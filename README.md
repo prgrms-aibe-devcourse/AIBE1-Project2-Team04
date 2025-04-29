@@ -43,4 +43,5 @@
 
 ### 브랜치 구조(개별 브랜치 - 파트 브랜치 - dev - main)
 
-![image](https://github.com/user-attachments/assets/c0e00a91-d51d-4a58-9c98-483b399362f4)
+![스크린샷 2025-04-29 102516](https://github.com/user-attachments/assets/a97102e9-30f8-415e-9d0e-36ef242fa0cc)
+
