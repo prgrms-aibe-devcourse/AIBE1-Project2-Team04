@@ -1,6 +1,6 @@
 package com.reboot.replay.entity;
 
-import com.reboot.reservation.entity.Reservation;
+import com.reboot.lecture.entity.Reservation;
 import jakarta.persistence.*;
 import lombok.*;
 

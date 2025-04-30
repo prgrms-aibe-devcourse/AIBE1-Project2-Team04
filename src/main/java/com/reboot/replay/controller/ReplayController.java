@@ -3,7 +3,7 @@ package com.reboot.replay.controller;
 import com.reboot.replay.dto.ReplayRequest;
 import com.reboot.replay.dto.ReplayResponse;
 import com.reboot.replay.service.ReplayService;
-import com.reboot.reservation.service.ReservationService;
+import com.reboot.lecture.service.ReservationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
