@@ -5,14 +5,14 @@ import lombok.Data;
 
 
 @Entity
-@Table(name = "student")
+@Table(name = "Member")
 @Data
-public class Student {
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "student_id")
-    private Long id;
+    @Column(name = "member_id")
+    private Long memberId;
 
     //인증관련
     @Column(nullable = false, unique = true)
@@ -25,14 +25,18 @@ public class Student {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(name ="e_mail",nullable = false, unique = true)
     private String email;
 
+    @Column(unique = true, nullable = false)
     private String nickname;
 
     @Column(name = "profile_image")
     private String profileImage;
 
     private String phone;
+
+    @Column(name = "role")
+    private boolean role = false;
 
 }

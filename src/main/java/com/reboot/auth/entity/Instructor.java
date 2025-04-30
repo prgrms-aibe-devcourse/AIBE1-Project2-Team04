@@ -9,33 +9,24 @@ import lombok.Data;
 public class Instructor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "instructor_id")
-    private Long id;
+    private Long instructorId;
 
-    //인증관련
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false)
-    private String password;
-
-    // 개인정보
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "profile_image")
-    private String profileImage;
+    @JoinColumn(name = "instructor_id")
+    private Member member;
 
     // 강사정보
+    @Column(length = 1000)
     private String career;
+
+    @Column(length = 2000)
     private String description;
 
     @Column(name = "review_num")
-    private Integer reviewNum = 0;
-    private Double rating = 0.0;
+    private int reviewNum = 0;
+
+    @Column(name = "rating")
+    private double rating = 0.0;
+
 
 }
