@@ -20,13 +20,13 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
-  # 객체 스토리지
-  supabase:
-    url: ${SUPABASE_URL}
-    access-key: ${SUPABASE_ACCESS_KEY}
-    pdf-bucket-name: ${SUPABASE_PDF_BUCKET_NAME}
-    sheet-bucket-name: ${SUPABASE_SHEET_BUCKET_NAME}
-    img-bucket-name: ${SUPABASE_IMG_BUCKET_NAME}
+#  # 객체 스토리지
+#  supabase:
+#    url: ${SUPABASE_URL}
+#    access-key: ${SUPABASE_ACCESS_KEY}
+#    pdf-bucket-name: ${SUPABASE_PDF_BUCKET_NAME}
+#    sheet-bucket-name: ${SUPABASE_SHEET_BUCKET_NAME}
+#    img-bucket-name: ${SUPABASE_IMG_BUCKET_NAME}
 
   # Security
   security:
@@ -63,10 +63,10 @@ jwt:
 springdoc:
   swagger-ui:
   # enabled: true # 개발 환경에선
-  enabled: false # 배포 환경에선
+   enabled: false # 배포 환경에선
   api-docs:
   # enabled: true # 개발 환경에선
-  enabled: false # 배포 환경에선
+   enabled: false # 배포 환경에선
 
 # 화면단 url
 #front-end:
