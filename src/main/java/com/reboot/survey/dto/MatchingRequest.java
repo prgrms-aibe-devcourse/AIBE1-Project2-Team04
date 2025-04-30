@@ -1,4 +1,4 @@
-package com.reboot.matching.dto;
+package com.reboot.survey.dto;
 
 public class MatchingRequest {
 }

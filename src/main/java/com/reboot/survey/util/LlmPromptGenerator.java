@@ -1,4 +1,4 @@
-package com.reboot.matching.util;
+package com.reboot.survey.util;
 
 public class LlmPromptGenerator {
 }

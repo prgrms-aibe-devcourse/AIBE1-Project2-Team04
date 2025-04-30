@@ -12,25 +12,17 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Lecture {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lecture_id")
-    private Long lectureId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "instructor_id")
+    @JoinColumn(name = "instructor_id", nullable = false)
     private Instructor instructor;
 
-    @Column(name = "title")
-    private String title;
+    @Embedded
+    private LectureInfo info;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "game_type")
-    private String gameType;
-
-    @Column(name = "price")
-    private Integer price;
+    @Embedded
+    private LectureMetaData metadata;
 }
