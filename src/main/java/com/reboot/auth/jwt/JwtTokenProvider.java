@@ -1,4 +1,4 @@
-package com.reboot.config;
+package com.reboot.auth.jwt;
 
 public class JwtTokenProvider {
 }
