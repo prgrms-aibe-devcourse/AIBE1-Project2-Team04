@@ -17,7 +17,7 @@ public class SignupService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void signupProcess(SignupDTO signupDTO) {
+    public boolean signupProcess(SignupDTO signupDTO) {
         String username = signupDTO.username();
         String password = signupDTO.password();
 
@@ -25,7 +25,7 @@ public class SignupService {
 
         if (isExist) {
             System.out.println("이미 등록된 사용자 : %s".formatted(username));
-            return;
+            return false;
         }
 
         Member member = new Member();
@@ -34,7 +34,8 @@ public class SignupService {
         member.setName(signupDTO.name());
         member.setEmail(signupDTO.email());
         member.setNickname(signupDTO.nickname());
-        member.setRole("USER");
+        member.setRole("ADMIN");
         memberRepository.save(member);
+        return true;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -38,12 +39,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(authToken);
     }
 
-    //로그인 성공시 실행하는 메소드 (여기서 JWT를 발급하면 됨)
+    //로그인 성공시 실행하는 메소드 (여기서 JWT를 발급)
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         System.out.println("로그인 성공");
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtTokenProvider.generateToken(authentication, List.of(userDetails.getAuthorities().toString()));
+
+        // 권한 이름 문자열만 추출
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .map(role -> role.replace("ROLE_", "")) // "ROLE_ADMIN" → "ADMIN" 으로 정리
+                .toList();
+
+        String token = jwtTokenProvider.generateToken(authentication, roles);
         response.addHeader("Authorization", "Bearer " + token);
     }
 
