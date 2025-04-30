@@ -1,4 +1,4 @@
 package com.reboot.course.service;
 
-public class CourseService {
+public class PaymentService {
 }
