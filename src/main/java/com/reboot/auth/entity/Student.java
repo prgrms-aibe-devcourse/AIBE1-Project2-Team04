@@ -16,5 +16,5 @@ public class Student {
 
     private String userid;
     private String password;
-
+    private String role;
 }
