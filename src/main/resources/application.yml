@@ -1,5 +1,3 @@
 spring:
-  application:
-    name: reboot
   profiles:
     active: dev
