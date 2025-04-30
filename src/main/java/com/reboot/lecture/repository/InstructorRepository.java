@@ -1,4 +1,4 @@
-package com.reboot.course.repository;
+package com.reboot.lecture.repository;
 
 public class InstructorRepository {
 }

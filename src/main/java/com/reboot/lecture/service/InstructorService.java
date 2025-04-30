@@ -1,4 +1,4 @@
-package com.reboot.course.service;
+package com.reboot.lecture.service;
 
 public class InstructorService {
 }
