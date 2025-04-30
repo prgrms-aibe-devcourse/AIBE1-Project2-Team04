@@ -1,7 +1,9 @@
 package com.reboot.lecture.entity;
 
 import com.reboot.auth.entity.Instructor;
-import com.reboot.member.entity.Member;
+import com.reboot.auth.entity.Member;
+import com.reboot.replay.entity.Replay;
+import com.reboot.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -16,28 +18,27 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
-    private Instructor instructorId;
+    private Instructor instructor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
-    private Lecture lectureId;
+    private Lecture lecture;
 
     private LocalDateTime date;
     private String status;
 
-    // 일단 아래는 필요하신 분이 활성화하면 될 것 같아요.
 //    @OneToOne(mappedBy = "reservation")
 //    private Payment payment;
-//
+
 //    @OneToOne(mappedBy = "reservation")
 //    private Review review;
-//
-//    @OneToOne(mappedBy = "reservation")
-//    private Replay replay;
+
+    @OneToOne(mappedBy = "reservation")
+    private Replay replay;
 }

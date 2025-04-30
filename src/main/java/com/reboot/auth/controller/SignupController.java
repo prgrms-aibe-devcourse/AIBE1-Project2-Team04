@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.controller;
 
 import com.reboot.auth.dto.SignupDTO;
@@ -21,4 +22,4 @@ public class SignupController {
         signupService.signupProcess(signupDTO);
         return "ok";
     }
-}
+}*/

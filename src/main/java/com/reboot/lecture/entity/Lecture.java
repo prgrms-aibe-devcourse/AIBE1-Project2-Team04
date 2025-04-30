@@ -1,6 +1,6 @@
 package com.reboot.lecture.entity;
 
-import com.reboot.instructor.entity.Instructor;
+import com.reboot.auth.entity.Instructor;
 import jakarta.persistence.*;
 import lombok.*;
 
