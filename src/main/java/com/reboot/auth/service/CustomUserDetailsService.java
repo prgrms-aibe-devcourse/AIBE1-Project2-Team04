@@ -1,6 +1,6 @@
 package com.reboot.auth.service;
 
-import com.reboot.auth.entity.Student;
+import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.MemberRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,28 +8,26 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final MemberRepository studentRepository;
+    private final MemberRepository memberRepository;
 
-    public CustomUserDetailsService(MemberRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public CustomUserDetailsService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Student student = studentRepository.findByUsername(username);
+        Optional<Member> member = memberRepository.findByUsername(username);
 
-        if(student != null) {
-            return User.builder()
-                    .username(student.getUsername())
-                    .password(student.getPassword())
-                    .roles(student.getRole())
-                    .build();
-        }
-
-        return null;
+        return member.map(value -> User.builder()
+                .username(value.getUsername())
+                .password(value.getPassword())
+                .roles(value.getRole())
+                .build()).orElse(null);
     }
 }
