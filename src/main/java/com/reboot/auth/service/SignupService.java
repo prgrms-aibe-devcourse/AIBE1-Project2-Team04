@@ -34,7 +34,7 @@ public class SignupService {
         member.setName(signupDTO.name());
         member.setEmail(signupDTO.email());
         member.setNickname(signupDTO.nickname());
-        member.setRole("ADMIN");
+        member.setRole("USER");
         memberRepository.save(member);
     }
 }
