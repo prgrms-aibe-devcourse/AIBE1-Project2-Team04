@@ -12,8 +12,12 @@ public class Instructor {
     @Column(name = "instructor_id")
     private Long instructorId;
 
+    @OneToOne
     @JoinColumn(name = "instructor_id")
     private Member member;
+
+    @Column(name = "member_id", insertable = false, updatable = false)
+    private Long memberId;
 
     // 강사정보
     @Column(length = 1000)
@@ -27,6 +31,4 @@ public class Instructor {
 
     @Column(name = "rating")
     private double rating = 0.0;
-
-
 }

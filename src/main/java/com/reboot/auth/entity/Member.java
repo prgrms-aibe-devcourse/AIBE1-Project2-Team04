@@ -5,7 +5,7 @@ import lombok.Data;
 
 
 @Entity
-@Table(name = "Member")
+@Table(name = "member")
 @Data
 public class Member {
 
@@ -39,4 +39,7 @@ public class Member {
     @Column(name = "role")
     private boolean role = false;
 
+    //맞춤 강사 서비스
+    @Column(name = "matching_service")
+    private Boolean matchingService = false;
 }

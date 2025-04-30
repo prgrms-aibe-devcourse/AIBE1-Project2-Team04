@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface InstructorRepository extends JpaRepository<Member, Long> {
-    Optional<Instructor> findByEmail(String email);
-    Optional<Instructor> findByUsername(String username);
-    boolean existsByEmail(String email);
-    boolean existsByUsername(String username);
+public interface InstructorRepository extends JpaRepository<Instructor, Long> {
+    Optional<Instructor> findByMember(Member member);
+    Optional<Instructor> findByMemberId(Long memberId);
+    boolean existsByMember(Member member);
+    boolean existsByMemberId(Long memberId);
 }

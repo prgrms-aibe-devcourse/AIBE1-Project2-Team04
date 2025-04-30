@@ -9,6 +9,10 @@ import lombok.Data;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "game_id")
+    private Long gameId;
+
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
