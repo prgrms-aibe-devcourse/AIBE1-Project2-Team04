@@ -23,7 +23,7 @@ public class SignupService {
 
         boolean isExist = memberRepository.existsByUsername(username);
 
-        if (!isExist) {
+        if (isExist) {
             System.out.println("이미 등록된 사용자 : %s".formatted(username));
             return;
         }
