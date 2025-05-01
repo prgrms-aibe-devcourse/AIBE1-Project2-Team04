@@ -5,6 +5,7 @@ import com.reboot.auth.repository.MemberRepository;
 import com.reboot.survey.dto.RecommendationResponse;
 import com.reboot.survey.dto.SurveyRequest;
 import com.reboot.survey.entity.Survey;
+import com.reboot.survey.repository.SurveyRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

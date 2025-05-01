@@ -4,18 +4,19 @@ import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.lecture.entity.Lecture;
+import com.reboot.lecture.repository.LectureRepository;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.Document;
+import com.reboot.survey.dto.Document;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @Service
 public class DataPreparationService {

@@ -47,8 +47,8 @@ public class ReservationService {
                 .studentName(reservation.getMember().getName())
                 .instructorId(reservation.getInstructor().getInstructorId())
                 .instructorName(reservation.getInstructor().getMember().getName())
-                .lectureId(reservation.getLecture().getLectureId())
-                .lectureTitle(reservation.getLecture().getTitle())
+                .lectureId(reservation.getLecture().getId())
+                .lectureTitle(reservation.getLecture().getInfo().getTitle())
                 .date(reservation.getDate())
                 .status(reservation.getStatus())
                 .build();

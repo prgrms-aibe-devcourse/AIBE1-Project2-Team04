@@ -1,6 +1,5 @@
 package com.reboot.survey.dto;
 
-import com.reboot.survey.service.LectureRecommendation;
 import lombok.Data;
 
 import java.util.List;

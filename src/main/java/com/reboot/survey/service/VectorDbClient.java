@@ -1,5 +1,6 @@
 package com.reboot.survey.service;
 
+import com.reboot.survey.dto.SearchResult;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;

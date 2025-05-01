@@ -3,14 +3,16 @@ package com.reboot.survey.service;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
 import com.reboot.lecture.entity.Lecture;
+import com.reboot.lecture.repository.LectureRepository;
+import com.reboot.survey.dto.LectureRecommendation;
 import com.reboot.survey.dto.RecommendationResponse;
 import com.reboot.survey.entity.Survey;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.directory.SearchResult;
-import javax.swing.text.Document;
+import com.reboot.survey.dto.SearchResult;
+import com.reboot.survey.dto.Document;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

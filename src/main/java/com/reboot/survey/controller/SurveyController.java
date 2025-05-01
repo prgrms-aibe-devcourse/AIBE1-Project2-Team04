@@ -1,7 +1,5 @@
 package com.reboot.survey.controller;
 
-import com.reboot.auth.entity.Member;
-import com.reboot.auth.security.CustomUserDetails;
 import com.reboot.survey.dto.RecommendationResponse;
 import com.reboot.survey.dto.SurveyRequest;
 import com.reboot.survey.service.SurveyService;
@@ -31,7 +29,7 @@ public class SurveyController {
             @RequestBody SurveyRequest surveyRequest) {
 
         // 현재 로그인한 사용자의 회원 ID 가져오기
-        Long memberId = ((CustomUserDetails) userDetails).getMemberId();
+        Long memberId = surveyRequest.getMemberId();
 
         // 설문조사 제출 및 추천 생성
         RecommendationResponse recommendations =

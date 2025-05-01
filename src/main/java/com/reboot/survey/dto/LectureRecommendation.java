@@ -1,4 +1,4 @@
-package com.reboot.survey.service;
+package com.reboot.survey.dto;
 
 import lombok.Data;
 import java.math.BigDecimal;

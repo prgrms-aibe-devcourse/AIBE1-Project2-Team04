@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class SurveyRequest {
+    private long memberId;
     private GameType gameType;
     private String gameTier;
     private String gamePosition;

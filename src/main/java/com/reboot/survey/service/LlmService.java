@@ -1,11 +1,13 @@
 package com.reboot.survey.service;
 
 import com.reboot.auth.entity.Member;
+import com.reboot.survey.dto.LlmRequest;
+import com.reboot.survey.dto.LlmResponse;
 import com.reboot.survey.entity.Survey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.Document;
+import com.reboot.survey.dto.Document;
 import java.util.List;
 
 @Service
