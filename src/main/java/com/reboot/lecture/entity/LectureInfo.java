@@ -1,10 +1,14 @@
 package com.reboot.lecture.entity;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Embeddable
+@Getter
+@Setter
 public class LectureInfo {
     private String title;
     private String description;

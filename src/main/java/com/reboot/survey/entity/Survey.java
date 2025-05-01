@@ -3,9 +3,13 @@ package com.reboot.survey.entity;
 import com.reboot.auth.entity.Member;
 import com.reboot.survey.entity.enums.*;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
 @Entity
+@Getter
+@Setter
 public class Survey {
 
     @Id
