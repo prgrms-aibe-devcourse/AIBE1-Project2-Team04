@@ -27,34 +27,40 @@ public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;
-    @Value("${jwt.expiration-ms}")
-    private long expirationMs;
+    // @Value("${jwt.expiration-ms}")
+    // private long expirationMs;
 
     public SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // jwt Token 생성
-    public String generateToken(Authentication authentication, List<String> roles) {
-        String username = authentication.getName();
-        Instant now = Instant.now();
-        Date expiration = new Date(now.toEpochMilli() + expirationMs);
+    // jwt Token 생성 (Access Token과 Refresh Token 분리를 위해 expiration 개별 설정)
+    public String generateToken(String category, String username, String role) {
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", roles); // ROLE_ 포함된 상태로 저장
+        Instant now = Instant.now();
+        Date expiration = new Date(now.toEpochMilli() + SetExpirationMs(category));
 
         return Jwts.builder()
-                .subject(username)
+                .claim("category", category)
+                .claim("username", username)
+                .claim("role", role)
                 .issuedAt(Date.from(now))
                 .expiration(expiration)
-                .claims(claims)
                 .signWith(getSecretKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
+    public String getCategory(String token) {
+        try {
+            return parseClaims(token).get("category", String.class);
+        } catch (JwtException e) {
+            throw new BadCredentialsException("Invalid or expired JWT token", e);
+        }
+    }
+
     public String getUsername(String token) {
         try {
-            return parseClaims(token).getSubject();
+            return parseClaims(token).get("username", String.class);
         } catch (JwtException e) {
             throw new BadCredentialsException("Invalid or expired JWT token", e);
         }
@@ -105,5 +111,18 @@ public class JwtTokenProvider {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    private long SetExpirationMs(String category) {
+        long expirationMs = 0L;
+
+        if(category.equals("access")) {
+            expirationMs = 600000; // 10분
+        }
+        else if(category.equals("refresh")) {
+            expirationMs = 86400000; // 1일
+        }
+
+        return expirationMs;
     }
 }
