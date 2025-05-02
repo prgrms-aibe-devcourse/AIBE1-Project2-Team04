@@ -11,7 +11,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -49,11 +48,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority grantedAuthority = authorities.iterator().next();
         String role = grantedAuthority.getAuthority();
 
-        String accessToken = jwtTokenProvider.generateToken("access", username, role);
-        String refreshToken = jwtTokenProvider.generateToken("refresh", username, role);
+        String accessToken = jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_ACCESS, username, role);
+        String refreshToken = jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_REFRESH, username, role);
 
-        response.setHeader("access", accessToken);
-        response.addCookie(createCookie("refresh", refreshToken));
+        response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, accessToken);
+        response.addCookie(createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
         response.setStatus(HttpServletResponse.SC_OK);
     }
 

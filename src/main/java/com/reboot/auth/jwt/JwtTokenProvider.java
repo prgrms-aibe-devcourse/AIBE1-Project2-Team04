@@ -23,6 +23,9 @@ import java.util.List;
 @Log
 public class JwtTokenProvider {
 
+    public final String CATEGORY_ACCESS = "access";
+    public final String CATEGORY_REFRESH = "refresh";
+
     @Value("${jwt.secret}")
     private String secretKey;
     // @Value("${jwt.expiration-ms}")
@@ -130,10 +133,10 @@ public class JwtTokenProvider {
     private long SetExpirationMs(String category) {
         long expirationMs = 0L;
 
-        if(category.equals("access")) {
+        if(category.equals(CATEGORY_ACCESS)) {
             expirationMs = 600000; // 10분
         }
-        else if(category.equals("refresh")) {
+        else if(category.equals(CATEGORY_REFRESH)) {
             expirationMs = 86400000; // 1일
         }
 

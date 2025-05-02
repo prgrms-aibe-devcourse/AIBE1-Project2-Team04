@@ -14,7 +14,7 @@ public class ReissueService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String reissueToken(String token) {
+    public String reissueAccessToken(String token) {
         try {
             jwtTokenProvider.validateToken(token);
         } catch (ExpiredJwtException e) {
@@ -31,6 +31,12 @@ public class ReissueService {
         String role = jwtTokenProvider.getRole(token);
 
         // 새 access 토큰 발급
-        return jwtTokenProvider.generateToken("access", username, role);
+        return jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_ACCESS, username, role);
+    }
+
+    public String reissueRefreshToken(String token) {
+        String username = jwtTokenProvider.getUsername(token);
+        String role = jwtTokenProvider.getRole(token);
+        return jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_REFRESH, username, role);
     }
 }
