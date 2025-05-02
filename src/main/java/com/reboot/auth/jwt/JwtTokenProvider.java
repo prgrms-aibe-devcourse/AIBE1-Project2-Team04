@@ -52,7 +52,7 @@ public class JwtTokenProvider {
         try {
             return parseClaims(token).get("category", String.class);
         } catch (JwtException e) {
-            throw new BadCredentialsException("Invalid or expired JWT token", e);
+            throw new BadCredentialsException("Invalid Category JWT token", e);
         }
     }
 
@@ -60,7 +60,15 @@ public class JwtTokenProvider {
         try {
             return parseClaims(token).get("username", String.class);
         } catch (JwtException e) {
-            throw new BadCredentialsException("Invalid or expired JWT token", e);
+            throw new BadCredentialsException("Invalid Username JWT token", e);
+        }
+    }
+
+    public String getRole(String token) {
+        try {
+            return parseClaims(token).get("role", String.class);
+        } catch (JwtException e) {
+            throw new BadCredentialsException("Invalid Role JWT token", e);
         }
     }
 
@@ -81,7 +89,7 @@ public class JwtTokenProvider {
                         .toList();
             }
 
-            throw new BadCredentialsException("Invalid roles claim in JWT: unexpected type " + rolesObj.getClass());
+            throw new BadCredentialsException("Invalid roles claim in JWT: unexpected type " + rolesObj);
 
         } catch (JwtException e) {
             throw new BadCredentialsException("Failed to extract roles from token", e);

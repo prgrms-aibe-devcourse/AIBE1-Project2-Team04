@@ -50,8 +50,9 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/","/login", "/sign").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/","/auth/login", "/auth/sign").permitAll()
+                        // .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/auth/reissue").permitAll()
                         .anyRequest().permitAll());
 
         http
