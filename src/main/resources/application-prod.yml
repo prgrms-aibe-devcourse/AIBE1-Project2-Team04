@@ -63,10 +63,10 @@ jwt:
 springdoc:
   swagger-ui:
   # enabled: true # 개발 환경에선
-  enabled: false # 배포 환경에선
+    enabled: false # 배포 환경에선
   api-docs:
   # enabled: true # 개발 환경에선
-  enabled: false # 배포 환경에선
+    enabled: false # 배포 환경에선
 
 # 화면단 url
 #front-end:
