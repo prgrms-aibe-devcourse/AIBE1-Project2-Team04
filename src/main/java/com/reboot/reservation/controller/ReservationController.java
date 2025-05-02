@@ -42,7 +42,6 @@ public class ReservationController {
         return "reservation/reservationForm";
     }
 
-
     /**
      * 예약 생성 요청 처리
      * - POST /reservation
@@ -55,7 +54,29 @@ public class ReservationController {
         return "reservation/reservationResult";
     }
 
-//    /**
+
+    /**
+     * 예약 취소 폼 진입
+     * - GET /reservation/{id}/cancel
+     */
+    @GetMapping("/{id}/cancel")
+    public String cancelForm(@PathVariable Long id, Model model) {
+        model.addAttribute("reservationId", id);
+        return "reservation/reservationCancel";
+    }
+
+    /**
+     * 예약 취소 요청 처리
+     * - POST /reservation/{id}/cancel
+     */
+    @PostMapping("/{id}/cancel")
+    public String cancelReservation(@PathVariable Long id, Model model) {
+        ReservationResponseDto reservation = reservationService.cancelReservation(id);
+        model.addAttribute("reservation", reservation);
+        return "reservation/reservationResult";
+    }
+
+    //    /**
 //     * 예약 상세 조회
 //     * - GET /reservation/{id}
 //     */
@@ -74,26 +95,5 @@ public class ReservationController {
 //    public String getReservationsByMember(@PathVariable Long memberId, Model model) {
 //        model.addAttribute("reservations", reservationService.getReservationsByMember(memberId));
 //        return "reservation/reservationList";
-//    }
-
-//    /**
-//     * 예약 취소 폼 진입
-//     * - GET /reservation/{id}/cancel
-//     */
-//    @GetMapping("/{id}/cancel")
-//    public String cancelForm(@PathVariable Long id, Model model) {
-//        model.addAttribute("reservationId", id);
-//        return "reservation/reservationCancel";
-//    }
-
-//    /**
-//     * 예약 취소 요청 처리
-//     * - POST /reservation/{id}/cancel
-//     */
-//    @PostMapping("/{id}/cancel")
-//    public String cancelReservation(@PathVariable Long id, Model model) {
-//        ReservationResponseDto reservation = reservationService.cancelReservation(id);
-//        model.addAttribute("reservation", reservation);
-//        return "reservation/reservationResult";
 //    }
 }

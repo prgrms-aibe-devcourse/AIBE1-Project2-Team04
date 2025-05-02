@@ -56,6 +56,8 @@ public class ReservationService {
                 .member(member)
                 .instructor(instructor)
                 .lecture(lecture)
+                .requestDetail(dto.getRequestDetail())
+                .scheduleDate(dto.getScheduleDate())
                 .date(LocalDateTime.now())
                 .status("예약완료")
                 .build();
@@ -117,6 +119,8 @@ public class ReservationService {
                 .lectureTitle(reservation.getLecture().getTitle())
                 .date(reservation.getDate())
                 .status(reservation.getStatus())
+                .requestDetail(reservation.getRequestDetail())
+                .scheduleDate(reservation.getScheduleDate())
                 .build();
     }
 }

@@ -4,7 +4,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,7 +15,10 @@ public class ReservationResponseDto {
     private String instructorName;
     private Long lectureId;
     private String lectureTitle;
+    private String requestDetail;
+    private String scheduleDate;
     private LocalDateTime date;
     private String status;
+
 
 }

@@ -27,6 +27,8 @@ public class Reservation {
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 
+    private String requestDetail;
+    private String scheduleDate;  // 강의 일정 (yyyy-MM-dd 등)
     private LocalDateTime date;
     private String status;
 
