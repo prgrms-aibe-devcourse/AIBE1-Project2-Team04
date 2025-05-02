@@ -17,24 +17,29 @@ public class SignupService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void signupProcess(SignupDTO signupDTO) {
-        String username = signupDTO.username();
-        String password = signupDTO.password();
-
-        boolean isExist = memberRepository.existsByUsername(username);
-
-        if (isExist) {
-            System.out.println("이미 등록된 사용자 : %s".formatted(username));
-            return;
+    public boolean signupProcess(SignupDTO signupDTO) {
+        if (isUsernameExist(signupDTO.username())) {
+            System.out.printf("이미 등록된 사용자 : %s", signupDTO.username());
+            return false;
         }
 
-        Member member = new Member();
-        member.setUsername(username);
-        member.setPassword(passwordEncoder.encode(password));
-        member.setName(signupDTO.name());
-        member.setEmail(signupDTO.email());
-        member.setNickname(signupDTO.nickname());
-        member.setRole("USER");
+        Member member = createMember(signupDTO);
         memberRepository.save(member);
+        return true;
+    }
+
+    private boolean isUsernameExist(String username) {
+        return memberRepository.existsByUsername(username);
+    }
+
+    private Member createMember(SignupDTO dto) {
+        Member member = new Member();
+        member.setUsername(dto.username());
+        member.setPassword(passwordEncoder.encode(dto.password()));
+        member.setName(dto.name());
+        member.setEmail(dto.email());
+        member.setNickname(dto.nickname());
+        member.setRole("ADMIN");
+        return member;
     }
 }

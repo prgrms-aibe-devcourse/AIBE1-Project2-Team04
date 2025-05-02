@@ -1,5 +1,6 @@
 package com.reboot.auth.config;
 
+import com.reboot.auth.jwt.JwtAuthenticationFilter;
 import com.reboot.auth.jwt.JwtTokenProvider;
 import com.reboot.auth.jwt.LoginFilter;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +52,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/","/login", "/sign").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
+
+        http
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), LoginFilter.class);
 
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
