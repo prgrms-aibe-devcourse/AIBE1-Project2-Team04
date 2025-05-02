@@ -1,4 +1,4 @@
-package com.reboot.course.dto;
+package com.reboot.reservation.dto;
 
 import lombok.*;
 

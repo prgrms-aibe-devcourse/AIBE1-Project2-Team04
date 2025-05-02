@@ -1,15 +1,15 @@
-package com.reboot.course.service;
+package com.reboot.reservation.service;
 
-import com.reboot.course.dto.ReservationRequestDto;
-import com.reboot.course.dto.ReservationResponseDto;
-import com.reboot.course.entity.Instructor;
-import com.reboot.course.entity.Lecture;
-import com.reboot.course.entity.Member;
-import com.reboot.course.entity.Reservation;
-import com.reboot.course.repository.InstructorRepository;
-import com.reboot.course.repository.LectureRepository;
-import com.reboot.course.repository.MemberRepository;
-import com.reboot.course.repository.ReservationRepository;
+import com.reboot.reservation.dto.ReservationRequestDto;
+import com.reboot.reservation.dto.ReservationResponseDto;
+import com.reboot.reservation.entity.Instructor;
+import com.reboot.reservation.entity.Lecture;
+import com.reboot.reservation.entity.Member;
+import com.reboot.reservation.entity.Reservation;
+import com.reboot.reservation.repository.InstructorRepository;
+import com.reboot.reservation.repository.LectureRepository;
+import com.reboot.reservation.repository.MemberRepository;
+import com.reboot.reservation.repository.ReservationRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

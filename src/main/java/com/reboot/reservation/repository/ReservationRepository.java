@@ -1,6 +1,6 @@
-package com.reboot.course.repository;
+package com.reboot.reservation.repository;
 
-import com.reboot.course.entity.Reservation;
+import com.reboot.reservation.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

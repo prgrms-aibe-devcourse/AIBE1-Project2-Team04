@@ -1,4 +1,4 @@
-package com.reboot.course.entity;
+package com.reboot.reservation.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

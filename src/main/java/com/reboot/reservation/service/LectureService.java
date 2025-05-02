@@ -1,7 +1,7 @@
-package com.reboot.course.service;
+package com.reboot.reservation.service;
 
-import com.reboot.course.entity.Lecture;
-import com.reboot.course.repository.LectureRepository;
+import com.reboot.reservation.entity.Lecture;
+import com.reboot.reservation.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

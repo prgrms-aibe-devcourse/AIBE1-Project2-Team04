@@ -1,12 +1,12 @@
-package com.reboot.course.controller;
+package com.reboot.reservation.controller;
 
-import com.reboot.course.dto.ReservationRequestDto;
-import com.reboot.course.dto.ReservationResponseDto;
-import com.reboot.course.entity.Lecture;
-import com.reboot.course.entity.Member;
-import com.reboot.course.service.LectureService;
-import com.reboot.course.service.MemberService;
-import com.reboot.course.service.ReservationService;
+import com.reboot.reservation.dto.ReservationRequestDto;
+import com.reboot.reservation.dto.ReservationResponseDto;
+import com.reboot.reservation.entity.Lecture;
+import com.reboot.reservation.entity.Member;
+import com.reboot.reservation.service.LectureService;
+import com.reboot.reservation.service.MemberService;
+import com.reboot.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
