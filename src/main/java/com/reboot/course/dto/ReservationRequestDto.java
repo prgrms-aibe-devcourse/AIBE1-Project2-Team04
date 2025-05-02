@@ -5,11 +5,14 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ReservationRequestDto {
     private Long memberId;
     private Long instructorId;
     private Long lectureId;
-    private String status;
+
+    public ReservationRequestDto(Long memberId, Long instructorId, Long lectureId) {
+        this.memberId = memberId;
+        this.instructorId = instructorId;
+        this.lectureId = lectureId;
+    }
 }

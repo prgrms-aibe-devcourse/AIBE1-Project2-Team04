@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 결과</title>
+</head>
+<body>
+<h2>예약 결과</h2>
+<p>예약번호: <span th:text="${reservation.reservationId}"></span></p>
+<p>회원명: <span th:text="${reservation.memberName}"></span></p>
+<p>강사명: <span th:text="${reservation.instructorName}"></span></p>
+<p>강의명: <span th:text="${reservation.lectureTitle}"></span></p>
+<p>예약일시: <span th:text="${reservation.date}"></span></p>
+<p>상태: <span th:text="${reservation.status}"></span></p>
+
+<a th:href="@{/reservation/{id}(id=${reservation.reservationId})}">예약 상세보기</a>
+<a th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}">예약 취소하기</a>
+</body>
+</html>

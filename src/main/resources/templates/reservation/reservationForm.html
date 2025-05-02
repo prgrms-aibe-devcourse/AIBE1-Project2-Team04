@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 신청</title>
+</head>
+<body>
+<h2>강의 예약</h2>
+<p>강의명: <span th:text="${lecture.title}"></span></p>
+<p>설명: <span th:text="${lecture.description}"></span></p>
+<p>게임 타입: <span th:text="${lecture.gameType}"></span></p>
+<p>가격: <span th:text="${lecture.price}"></span>원</p>
+
+<form th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post">
+    <input type="hidden" th:field="*{memberId}" th:value="${member.memberId}" />
+    <input type="hidden" th:field="*{lectureId}" th:value="${lecture.lectureId}" />
+    <input type="hidden" th:field="*{instructorId}" th:value="${lecture.instructor.instructorId}" />
+    <button type="submit">예약완료</button>
+</form>
+</body>
+</html>

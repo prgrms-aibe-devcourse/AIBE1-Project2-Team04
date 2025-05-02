@@ -5,10 +5,11 @@
     <title>예약 취소</title>
 </head>
 <body>
-<h1>예약 취소</h1>
+<h2>예약 취소</h2>
 <form th:action="@{/reservation/{id}/cancel(id=${reservationId})}" method="post">
-    <label>취소 사유: <input type="text" name="cancelReason" /></label><br/>
+    <p>정말로 예약을 취소하시겠습니까?</p>
     <button type="submit">취소하기</button>
+    <a th:href="@{/reservation/{id}(id=${reservationId})}">돌아가기</a>
 </form>
 </body>
 </html>
