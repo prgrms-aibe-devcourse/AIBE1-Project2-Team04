@@ -70,7 +70,33 @@ public class MypageControlloer {
         return "redirect:/mypage";
     }
 
-    //비밀번호 변경 ??
+    //비밀번호 변경
+    @PostMapping("/password")
+    public String changePassword(@RequestParam("currentPassword") String currentPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Principal principal,
+                                 RedirectAttributes redirectAttributes) {
+
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+            return "redirect:/mypage/password";
+        }
+
+        try {
+            boolean success = mypageService.changePassword(principal.getName(), currentPassword, newPassword);
+            if (success) {
+                redirectAttributes.addFlashAttribute("message", "비밀번호가 성공적으로 변경되었습니다.");
+                return "redirect:/mypage";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "현재 비밀번호가 올바르지 않습니다.");
+                return "redirect:/mypage/password";
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "비밀번호 변경 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/mypage/password";
+        }
+    }
 
     //개인정보 관리
 
@@ -81,7 +107,7 @@ public class MypageControlloer {
         List<Game> game = gameRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
-        model.addAttribute("games", game);
+        model.addAttribute("game", game);
         return "mypage/game";
     }
 
