@@ -74,15 +74,46 @@ public class MypageControlloer {
 
     //개인정보 관리
 
-    //게임 정보 업데이트(추가) ??
+    //게임정보 (읽기전용)
+    @GetMapping("/game")
+    public String myGames(Principal principal, Model model) {
+        Member member = mypageSercice.getCurrentMember(principal.getName());
+        List<Game> game = gameRepository.findByMemberId(member.getMemberId());
 
-    //게임 정보 삭제
+        model.addAttribute("member", member);
+        model.addAttribute("games", game);
+        return "mypage/game";
+    }
 
     //수강신청 내역 페이지
+    @GetMapping("/reservations")
+    public String myReservations(Principal principal, Model model) {
+        Member member = mypageService.getCurrentMember(principal.getName());
+        List<Reservation> reservations = reservationRepository.findByMemberId(member.getMemberId());
+
+        model.addAttribute("member", member);
+        model.addAttribute("reservations", reservations);
+
+        return "mypage/reservations";
+    }
 
     //수강신청 상세정보
+    @GetMapping("/reservations/{reservationId}")
+    public String reservationDetail(@PathVariable Long reservationId,
+                                    Principal principal,
+                                    Model model) {
+        Member member = mypageService.getCurrentMember(principal.getName());
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
 
-    //수강신청 취소 페이지
+        if (reservation.isPresent() && reservation.get().getMemberId().equals(member.getMemberId())) {
+            model.addAttribute("member", member);
+            model.addAttribute("reservation", reservation.get());
+            return "mypage/reservation-detail";
+        } else {
+            return "redirect:/mypage/reservations";
+        }
+    }
+
 
 
 
