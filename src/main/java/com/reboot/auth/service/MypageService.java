@@ -1,7 +1,9 @@
 package com.reboot.auth.service;
 
+import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,7 @@ public class MypageService {
     }
 
     public Member getCurrentMember(String username) {
-        return memberRepository.findzbyUsername(username).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return memberRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
 
     // 프로필 업데이트
