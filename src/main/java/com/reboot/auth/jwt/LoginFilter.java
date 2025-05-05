@@ -11,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
@@ -44,7 +45,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     //로그인 성공 시 실행하는 메소드 (여기서 JWT를 발급)
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         String username = authentication.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -62,12 +63,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, accessToken);
         response.addCookie(refreshTokenService.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
+        response.sendRedirect("/"); // TODO. 프론트에서 상태값 보고 처리하도록
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        response.sendRedirect("/auth/login?error"); // TODO. 프론트에서 상태값 보고 처리하도록
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 

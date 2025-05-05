@@ -70,8 +70,8 @@
                     <i class="ri-search-line"></i>
                 </div>
             </div>
-            <a th:href="@{/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
-            <a th:href="@{/sign}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
+            <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
+            <a th:href="@{/auth/sign}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
             <button class="md:hidden w-10 h-10 flex items-center justify-center">
                 <i class="ri-menu-line text-xl"></i>
             </button>
@@ -188,7 +188,7 @@
         <!-- 회원가입 안내 -->
         <div class="text-center">
             <p class="text-sm text-gray-600">
-                아직 회원이 아니신가요? <a th:href="@{/sign}" class="font-medium text-primary hover:text-primary/80">회원가입</a>
+                아직 회원이 아니신가요? <a th:href="@{/auth/sign}" class="font-medium text-primary hover:text-primary/80">회원가입</a>
             </p>
         </div>
     </div>
