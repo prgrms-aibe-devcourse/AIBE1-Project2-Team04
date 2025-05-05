@@ -23,7 +23,7 @@ public class ReissueService {
 
 
         String category = jwtTokenProvider.getCategory(token);
-        if (!"refresh".equals(category)) {
+        if (!jwtTokenProvider.CATEGORY_REFRESH.equals(category)) {
             throw new IllegalArgumentException("invalid refresh token");
         }
 
