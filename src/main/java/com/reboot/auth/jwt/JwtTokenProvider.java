@@ -30,6 +30,10 @@ public class JwtTokenProvider {
     private String secretKey;
     // @Value("${jwt.expiration-ms}")
     // private long expirationMs;
+    @Value("${jwt.access-expiration-ms}")
+    private long accessExpirationMs;
+    @Value("${jwt.refresh-expiration-ms}")
+    private long refreshExpirationMs;
 
     public SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -39,7 +43,7 @@ public class JwtTokenProvider {
     public String generateToken(String category, String username, String role) {
 
         Instant now = Instant.now();
-        Date expiration = new Date(now.toEpochMilli() + SetExpirationMs(category));
+        Date expiration = new Date(now.toEpochMilli() + GetExpirationMs(category));
 
         return Jwts.builder()
                 .claim("category", category)
@@ -130,14 +134,16 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    private long SetExpirationMs(String category) {
+    public long GetExpirationMs(String category) {
         long expirationMs = 0L;
 
         if(category.equals(CATEGORY_ACCESS)) {
-            expirationMs = 600000; // 10분
+            // expirationMs = 600000; // 10분
+            expirationMs = accessExpirationMs;
         }
         else if(category.equals(CATEGORY_REFRESH)) {
-            expirationMs = 86400000; // 1일
+            // expirationMs = 86400000; // 1일
+            expirationMs = refreshExpirationMs;
         }
 
         return expirationMs;

@@ -1,7 +1,7 @@
 package com.reboot.auth.jwt;
 
+import com.reboot.auth.service.RefreshTokenService;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,18 +11,22 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.time.Instant;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, RefreshTokenService refreshTokenService) {
 
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -44,15 +48,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = authentication.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator iterator = authorities.iterator();
         GrantedAuthority grantedAuthority = authorities.iterator().next();
         String role = grantedAuthority.getAuthority();
 
         String accessToken = jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_ACCESS, username, role);
         String refreshToken = jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_REFRESH, username, role);
 
+        // Refresh Token DB 저장
+        Instant now = Instant.now();
+        Date expiration = new Date(now.toEpochMilli() + jwtTokenProvider.GetExpirationMs(jwtTokenProvider.CATEGORY_REFRESH));
+        String refresh_Expiration = expiration.toString();
+        refreshTokenService.addRefreshEntity(username, refreshToken, refresh_Expiration);
+
         response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, accessToken);
-        response.addCookie(createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
+        response.addCookie(refreshTokenService.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
@@ -62,10 +71,4 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
-    private Cookie createCookie(String key, String vaule) {
-        Cookie cookie = new Cookie(key, vaule);
-        cookie.setMaxAge(24 * 60 * 60); // refreshToken과 동일하게
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
 }

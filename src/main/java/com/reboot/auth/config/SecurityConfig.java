@@ -3,6 +3,7 @@ package com.reboot.auth.config;
 import com.reboot.auth.jwt.JwtAuthenticationFilter;
 import com.reboot.auth.jwt.JwtTokenProvider;
 import com.reboot.auth.jwt.LoginFilter;
+import com.reboot.auth.service.RefreshTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,11 +23,13 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtTokenProvider jwtTokenProvider, RefreshTokenService refreshTokenService) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Bean
@@ -58,7 +61,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), LoginFilter.class);
 
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, refreshTokenService), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session) ->
