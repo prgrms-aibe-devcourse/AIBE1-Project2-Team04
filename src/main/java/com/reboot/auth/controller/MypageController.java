@@ -1,22 +1,28 @@
 package com.reboot.auth.controller;
 
+import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Member;
+import com.reboot.auth.entity.Reservation;
 import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
+import com.reboot.auth.repository.ReservationRepository;
 import com.reboot.auth.service.MypageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.reboot.auth.repository.ReservationRepository;
+import com.reboot.auth.entity.Reservation;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/mypage")
-public class MypageControlloer {
+public class MypageController {
 
     private final MemberRepository memberRepository;
     // 매칭
@@ -24,7 +30,7 @@ public class MypageControlloer {
     private final GameRepository gameRepository;
     private final MypageService mypageService;
 
-    public MypageControlloer(MemberRepository memberRepository,
+    public MypageController(MemberRepository memberRepository,
                              GameRepository gameRepository,
                              ReservationRepository reservationRepository,
                              MypageService mypageService) {
@@ -38,31 +44,33 @@ public class MypageControlloer {
     @GetMapping
     public String mypage(Principal principal, Model model) {
         // 로그인 사용자 정보 조회
-        Member meber = mypageService.getCurrentMember(principal.getName());
+        Member member = mypageService.getCurrentMember(principal.getName());
         List<Game> games = GameRepository.findByMemberId(member.getMemberId());
         List<Reservation> reservations = reservationRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
         model.addAttribute("games", games);
         model.addAttribute("reservations",reservations);
+
+        return "mypage";
     }
 
     //프로필 수정 페이지
     @GetMapping("/profile")
     public String profileEditForm(Principal principal, Model model) {
-        Member member = mypageSercice.getCurrentMember(principal.getName());
-        model.addAttriboute("member",member);
-        return "mypage/profile-deit";
+        Member member = mypageService.getCurrentMember(principal.getName());
+        model.addAttribute("member",member);
+        return "mypage/profile-edit";
     }
 
     // 프로필 정보 업데이트
     @PostMapping("/profile")
-    public String updateProfile(@ModelAttribute ProfileUpdateDTO  profileDTO,
+    public String updateProfile(@ModelAttribute ProfileDTO profileDTO,
                                 @RequestParam(value = "profileImage", required = false)MultipartFile profileImage,
                                 Principal principal,
                                 RedirectAttributes redirectAttributes) {
         try {
-            mypageService.updateProfile(principal.getName(), profileDTO, profileImage);
+            mypageService.updateProfile(principal.getName(), profileDTO);
             redirectAttributes.addAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "프로필 업데이트 중 오류가 발생했습니다.");
@@ -103,8 +111,8 @@ public class MypageControlloer {
     //게임정보 (읽기전용)
     @GetMapping("/game")
     public String myGames(Principal principal, Model model) {
-        Member member = mypageSercice.getCurrentMember(principal.getName());
-        List<Game> game = gameRepository.findByMemberId(member.getMemberId());
+        Member member = mypageService.getCurrentMember(principal.getName());
+        List<Game> game = GameRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
         model.addAttribute("game", game);
@@ -139,17 +147,4 @@ public class MypageControlloer {
             return "redirect:/mypage/reservations";
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

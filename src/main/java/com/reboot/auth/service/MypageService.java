@@ -1,21 +1,24 @@
 package com.reboot.auth.service;
 
+import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
+import com.reboot.auth.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class MypageService {
 
     private final MemberRepository memberRepository;
-    private final ResrvationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
 
     public MypageService(MemberRepository memberRepository,
-                         ResrvationRepository reservationRepository,
+                         ReservationRepository reservationRepository,
                          PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
@@ -27,9 +30,18 @@ public class MypageService {
     }
 
     // 프로필 업데이트
-    member.setName(profileDTO.getName());
-    member.setNickname(profileDTO.getNickname());
-    member.setPhone(profileDTO.getPhone());
+    @Transactional
+    public void updateProfile(String username, ProfileDTO profileDTO) {
+        Member member = getCurrentMember(username);
+
+        member.setName(profileDTO.getName());
+        member.setNickname(profileDTO.getNickname());
+        member.setPhone(profileDTO.getPhone());
+
+        // 저장
+        memberRepository.save(member);
+    }
+
 
     // 비밀번호 변경
     @Transactional
@@ -47,6 +59,4 @@ public class MypageService {
 
         return true;
     }
-
-
 }
