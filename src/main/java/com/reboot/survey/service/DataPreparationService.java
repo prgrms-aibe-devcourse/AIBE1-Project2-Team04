@@ -70,7 +70,7 @@ public class DataPreparationService {
             documentContent.append("설명: ").append(lecture.getInfo().getDescription()).append("\n");
             documentContent.append("가격: ").append(lecture.getInfo().getPrice()).append("\n");
             documentContent.append("강의 시간: ").append(lecture.getInfo().getDuration()).append("\n");
-            documentContent.append("랭크/티어: ").append(lecture.getInfo().getRank()).append("\n");
+            documentContent.append("랭크/티어: ").append(lecture.getInfo().getRank_()).append("\n");
             documentContent.append("포지션: ").append(lecture.getInfo().getPosition()).append("\n");
             documentContent.append("평균 평점: ").append(lecture.getMetadata().getAverageRating()).append("\n");
             documentContent.append("수강생 수: ").append(lecture.getMetadata().getTotalMembers()).append("\n");
@@ -89,7 +89,7 @@ public class DataPreparationService {
             metadata.put("gameType", lecture.getInfo().getGameType());
             metadata.put("instructorId", String.valueOf(instructor.getInstructorId()));
             metadata.put("price", lecture.getInfo().getPrice().toString());
-            metadata.put("rank", lecture.getInfo().getRank());
+            metadata.put("rank", lecture.getInfo().getRank_());
             metadata.put("position", lecture.getInfo().getPosition());
             metadata.put("rating", String.valueOf(lecture.getMetadata().getAverageRating()));
             metadata.put("isActive", String.valueOf(lecture.getMetadata().isActive()));

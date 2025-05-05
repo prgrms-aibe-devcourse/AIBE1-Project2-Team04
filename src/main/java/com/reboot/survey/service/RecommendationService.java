@@ -187,7 +187,7 @@ public class RecommendationService {
             content.append("설명: ").append(lecture.getInfo().getDescription()).append("\n");
             content.append("가격: ").append(lecture.getInfo().getPrice()).append("\n");
             content.append("강의 시간: ").append(lecture.getInfo().getDuration()).append("\n");
-            content.append("랭크/티어: ").append(lecture.getInfo().getRank()).append("\n");
+            content.append("랭크/티어: ").append(lecture.getInfo().getRank_()).append("\n");
             content.append("포지션: ").append(lecture.getInfo().getPosition()).append("\n");
             content.append("평균 평점: ").append(lecture.getMetadata().getAverageRating()).append("\n");
             content.append("수강생 수: ").append(lecture.getMetadata().getTotalMembers()).append("\n");

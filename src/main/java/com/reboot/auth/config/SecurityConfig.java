@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.config;
 
 import com.reboot.auth.jwt.JwtAuthenticationFilter;
@@ -66,4 +67,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-}
+}*/

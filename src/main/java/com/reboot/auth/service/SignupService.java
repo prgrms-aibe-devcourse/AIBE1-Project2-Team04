@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.service;
 
 import com.reboot.auth.dto.SignupDTO;
@@ -42,4 +43,4 @@ public class SignupService {
         member.setRole("ADMIN");
         return member;
     }
-}
+}*/

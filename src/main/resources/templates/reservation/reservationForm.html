@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>강의 예약</title>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; }
+        .container { display: flex; max-width: 1000px; margin: 40px auto; gap: 32px; }
+        .lecture-info { flex: 2; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
+        .reservation-card { flex: 1; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
+        .lecture-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 12px; }
+        .lecture-desc { color: #444; margin-bottom: 24px; }
+        .price { font-size: 1.2rem; color: #2e7dff; font-weight: bold; }
+        .form-label { display: block; margin: 16px 0 8px; font-weight: 500; }
+        .form-input, .form-textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+        .form-textarea { resize: vertical; min-height: 60px; }
+        .form-btn { width: 100%; margin-top: 24px; padding: 12px 0; background: #2e7dff; color: #fff; border: none; border-radius: 6px; font-size: 1.1rem; cursor: pointer; }
+        .form-btn:hover { background: #185bb5; }
+        .calendar-input { background: #f7f9fa; }
+        .replay-link { display: inline-block; margin: 12px 0; color: #2e7dff; text-decoration: underline; }
+    </style>
+    <!-- 캘린더용 jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script>
+        $(function() {
+            $("#scheduleDate").datepicker({
+                dateFormat: "yy-mm-dd",
+                minDate: 0
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <!-- 좌측: 강의 정보 -->
+    <div class="lecture-info">
+        <div class="lecture-title" th:text="${lecture.title}"></div>
+        <div class="lecture-desc" th:text="${lecture.description}"></div>
+        <div class="price">
+            <span th:text="${#numbers.formatInteger(lecture.price, 0, 'COMMA')}"></span>원
+        </div>
+        <!-- 필요시 추가 정보, 안내 등 -->
+    </div>
+    <!-- 우측: 예약 카드 -->
+    <div class="reservation-card">
+        <form th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post">
+            <input type="hidden" th:field="*{memberId}" />
+            <input type="hidden" th:field="*{lectureId}" />
+            <input type="hidden" th:field="*{instructorId}" />
+
+            <label class="form-label">요청사항</label>
+            <textarea th:field="*{requestDetail}" class="form-textarea" placeholder="요청사항을 입력하세요"></textarea>
+
+            <label class="form-label">강의 일정 선택</label>
+            <input type="text" id="scheduleDate" th:field="*{scheduleDate}" class="form-input calendar-input" readonly placeholder="날짜를 선택하세요"/>
+
+            <a th:href="@{/replay/list}" target="_blank" class="replay-link">리플레이 목록 보기</a>
+
+            <button type="submit" class="form-btn">예약완료</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>예약 신청</title>-->
+<!--    &lt;!&ndash; jQuery UI DatePicker CDN &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>-->
+<!--    <script>-->
+<!--        $(function() {-->
+<!--            $("#scheduleDate").datepicker({-->
+<!--                dateFormat: "yy-mm-dd",-->
+<!--                minDate: 0-->
+<!--            });-->
+<!--        });-->
+<!--    </script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h2>강의 예약</h2>-->
+<!--<p>강의명: <span th:text="${lecture.title}"></span></p>-->
+<!--<p>설명: <span th:text="${lecture.description}"></span></p>-->
+
+<!--<form th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post">-->
+<!--    <input type="hidden" th:field="*{memberId}" />-->
+<!--    <input type="hidden" th:field="*{lectureId}" />-->
+<!--    <input type="hidden" th:field="*{instructorId}" />-->
+
+<!--    <label>요청사항:<br>-->
+<!--        <textarea th:field="*{requestDetail}" rows="3" cols="40" placeholder="요청사항을 입력하세요"></textarea>-->
+<!--    </label><br><br>-->
+
+<!--    <label>강의 일정 선택:<br>-->
+<!--        <input type="text" id="scheduleDate" th:field="*{scheduleDate}" readonly placeholder="날짜를 선택하세요"/>-->
+<!--    </label><br><br>-->
+
+<!--    &lt;!&ndash; 리플레이 목록 페이지로 이동하는 버튼/링크 &ndash;&gt;-->
+<!--    <a th:href="@{/replay/list}" target="_blank">리플레이 목록 추가</a><br><br>-->
+
+<!--    <button type="submit">예약완료</button>-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->
