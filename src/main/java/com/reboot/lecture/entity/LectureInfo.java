@@ -16,7 +16,7 @@ public class LectureInfo {
     private BigDecimal price;
     private String imageUrl;
     private Integer duration;
-    private String rank;
+    private String rank_;
     private String position;
 }
 

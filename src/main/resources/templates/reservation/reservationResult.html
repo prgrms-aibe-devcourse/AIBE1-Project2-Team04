@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 결과</title>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
+        h2 { margin-top: 0; color: #333; }
+        .info-row { margin-bottom: 12px; }
+        .info-label { font-weight: 500; color: #555; }
+        .info-value { color: #333; }
+        .status { display: inline-block; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
+        .status-complete { background: #e3f9e5; color: #2b8a3e; }
+        .status-cancel { background: #fff5f5; color: #e03131; }
+        hr { margin: 24px 0; border: none; border-top: 1px solid #eee; }
+        .actions { margin-top: 24px; display: flex; gap: 12px; }
+        .btn { padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block; text-align: center; }
+        .btn-primary { background: #2e7dff; color: #fff; }
+        .btn-secondary { background: #f1f2f6; color: #333; }
+        .btn-danger { background: #ff4757; color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>예약 결과</h2>
+
+    <div class="info-row">
+        <span class="info-label">예약번호:</span>
+        <span class="info-value" th:text="${reservation.reservationId}"></span>
+    </div>
+
+    <div class="info-row">
+        <span class="info-label">회원명:</span>
+        <span class="info-value" th:text="${reservation.memberName}"></span>
+    </div>
+
+    <div class="info-row">
+        <span class="info-label">강사명:</span>
+        <span class="info-value" th:text="${reservation.instructorName}"></span>
+    </div>
+
+    <div class="info-row">
+        <span class="info-label">강의명:</span>
+        <span class="info-value" th:text="${reservation.lectureTitle}"></span>
+    </div>
+
+    <div class="info-row">
+        <span class="info-label">예약일시(생성일):</span>
+        <span class="info-value" th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span>
+    </div>
+
+    <div class="info-row">
+        <span class="info-label">상태:</span>
+        <span class="status" th:classappend="${reservation.status == '예약완료'} ? 'status-complete' : 'status-cancel'"
+              th:text="${reservation.status}"></span>
+    </div>
+
+    <div class="info-row" th:if="${reservation.status == '취소' && reservation.cancelReason != null}">
+        <span class="info-label">취소 사유:</span>
+        <span class="info-value" th:text="${reservation.cancelReason}">-</span>
+    </div>
+
+    <hr>
+
+    <div class="info-row">
+        <div class="info-label">요청사항:</div>
+        <div class="info-value" th:text="${reservation.requestDetail ?: '-'}"></div>
+    </div>
+
+    <div class="info-row">
+        <div class="info-label">강의 일정(예약일):</div>
+        <div class="info-value" th:text="${reservation.scheduleDate ?: '-'}"></div>
+    </div>
+
+    <div class="actions">
+        <a th:href="@{/replay/list}" target="_blank" class="btn btn-secondary">리플레이 목록 보기</a>
+        <a th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}" class="btn btn-primary">다시 예약하기</a>
+        <a th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}" class="btn btn-danger">예약 취소하기</a>
+    </div>
+</div>
+</body>
+</html>
