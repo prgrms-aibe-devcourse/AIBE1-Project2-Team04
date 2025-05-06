@@ -63,20 +63,36 @@ public class ReplayServiceTest {
     }
 
     @Test
-    @DisplayName("리플레이 저장 성공 테스트")
+    @DisplayName("리플레이 저장 성공 테스트") // 테스트 실행 시 출력될 설명. 이 테스트는 정상 저장 흐름을 검증합니다.
     void saveReplaySuccess() {
-        // Given
+        // ✅ Given (Mocking 설정 및 준비 단계)
+
+        // 예약 ID가 1인 예약 정보를 요청할 경우, 미리 만든 testReservation 객체를 반환하도록 설정
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(testReservation));
+
+        // 리플레이 저장 요청이 들어오면, 미리 만든 testReplay 객체를 리턴하도록 설정
         when(replayRepository.save(any(Replay.class))).thenReturn(testReplay);
 
-        // When
+        // ✅ When (실제 테스트 대상인 서비스 메서드 호출)
+
+        // ReplayService의 saveReplay 메서드를 호출해 ReplayResponse를 받음
         ReplayResponse response = replayService.saveReplay(validRequest);
 
-        // Then
+        // ✅ Then (검증 단계)
+
+        // 응답 객체가 null이 아닌지 확인
         assertNotNull(response);
+
+        // 응답된 리플레이 ID가 예상값(1L)과 일치하는지 확인
         assertEquals(1L, response.getReplayId());
+
+        // 응답된 예약 ID가 예상값(1L)과 일치하는지 확인
         assertEquals(1L, response.getReservationId());
+
+        // 응답된 파일 URL이 예상값과 정확히 일치하는지 확인
         assertEquals("https://www.youtube.com/watch?v=abc123", response.getFileUrl());
+
+        // replayRepository.save() 메서드가 정확히 1번 호출되었는지 검증 (정상 저장 호출 확인용)
         verify(replayRepository, times(1)).save(any(Replay.class));
     }
 
@@ -171,19 +187,19 @@ public class ReplayServiceTest {
     void updateReplaySuccess() {
         // Given
         when(replayRepository.findById(1L)).thenReturn(Optional.of(testReplay));
-        
+
         ReplayRequest updateRequest = ReplayRequest.builder()
                 .reservationId(1L) // 예약 ID는 변경되지 않음
                 .fileUrl("https://www.youtube.com/watch?v=xyz789") // 새 URL
                 .build();
-        
+
         Replay updatedReplay = Replay.builder()
                 .replayId(1L)
                 .reservation(testReservation)
                 .fileUrl("https://www.youtube.com/watch?v=xyz789")
                 .date(LocalDateTime.now())
                 .build();
-                
+
         when(replayRepository.save(any(Replay.class))).thenReturn(updatedReplay);
 
         // When

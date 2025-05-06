@@ -15,7 +15,7 @@ public class ReservationResponseDto {
     private String memberName;
     private Long instructorId;
     private String instructorName;
-    private Long lectureId;
+    private String lectureId;
     private String lectureTitle;
     private String requestDetail;
     private String scheduleDate;

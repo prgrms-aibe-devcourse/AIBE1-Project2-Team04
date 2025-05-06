@@ -14,5 +14,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByInstructorInstructorId(Long instructorId);
 
     // 특정 강의의 예약 전체 조회
-    List<Reservation> findByLectureLectureId(Long lectureId);
+    List<Reservation> findByLectureLectureId(String lectureId);
 }

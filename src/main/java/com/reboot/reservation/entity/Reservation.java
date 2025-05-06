@@ -7,6 +7,7 @@ import com.reboot.replay.entity.Replay;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,7 +35,7 @@ public class Reservation {
 
     private String requestDetail;
 
-    private String scheduleDate;  // yyyy-MM-dd 형태 권장
+    private LocalDate scheduleDate;  // yyyy-MM-dd 형태 권장
 
     private LocalDateTime date;
 

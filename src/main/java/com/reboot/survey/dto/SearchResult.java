@@ -5,7 +5,7 @@ import java.util.Map;
 
 @Data
 public class SearchResult {
-    private String id;
+    private Long id;
     private float score;
     private Map<String, String> metadata;
 }

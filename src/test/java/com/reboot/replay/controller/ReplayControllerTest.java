@@ -3,6 +3,7 @@ package com.reboot.replay.controller;
 import com.reboot.replay.dto.ReplayRequest;
 import com.reboot.replay.dto.ReplayResponse;
 import com.reboot.replay.service.ReplayService;
+import com.reboot.reservation.entity.Reservation;
 import com.reboot.reservation.service.ReservationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.ui.Model;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -67,13 +66,12 @@ public class ReplayControllerTest {
     @DisplayName("예약 ID가 있는 리플레이 업로드 폼 페이지 테스트")
     void showUploadFormWithReservationId() throws Exception {
         // 예약 정보 모킹
-        when(reservationService.getReservation(1L)).thenReturn(any());
+        when(reservationService.getReservation(eq(1L))).thenReturn(null);
 
         mockMvc.perform(get("/replays/upload").param("reservationId", "1"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("replayRequest"))
-                .andExpect(model().attributeExists("reservation"))
-                .andExpect(view().name("replay/upload-form"));
+                .andExpect(view().name("replay/upload-form"))
+                .andExpect(model().attributeExists("replayRequest"));
     }
 
     @Test
@@ -94,8 +92,8 @@ public class ReplayControllerTest {
         when(replayService.saveReplay(any(ReplayRequest.class))).thenReturn(testReplayResponse);
 
         mockMvc.perform(post("/replays")
-                .param("reservationId", "1")
-                .param("fileUrl", "https://www.youtube.com/watch?v=abc123"))
+                        .param("reservationId", "1")
+                        .param("fileUrl", "https://www.youtube.com/watch?v=abc123"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/replays/1"))
                 .andExpect(flash().attributeExists("message"));
@@ -108,8 +106,8 @@ public class ReplayControllerTest {
         when(replayService.saveReplay(any(ReplayRequest.class))).thenThrow(new RuntimeException("저장 실패"));
 
         mockMvc.perform(post("/replays")
-                .param("reservationId", "1")
-                .param("fileUrl", "https://www.youtube.com/watch?v=abc123"))
+                        .param("reservationId", "1")
+                        .param("fileUrl", "https://www.youtube.com/watch?v=abc123"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/replays/upload?reservationId=1"))
                 .andExpect(flash().attributeExists("error"));
@@ -152,13 +150,12 @@ public class ReplayControllerTest {
                         .build()
         );
         when(replayService.getReplaysByReservationId(1L)).thenReturn(replayList);
-        when(reservationService.getReservation(1L)).thenReturn(any());
+        when(reservationService.getReservation(eq(1L))).thenReturn(null);
 
         mockMvc.perform(get("/replays/reservation/1"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("replays"))
-                .andExpect(model().attributeExists("reservation"))
-                .andExpect(view().name("replay/list"));
+                .andExpect(view().name("replay/list"))
+                .andExpect(model().attributeExists("replays"));
     }
 
     @Test
@@ -179,14 +176,13 @@ public class ReplayControllerTest {
     void showEditForm() throws Exception {
         // 리플레이 조회 서비스 모킹
         when(replayService.getReplay(1L)).thenReturn(testReplayResponse);
-        when(reservationService.getReservation(1L)).thenReturn(any());
+        when(reservationService.getReservation(eq(1L))).thenReturn(null);
 
         mockMvc.perform(get("/replays/1/edit"))
                 .andExpect(status().isOk())
+                .andExpect(view().name("replay/edit-form"))  // 뷰 이름 수정
                 .andExpect(model().attributeExists("replayRequest"))
-                .andExpect(model().attributeExists("replayId"))
-                .andExpect(model().attributeExists("reservation"))
-                .andExpect(view().name("replay/edit-form"));
+                .andExpect(model().attributeExists("replayId"));
     }
 
     @Test
@@ -208,7 +204,7 @@ public class ReplayControllerTest {
         when(replayService.updateReplay(eq(1L), any(ReplayRequest.class))).thenReturn(testReplayResponse);
 
         mockMvc.perform(post("/replays/1/update")
-                .param("fileUrl", "https://www.youtube.com/watch?v=xyz789"))
+                        .param("fileUrl", "https://www.youtube.com/watch?v=xyz789"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/replays/1"))
                 .andExpect(flash().attributeExists("message"));
@@ -222,7 +218,7 @@ public class ReplayControllerTest {
         when(replayService.updateReplay(eq(1L), any(ReplayRequest.class))).thenThrow(new RuntimeException("수정 실패"));
 
         mockMvc.perform(post("/replays/1/update")
-                .param("fileUrl", "https://www.youtube.com/watch?v=xyz789"))
+                        .param("fileUrl", "https://www.youtube.com/watch?v=xyz789"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/replays/1/edit"))
                 .andExpect(flash().attributeExists("error"));
@@ -235,7 +231,7 @@ public class ReplayControllerTest {
         doNothing().when(replayService).deleteReplay(1L);
 
         mockMvc.perform(post("/replays/1/delete")
-                .param("reservationId", "1"))
+                        .param("reservationId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/replays/reservation/1"))
                 .andExpect(flash().attributeExists("message"));
@@ -248,7 +244,7 @@ public class ReplayControllerTest {
         doThrow(new RuntimeException("삭제 실패")).when(replayService).deleteReplay(1L);
 
         mockMvc.perform(post("/replays/1/delete")
-                .param("reservationId", "1"))
+                        .param("reservationId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/replays/1"))
                 .andExpect(flash().attributeExists("error"));

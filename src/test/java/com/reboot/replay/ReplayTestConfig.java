@@ -18,12 +18,12 @@ import org.springframework.context.annotation.Primary;
  */
 @TestConfiguration
 @ComponentScan(
-    basePackages = "com.reboot.replay",
-    useDefaultFilters = false,
-    includeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, 
+        basePackages = "com.reboot.replay",
+        useDefaultFilters = false,
+        includeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
                         classes = {ReplayService.class, ReplayController.class})
-    }
+        }
 )
 public class ReplayTestConfig {
 
@@ -35,7 +35,7 @@ public class ReplayTestConfig {
     public ReplayRepository replayRepository() {
         return Mockito.mock(ReplayRepository.class);
     }
-    
+
     /**
      * ReservationRepository 빈 모킹
      */
@@ -44,7 +44,7 @@ public class ReplayTestConfig {
     public ReservationRepository reservationRepository() {
         return Mockito.mock(ReservationRepository.class);
     }
-    
+
     /**
      * ReservationService 빈 모킹
      */
@@ -53,24 +53,24 @@ public class ReplayTestConfig {
     public ReservationService reservationService() {
         return Mockito.mock(ReservationService.class);
     }
-    
+
     /**
      * ReplayService 빈
      */
     @Bean
     @Primary
-    public ReplayService replayService(ReplayRepository replayRepository, 
+    public ReplayService replayService(ReplayRepository replayRepository,
                                        ReservationRepository reservationRepository) {
         return new ReplayService(replayRepository, reservationRepository);
     }
-    
+
     /**
      * ReplayController 빈
      */
     @Bean
     @Primary
-    public ReplayController replayController(ReplayService replayService, 
-                                            ReservationService reservationService) {
+    public ReplayController replayController(ReplayService replayService,
+                                             ReservationService reservationService) {
         return new ReplayController(replayService, reservationService);
     }
 }

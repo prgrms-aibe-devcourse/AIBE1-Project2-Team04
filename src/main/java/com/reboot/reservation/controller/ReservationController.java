@@ -30,7 +30,7 @@ public class ReservationController {
      * - 강의 정보를 조회하여 예약 폼에 전달
      */
     @GetMapping("/new")
-    public String reservationForm(@RequestParam Long lectureId, @RequestParam Long memberId, Model model) {
+    public String reservationForm(@RequestParam String lectureId, @RequestParam Long memberId, Model model) {
         Member member = memberService.getMember(memberId);
         Lecture lecture = lectureService.getLecture(lectureId);
         model.addAttribute("member", member);
@@ -38,7 +38,7 @@ public class ReservationController {
         model.addAttribute("reservationRequestDto", new ReservationRequestDto(
                 member.getMemberId(),
                 lecture.getInstructor().getInstructorId(),
-                lecture.getLectureId(),
+                lecture.getId(),
                 null,
                 null
         ));
