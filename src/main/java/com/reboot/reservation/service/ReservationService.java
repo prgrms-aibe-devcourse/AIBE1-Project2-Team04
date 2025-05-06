@@ -129,19 +129,30 @@ public class ReservationService {
      * Reservation 엔티티를 ReservationResponseDto로 변환
      */
     private ReservationResponseDto convertToDto(Reservation reservation) {
-        return ReservationResponseDto.builder()
-                .reservationId(reservation.getReservationId())
-                .memberId(reservation.getMember().getMemberId())
-                .memberName(reservation.getMember().getName())
-                .instructorId(reservation.getInstructor().getInstructorId())
-                .instructorName(reservation.getInstructor().getMember().getName())
-                .lectureId(reservation.getLecture().getId())
-                .lectureTitle(reservation.getLecture().getInfo().getTitle())
-                .date(reservation.getDate())
-                .status(reservation.getStatus())
-                .requestDetail(reservation.getRequestDetail())
-                .scheduleDate(reservation.getScheduleDate())
-                .cancelReason(reservation.getCancelReason())
-                .build();
+        // 새 DTO 객체 생성
+        ReservationResponseDto dto = new ReservationResponseDto();
+
+        // 기본 필드 설정
+        dto.setReservationId(reservation.getReservationId());
+        dto.setMemberId(reservation.getMember().getMemberId());
+        dto.setMemberName(reservation.getMember().getName());
+        dto.setInstructorId(reservation.getInstructor().getInstructorId());
+        dto.setInstructorName(reservation.getInstructor().getMember().getName());
+        dto.setLectureId(reservation.getLecture().getId());
+        dto.setDate(reservation.getDate());
+        dto.setStatus(reservation.getStatus());
+        dto.setRequestDetail(reservation.getRequestDetail());
+        dto.setScheduleDate(reservation.getScheduleDate());
+        dto.setCancelReason(reservation.getCancelReason());
+
+        // null 체크 추가
+        if (reservation.getLecture() != null &&
+                reservation.getLecture().getInfo() != null) {
+            dto.setLectureTitle(reservation.getLecture().getInfo().getTitle());
+        } else {
+            dto.setLectureTitle(""); // 정보가 없을 경우 빈 문자열로 설정
+        }
+
+        return dto;
     }
 }
