@@ -6,6 +6,9 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
+
 public class Instructor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

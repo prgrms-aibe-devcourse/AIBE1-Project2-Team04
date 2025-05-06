@@ -1,5 +1,6 @@
 package com.reboot.reservation.entity;
 
+import ch.qos.logback.classic.spi.LoggingEventVO;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -7,6 +8,9 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
+
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +30,5 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Reservation> reservations;
+
 }
