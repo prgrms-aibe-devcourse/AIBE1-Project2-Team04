@@ -56,13 +56,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_REFRESH, username, role);
 
         // Refresh Token DB 저장
-        Instant now = Instant.now();
-        Date expiration = new Date(now.toEpochMilli() + jwtTokenProvider.GetExpirationMs(jwtTokenProvider.CATEGORY_REFRESH));
-        String refresh_Expiration = expiration.toString();
-        refreshTokenService.addRefreshEntity(username, refreshToken, refresh_Expiration);
+        refreshTokenService.addRefreshEntity(username, refreshToken);
 
-        response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, accessToken);
-        response.addCookie(refreshTokenService.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
+        response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_ACCESS, accessToken));
+        response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
         response.setStatus(HttpServletResponse.SC_OK);
     }
 

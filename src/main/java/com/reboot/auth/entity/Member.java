@@ -39,7 +39,4 @@ public class Member {
     @Column(name = "role")
     private String role;
 
-    //맞춤 강사 서비스
-    @Column(name = "matching_service")
-    private Boolean matchingService = false;
 }

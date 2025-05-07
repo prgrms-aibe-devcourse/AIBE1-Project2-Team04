@@ -32,7 +32,7 @@ public class ReissueController {
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        String token = extractRefreshTokenFromCookies(request);
+        String token = jwtTokenProvider.getTokenFromCookies(jwtTokenProvider.CATEGORY_REFRESH, request);
 
         if (token == null) {
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
@@ -44,15 +44,11 @@ public class ReissueController {
             String newRefresh = reissueService.reissueRefreshToken(token);
 
             // 기존 Refresh Token 삭제 후 New Refresh Token DB 저장
-            Instant now = Instant.now();
-            Date expiration = new Date(now.toEpochMilli() + jwtTokenProvider.GetExpirationMs(jwtTokenProvider.CATEGORY_REFRESH));
-            String refresh_Expiration = expiration.toString();
-
             refreshTokenService.deleteRefreshToken(token);
-            refreshTokenService.addRefreshEntity(username, newRefresh, refresh_Expiration);
+            refreshTokenService.addRefreshEntity(username, newRefresh);
 
             response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, newAccess);
-            response.addCookie(refreshTokenService.createCookie(jwtTokenProvider.CATEGORY_REFRESH, newRefresh));
+            response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_REFRESH, newRefresh));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -60,15 +56,5 @@ public class ReissueController {
     }
 
     // refresh token 추출
-    private String extractRefreshTokenFromCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) return null;
 
-        for (Cookie cookie : cookies) {
-            if (jwtTokenProvider.CATEGORY_REFRESH.equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
-    }
 }

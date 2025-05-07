@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -53,6 +55,15 @@ public class JwtTokenProvider {
                 .expiration(expiration)
                 .signWith(getSecretKey(), Jwts.SIG.HS256)
                 .compact();
+    }
+
+    public Cookie createCookie(String key, String vaule) {
+        Cookie cookie = new Cookie(key, vaule);
+        cookie.setMaxAge((int)GetExpirationMs(key));
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        return cookie;
     }
 
     public String getCategory(String token) {
@@ -147,5 +158,17 @@ public class JwtTokenProvider {
         }
 
         return expirationMs;
+    }
+
+    public String getTokenFromCookies(String category, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
+
+        for (Cookie cookie : cookies) {
+            if (category.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
