@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.dto;
 
 import lombok.Data;
@@ -9,3 +10,4 @@ public class LlmResponse {
     private int promptTokens;
     private int completionTokens;
 }
+*/

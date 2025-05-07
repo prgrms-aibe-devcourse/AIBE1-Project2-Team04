@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.auth.entity.Instructor;
@@ -37,12 +38,14 @@ public class RecommendationService {
         this.lectureRepository = lectureRepository;
     }
 
-    /**
+    */
+/**
      * 사용자와 설문조사 데이터를 기반으로 맞춤형 강의를 추천합니다.
      * @param member 회원 정보
      * @param survey 설문조사 정보
      * @return 추천된 강의 응답
-     */
+     *//*
+
     public RecommendationResponse getRecommendations(Member member, Survey survey) {
         // 1. 설문 데이터를 기반으로 벡터 DB 검색 쿼리 구성
         String searchQuery = buildSearchQuery(survey);
@@ -106,9 +109,11 @@ public class RecommendationService {
         return response;
     }
 
-    /**
+    */
+/**
      * 설문조사 데이터를 기반으로 검색 쿼리를 구성합니다.
-     */
+     *//*
+
     private String buildSearchQuery(Survey survey) {
         StringBuilder query = new StringBuilder();
 
@@ -166,15 +171,17 @@ public class RecommendationService {
         return query.toString();
     }
 
-    /**
+    */
+/**
      * 검색 결과에서 강의 문서 정보를 가져옵니다.
-     */
+     *//*
+
     private List<Document> fetchLectureDocuments(List<SearchResult> searchResults) {
         List<Document> documents = new ArrayList<>();
 
         for (SearchResult result : searchResults) {
-            String lectureId = result.getMetadata().get("lectureId");
-            Lecture lecture = lectureRepository.findById(lectureId)
+            Object lectureId = result.getMetadata().get("lectureId");
+            Lecture lecture = lectureRepository.findById((Long)lectureId)
                     .orElseThrow(() -> new EntityNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
             Instructor instructor = lecture.getInstructor();
@@ -200,7 +207,7 @@ public class RecommendationService {
             content.append("강사 리뷰 수: ").append(instructor.getReviewNum()).append("\n");
             content.append("유사도 점수: ").append(result.getScore()).append("\n");
 
-            Map<String, String> metadata = new HashMap<>(result.getMetadata());
+            Map<String, Object> metadata = new HashMap<>(result.getMetadata());
 
             documents.add(new Document(content.toString(), metadata));
         }
@@ -208,9 +215,11 @@ public class RecommendationService {
         return documents;
     }
 
-    /**
+    */
+/**
      * LLM이 생성한 추천 결과를 파싱하고 응답 객체로 변환합니다.
-     */
+     *//*
+
     private RecommendationResponse parseRecommendations(String llmRecommendations) {
         RecommendationResponse response = new RecommendationResponse();
         List<LectureRecommendation> lectureRecommendations = new ArrayList<>();
@@ -223,7 +232,7 @@ public class RecommendationService {
         Matcher matcher = pattern.matcher(llmRecommendations);
 
         while (matcher.find() && lectureRecommendations.size() < 5) {
-            String lectureId = matcher.group(1);
+            String lectureIdStr = matcher.group(1);
             String lectureTitle = matcher.group(2);
             String instructorName = matcher.group(3).trim();
             String instructorCareer = matcher.group(4).trim();
@@ -231,7 +240,14 @@ public class RecommendationService {
             String expectedEffect = matcher.group(6).trim();
 
             LectureRecommendation recommendation = new LectureRecommendation();
-            recommendation.setLectureId(lectureId);
+            // lectureId를 String에서 Long으로 변환
+            try {
+                Long lectureId = Long.parseLong(lectureIdStr);
+                recommendation.setLectureId(lectureId);
+            } catch (NumberFormatException e) {
+                // 변환 실패 시 로깅 또는 예외 처리
+                continue; // 이 추천은 건너뜀
+            }
             recommendation.setTitle(lectureTitle);
             recommendation.setInstructorName(instructorName);
             recommendation.setInstructorCareer(instructorCareer);
@@ -252,3 +268,4 @@ public class RecommendationService {
         return response;
     }
 }
+*/

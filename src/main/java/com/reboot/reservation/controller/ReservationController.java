@@ -29,7 +29,7 @@ public class ReservationController {
      * 예약 폼 페이지 진입
      */
     @GetMapping("/new")
-    public String reservationForm(@RequestParam String lectureId, @RequestParam Long memberId, Model model) {
+    public String reservationForm(@RequestParam Long lectureId, @RequestParam Long memberId, Model model) {
         Member member = memberService.getMember(memberId);
         Lecture lecture = lectureService.getLecture(lectureId);
         model.addAttribute("member", member);
@@ -40,8 +40,22 @@ public class ReservationController {
                 lecture.getId(),
                 null,
                 null,
-                null  // youtubeUrl 추가
+                null
         ));
+
+        // 기존 예약이 있는 경우 해당 예약의 리플레이 목록도 조회
+        try {
+            List<ReservationResponseDto> existingReservations = reservationService.getReservationsByMemberAndLecture(memberId, lectureId);
+            if (!existingReservations.isEmpty()) {
+                ReservationResponseDto existingReservation = existingReservations.get(0);
+                List<ReplayResponse> existingReplays = replayService.getReplaysByReservationId(existingReservation.getReservationId());
+                model.addAttribute("existingReplays", existingReplays);
+                model.addAttribute("existingReservation", existingReservation);
+            }
+        } catch (Exception e) {
+            // 기존 예약 정보 조회 실패 시 무시
+        }
+
         return "reservation/reservationForm";
     }
 

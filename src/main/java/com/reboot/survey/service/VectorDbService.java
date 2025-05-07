@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.survey.dto.SearchResult;
@@ -25,4 +26,4 @@ public class VectorDbService {
         // 벡터 DB 검색 실행
         return vectorDbClient.search(queryEmbedding, filter, limit, 0.7f); // 임계값 0.7 설정
     }
-}
+}*/

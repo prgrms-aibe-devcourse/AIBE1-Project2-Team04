@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.auth.entity.Member;
@@ -43,9 +44,11 @@ public class LlmService {
         this.llmClient = llmClient;
     }
 
-    /**
+    */
+/**
      * 회원 정보, 설문 데이터, 검색된 강의 정보를 기반으로 LLM에 추천을 요청합니다.
-     */
+     *//*
+
     public String generateRecommendations(Member member, Survey survey, List<Document> retrievedLectures) {
         // 프롬프트 구성
         String prompt = buildPrompt(member, survey, retrievedLectures);
@@ -63,9 +66,11 @@ public class LlmService {
         return response.getCompletion();
     }
 
-    /**
+    */
+/**
      * 회원 정보, 설문 데이터, 검색된 강의 정보를 기반으로 프롬프트를 구성합니다.
-     */
+     *//*
+
     private String buildPrompt(Member member, Survey survey, List<Document> retrievedLectures) {
         // 회원 정보 포맷팅
         String memberInfo = String.format(
@@ -104,3 +109,4 @@ public class LlmService {
     }
 }
 
+*/

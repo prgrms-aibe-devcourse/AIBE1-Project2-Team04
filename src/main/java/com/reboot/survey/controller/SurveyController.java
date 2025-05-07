@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.controller;
 
 import com.reboot.survey.dto.RecommendationResponse;
@@ -116,4 +117,4 @@ public class SurveyController {
     public String skipSurvey() {
         return "index";
     }
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.dto;
 
 import lombok.Data;
@@ -5,7 +6,7 @@ import java.math.BigDecimal;
 
 @Data
 public class LectureRecommendation {
-    private String lectureId;
+    private Long lectureId;
     private String title;
     private String instructorName;
     private String instructorCareer;
@@ -13,4 +14,4 @@ public class LectureRecommendation {
     private String expectedEffect;
     private String imageUrl;
     private BigDecimal price;
-}
+}*/

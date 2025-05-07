@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/","/login", "/sign").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().permitAll());
+                        .anyRequest().authenticated());
 
         http
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), LoginFilter.class);

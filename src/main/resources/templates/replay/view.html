@@ -66,10 +66,10 @@
 
         <!-- 네비게이션 버튼 -->
         <div class="d-grid gap-2">
-            <a th:href="@{'/replays/reservation/' + ${replay.reservationId}}" class="btn btn-primary">
+            <a th:href="@{/replays/reservation/{id}(id=${replay.reservationId})}" class="btn btn-primary">
                 예약의 모든 리플레이 보기
             </a>
-            <a th:href="@{'/replays/' + ${replay.replayId} + '/edit'}" class="btn btn-warning">
+            <a th:href="@{/replays/{id}/edit(id=${replay.replayId})}" class="btn btn-warning">
                 수정하기
             </a>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
@@ -101,7 +101,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <form th:action="@{'/replays/' + ${replay.replayId} + '/delete'}" method="post">
+                    <form th:action="@{/replays/{replayId}/delete(replayId=${replay.replayId})}" method="post">
                         <input type="hidden" name="reservationId" th:value="${replay.reservationId}">
                         <button type="submit" class="btn btn-danger">삭제</button>
                     </form>

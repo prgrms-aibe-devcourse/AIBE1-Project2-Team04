@@ -44,6 +44,13 @@ public class ReplayController {
         return "replay/upload-form";
     }
 
+    @GetMapping
+    public String listAllReplays(Model model) {
+        List<ReplayResponse> replays = replayService.getAllReplays();
+        model.addAttribute("replays", replays);
+        return "replay/list-all"; // 모든 리플레이 목록용 템플릿
+    }
+
     // 리플레이 저장 처리
     @PostMapping
     public String saveReplay(@ModelAttribute("replayRequest") ReplayRequest request,
