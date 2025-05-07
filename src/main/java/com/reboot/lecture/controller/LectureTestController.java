@@ -23,13 +23,13 @@ public class LectureTestController {
     private final LectureService lectureService;
 
     @GetMapping("/popular")
-    @Operation(summary = "인기 강의 목록 조회", description = "인기순으로 정렬된 활성화된 강의 목록 조회")
+    @Operation(summary = "테스트: 인기 강의 목록 조회", description = "인기순으로 정렬된 활성화된 강의 목록 조회")
     public List<LectureResponse> getActivePopularLectures() {
         return lectureService.getActivePopularLectures();
     }
 
     @GetMapping
-    @Operation(summary = "전체 강의 목록 조회", description = "페이징 처리된 모든 활성화된 강의 목록 조회")
+    @Operation(summary = "테스트: 전체 강의 목록 조회", description = "페이징 처리된 모든 활성화된 강의 목록 조회")
     public Page<LectureResponse> getAllActiveLectures(
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기") @RequestParam(defaultValue = "30") int size) {
@@ -38,7 +38,7 @@ public class LectureTestController {
     }
 
     @GetMapping("/game/{gameType}")
-    @Operation(summary = "게임별 강의 목록 조회", description = "특정 게임 타입에 대한 강의 목록 조회 (정렬 옵션 적용)")
+    @Operation(summary = "테스트: 게임별 강의 목록 조회", description = "특정 게임 타입에 대한 강의 목록 조회 (정렬 옵션 적용)")
     public Page<LectureResponse> getLecturesByGameType(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @PathVariable String gameType,
             @Parameter(description = "정렬 기준 (popularity, newest, reviews, priceLow, priceHigh)")
@@ -50,7 +50,7 @@ public class LectureTestController {
     }
 
     @GetMapping("/filtered")
-    @Operation(summary = "필터링된 강의 목록 조회", description = "게임 타입, 랭크, 포지션 등으로 필터링된 강의 목록 조회")
+    @Operation(summary = "테스트: 필터링된 강의 목록 조회", description = "게임 타입, 랭크, 포지션 등으로 필터링된 강의 목록 조회")
     public Page<LectureResponse> getFilteredLectures(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @RequestParam String gameType,
             @Parameter(description = "랭크 (예: bronze, silver, gold)") @RequestParam(required = false) String lectureRank,
@@ -63,7 +63,7 @@ public class LectureTestController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "강의 검색", description = "키워드로 강의 검색 (제목, 설명에서 검색)")
+    @Operation(summary = "테스트: 강의 검색", description = "키워드로 강의 검색 (제목, 설명에서 검색)")
     public Page<LectureResponse> searchLectures(
             @Parameter(description = "검색 키워드") @RequestParam String keyword,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
@@ -73,7 +73,7 @@ public class LectureTestController {
     }
 
     @GetMapping("/search/game/{gameType}")
-    @Operation(summary = "게임별 강의 검색", description = "특정 게임 타입 내에서 키워드로 강의 검색")
+    @Operation(summary = "테스트: 게임별 강의 검색", description = "특정 게임 타입 내에서 키워드로 강의 검색")
     public Page<LectureResponse> searchLecturesByGameType(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @PathVariable String gameType,
             @Parameter(description = "검색 키워드") @RequestParam String keyword,
@@ -84,13 +84,13 @@ public class LectureTestController {
     }
 
     @GetMapping("/game-types")
-    @Operation(summary = "게임 타입 목록 조회", description = "활성화된 모든 게임 타입(장르) 목록 조회")
+    @Operation(summary = "테스트: 게임 타입 목록 조회", description = "활성화된 모든 게임 타입(장르) 목록 조회")
     public List<String> getAllActiveGameTypes() {
         return lectureService.getAllActiveGameTypes();
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "강의 상세 정보 조회", description = "특정 ID의 강의 상세 정보 조회")
+    @GetMapping("/detail/{id}")
+    @Operation(summary = "테스트: 강의 상세 정보 조회", description = "특정 ID의 강의 상세 정보 조회")
     public LectureResponse getLectureById(
             @Parameter(description = "강의 ID") @PathVariable String id) {
         return lectureService.getLectureById(id);

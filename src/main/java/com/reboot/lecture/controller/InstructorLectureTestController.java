@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/instructor/test/lectures")
 @RequiredArgsConstructor
-@Tag(name = "강사 강의 관리 테스트 API", description = "강사 본인 강의 CRUD 테스트용 API")
+@Tag(name = "강사 - 강의 관리 테스트 API", description = "강사 본인 강의 CRUD 테스트용 API")
 public class InstructorLectureTestController {
 
     private final InstructorLectureService instructorLectureService;
