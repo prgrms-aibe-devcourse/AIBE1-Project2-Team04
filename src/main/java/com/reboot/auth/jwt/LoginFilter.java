@@ -33,17 +33,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        //클라이언트 요청에서 username, password 추출
+        // 클라이언트 요청에서 username, password 추출
         String username = obtainUsername(request);
         String password = obtainPassword(request);
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
-        //token에 담은 검증을 위한 AuthenticationManager로 전달
+        // token에 담은 검증을 위한 AuthenticationManager로 전달
         return authenticationManager.authenticate(authToken);
     }
 
-    //로그인 성공 시 실행하는 메소드 (여기서 JWT를 발급)
+    // 로그인 성공 시 실행하는 메소드 (여기서 JWT를 발급)
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         String username = authentication.getName();
@@ -63,15 +63,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, accessToken);
         response.addCookie(refreshTokenService.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
-        response.sendRedirect("/"); // TODO. 프론트에서 상태값 보고 처리하도록
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    //로그인 실패시 실행하는 메소드
+    // 로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-        response.sendRedirect("/auth/login?error"); // TODO. 프론트에서 상태값 보고 처리하도록
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
-
 }

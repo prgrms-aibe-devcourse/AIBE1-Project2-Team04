@@ -231,9 +231,28 @@
 
         // 로그인 폼 제출
         const loginForm = document.querySelector('form');
+        const username = document.getElementById('username');
 
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             // 폼 검증이 필요한 경우 여기에 구현
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('username', username.value);
+            formData.append('password', password.value);
+
+            const response = await fetch('http://localhost:8080/login', {
+               method: 'POST',
+               body: formData
+            });
+            if(response.ok){
+                const token = response.headers.get("access");
+                localStorage.setItem('token', token);
+                window.location.href = "/"
+            }
+            else{
+                window.location.href = "/auth/login?error"
+            }
         });
     });
 </script>
