@@ -1,6 +1,6 @@
 package com.reboot.payment.dto;
 
-public record TossPaymentResultDto(
+public record TossResultDto(
         String status,         // PAY_COMPLETE, PAY_APPROVED 등
         String orderNo,
         String payMethod,

@@ -1,5 +1,6 @@
 package com.reboot.payment.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,13 +12,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TossPaymentTransaction {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Table(name = "toss_transaction")
+public class TossTransaction {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tossPaymentId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private Payment payment;
+
 
     private String orderNo;
     private Integer amount;
@@ -35,7 +39,6 @@ public class TossPaymentTransaction {
     private String cardCompany;
     private String bankCode;
     private String responseCode;
-    private String responseMsg;
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
     private String status;

@@ -6,6 +6,3 @@ VALUES (1, 1, '5년차', '설명 잘함', 0, 0.0);
 
 INSERT INTO lecture (lecture_id, instructor_id, title, description, game_type, price)
 VALUES (1, 1, '롤 강의', '실전 위주 강의입니다', 'LOL', 30000);
-
-ALTER TABLE reservation ADD COLUMN request_detail VARCHAR(255);
-ALTER TABLE reservation ADD COLUMN schedule_date VARCHAR(32);

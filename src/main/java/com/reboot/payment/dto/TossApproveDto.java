@@ -1,6 +1,6 @@
 package com.reboot.payment.dto;
 
-public record TossPaymentApproveDto(
+public record TossApproveDto(
         String paymentKey,
         String orderNo,
         Integer amount

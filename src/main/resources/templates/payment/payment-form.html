@@ -1,13 +1,13 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>payment-mainPage</title>
+    <title>Toss 결제 요청</title>
 </head>
 <body>
-
+<h2>Toss 결제 요청</h2>
+<form th:action="@{/payments/request}" method="post">
+    <input type="hidden" name="reservationId" th:value="${reservationId}" />
+    <button type="submit">결제 요청</button>
+</form>
 </body>
 </html>

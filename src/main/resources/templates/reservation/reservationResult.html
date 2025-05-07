@@ -26,6 +26,10 @@
 
 <a th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}">다시 예약하기</a>
 
-<a th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}">예약 취소하기</a>
+<a th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}">예약 취소하기</a> <br>
+<th:block th:with="resvId=${reservation.reservationId}">
+    <a th:href="@{/payments/form(reservationId=${resvId})}">결제하기</a>
+</th:block>
+
 </body>
 </html>

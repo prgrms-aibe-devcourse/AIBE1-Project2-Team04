@@ -1,5 +1,6 @@
 package com.reboot.reservation.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +33,7 @@ public class Reservation {
     private String scheduleDate;  // 강의 일정 (yyyy-MM-dd 등)
     private LocalDateTime date;
     private String status;
+    private String PaymentStatus;
 
     //추후 기능구현
 //    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
