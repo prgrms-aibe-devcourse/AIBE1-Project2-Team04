@@ -1,23 +1,12 @@
+/* reservation + replay 테스트용
 package com.reboot;
 
-import com.reboot.auth.entity.Instructor;
-import com.reboot.auth.entity.Member;
-import com.reboot.auth.repository.InstructorRepository;
-import com.reboot.auth.repository.MemberRepository;
-import com.reboot.auth.service.MemberService;
-import com.reboot.lecture.entity.Lecture;
-import com.reboot.lecture.entity.LectureInfo;
-import com.reboot.lecture.service.LectureService;
-import com.reboot.replay.service.ReplayService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import java.util.Optional;
 
 @SpringBootApplication
 @ComponentScan(
@@ -47,6 +36,20 @@ import java.util.Optional;
 		"com.reboot.lecture.repository",
 		"com.reboot.auth.repository"
 })
+public class RebootApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(RebootApplication.class, args);
+	}
+}
+*/
+package com.reboot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+
 public class RebootApplication {
 
 	public static void main(String[] args) {
