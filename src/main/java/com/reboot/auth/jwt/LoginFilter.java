@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.jwt;
 
 import com.reboot.auth.service.CustomUserDetailsService;
@@ -75,4 +74,4 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         cookie.setHttpOnly(true);
         return cookie;
     }
-}*/
+}

@@ -18,6 +18,12 @@
         .form-btn:hover { background: #185bb5; }
         .calendar-input { background: #f7f9fa; }
         .replay-link { display: inline-block; margin: 12px 0; color: #2e7dff; text-decoration: underline; }
+        .section-divider { border-top: 1px solid #eee; margin: 24px 0 16px; padding-top: 8px; }
+        .replay-toggle { color: #2e7dff; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; user-select: none; }
+        .replay-toggle:hover { text-decoration: underline; }
+        .replay-fields { max-height: 0; overflow: hidden; transition: max-height 0.3s; }
+        .replay-fields.show { max-height: 200px; }
+        .replay-note { font-size: 0.85rem; color: #666; margin-top: 8px; }
     </style>
     <!-- 캘린더용 jQuery UI -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -28,6 +34,20 @@
             $("#scheduleDate").datepicker({
                 dateFormat: "yy-mm-dd",
                 minDate: 0
+            });
+
+            // 리플레이 토글 기능
+            $("#replay-toggle").click(function() {
+                $("#replay-fields").toggleClass("show");
+                var isExpanded = $("#replay-fields").hasClass("show");
+                $(this).html(isExpanded ? '리플레이 등록 <span style="margin-left:4px;">▲</span>' : '리플레이 등록 <span style="margin-left:4px;">▼</span>');
+
+                // 토글 상태에 따라 필드 활성화/비활성화
+                if(isExpanded) {
+                    $("#youtubeUrl").prop("disabled", false);
+                } else {
+                    $("#youtubeUrl").prop("disabled", true);
+                }
             });
         });
     </script>
@@ -56,6 +76,16 @@
             <label class="form-label">강의 일정 선택</label>
             <input type="text" id="scheduleDate" th:field="*{scheduleDate}" class="form-input calendar-input" readonly placeholder="날짜를 선택하세요"/>
 
+            <!-- 리플레이 섹션 -->
+            <div class="section-divider"></div>
+            <div class="replay-toggle" id="replay-toggle">리플레이 등록 <span style="margin-left:4px;">▼</span></div>
+
+            <div id="replay-fields" class="replay-fields">
+                <label class="form-label">YouTube URL</label>
+                <input type="text" id="youtubeUrl" name="youtubeUrl" class="form-input" placeholder="YouTube 영상 URL을 입력하세요" disabled>
+                <div class="replay-note">YouTube 영상 URL을 입력하시면 이 예약과 연결된 리플레이가 생성됩니다.</div>
+            </div>
+
             <a th:href="@{/replay/list}" target="_blank" class="replay-link">리플레이 목록 보기</a>
 
             <button type="submit" class="form-btn">예약완료</button>
@@ -64,47 +94,3 @@
 </div>
 </body>
 </html>
-
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>예약 신청</title>-->
-<!--    &lt;!&ndash; jQuery UI DatePicker CDN &ndash;&gt;-->
-<!--    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">-->
-<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
-<!--    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>-->
-<!--    <script>-->
-<!--        $(function() {-->
-<!--            $("#scheduleDate").datepicker({-->
-<!--                dateFormat: "yy-mm-dd",-->
-<!--                minDate: 0-->
-<!--            });-->
-<!--        });-->
-<!--    </script>-->
-<!--</head>-->
-<!--<body>-->
-<!--<h2>강의 예약</h2>-->
-<!--<p>강의명: <span th:text="${lecture.title}"></span></p>-->
-<!--<p>설명: <span th:text="${lecture.description}"></span></p>-->
-
-<!--<form th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post">-->
-<!--    <input type="hidden" th:field="*{memberId}" />-->
-<!--    <input type="hidden" th:field="*{lectureId}" />-->
-<!--    <input type="hidden" th:field="*{instructorId}" />-->
-
-<!--    <label>요청사항:<br>-->
-<!--        <textarea th:field="*{requestDetail}" rows="3" cols="40" placeholder="요청사항을 입력하세요"></textarea>-->
-<!--    </label><br><br>-->
-
-<!--    <label>강의 일정 선택:<br>-->
-<!--        <input type="text" id="scheduleDate" th:field="*{scheduleDate}" readonly placeholder="날짜를 선택하세요"/>-->
-<!--    </label><br><br>-->
-
-<!--    &lt;!&ndash; 리플레이 목록 페이지로 이동하는 버튼/링크 &ndash;&gt;-->
-<!--    <a th:href="@{/replay/list}" target="_blank">리플레이 목록 추가</a><br><br>-->
-
-<!--    <button type="submit">예약완료</button>-->
-<!--</form>-->
-<!--</body>-->
-<!--</html>-->

@@ -14,11 +14,17 @@
         .status-complete { background: #e3f9e5; color: #2b8a3e; }
         .status-cancel { background: #fff5f5; color: #e03131; }
         hr { margin: 24px 0; border: none; border-top: 1px solid #eee; }
-        .actions { margin-top: 24px; display: flex; gap: 12px; }
+        .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
         .btn { padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block; text-align: center; }
         .btn-primary { background: #2e7dff; color: #fff; }
         .btn-secondary { background: #f1f2f6; color: #333; }
         .btn-danger { background: #ff4757; color: #fff; }
+        .btn-success { background: #2b8a3e; color: #fff; }
+        .replay-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid #eee; }
+        .replay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .video-container { margin-top: 16px; border-radius: 8px; overflow: hidden; }
+        .video-container iframe { width: 100%; height: 250px; border: none; }
+        .no-replay { background: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center; color: #666; }
     </style>
 </head>
 <body>
@@ -73,8 +79,49 @@
         <div class="info-value" th:text="${reservation.scheduleDate ?: '-'}"></div>
     </div>
 
+    <!-- 리플레이 섹션 -->
+    <div class="replay-section">
+        <div class="replay-header">
+            <h3 style="margin: 0;">리플레이</h3>
+            <a th:if="${replay == null && reservation.status != '취소'}"
+               th:href="@{/replays/upload(reservationId=${reservation.reservationId})}"
+               class="btn btn-success btn-sm">리플레이 등록</a>
+        </div>
+
+        <!-- 리플레이가 존재하는 경우 -->
+        <div th:if="${replay != null}" class="replay-content">
+            <div class="info-row">
+                <span class="info-label">리플레이 ID:</span>
+                <span class="info-value" th:text="${replay.replayId}"></span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">업로드 일시:</span>
+                <span class="info-value" th:text="${#temporals.format(replay.date, 'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+
+            <!-- 리플레이 비디오 표시 -->
+            <div class="video-container" th:if="${replay.youtubeEmbedUrl != null}">
+                <iframe th:src="${replay.youtubeEmbedUrl}" allowfullscreen></iframe>
+            </div>
+
+            <div class="actions" style="margin-top: 12px;">
+                <a th:href="@{/replays/{id}(id=${replay.replayId})}" class="btn btn-secondary">상세보기</a>
+                <a th:href="@{/replays/{id}/edit(id=${replay.replayId})}" class="btn btn-primary">수정</a>
+            </div>
+        </div>
+
+        <!-- 리플레이가 없는 경우 -->
+        <div th:if="${replay == null}" class="no-replay">
+            <p>아직 등록된 리플레이가 없습니다.</p>
+            <div th:if="${reservation.status != '취소'}">
+                <p>리플레이를 등록하려면 위의 '리플레이 등록' 버튼을 클릭하세요.</p>
+            </div>
+        </div>
+    </div>
+
     <div class="actions">
-        <a th:href="@{/replay/list}" target="_blank" class="btn btn-secondary">리플레이 목록 보기</a>
+        <a th:href="@{/replays/reservation/{id}(id=${reservation.reservationId})}" class="btn btn-secondary">리플레이 목록</a>
         <a th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}" class="btn btn-primary">다시 예약하기</a>
         <a th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}" class="btn btn-danger">예약 취소하기</a>
     </div>

@@ -8,6 +8,8 @@ import com.reboot.lecture.entity.Lecture;
 import com.reboot.lecture.entity.LectureInfo;
 import com.reboot.lecture.entity.LectureMetaData;
 import com.reboot.lecture.repository.LectureRepository;
+import com.reboot.replay.dto.ReplayResponse;
+import com.reboot.replay.service.ReplayService;
 import com.reboot.reservation.dto.ReservationCancelDto;
 import com.reboot.reservation.dto.ReservationRequestDto;
 import com.reboot.reservation.dto.ReservationResponseDto;
@@ -57,6 +59,9 @@ public class ReservationModuleTest {
     @Mock
     private LectureRepository lectureRepository;
 
+    @Mock
+    private ReplayService replayService; // 추가
+
     private Member testMember;
     private Member instructorMember;
     private Instructor testInstructor;
@@ -71,7 +76,8 @@ public class ReservationModuleTest {
                 reservationRepository,
                 memberRepository,
                 instructorRepository,
-                lectureRepository
+                lectureRepository,
+                replayService // 추가
         );
 
         // 테스트용 회원 객체 생성
@@ -267,5 +273,40 @@ public class ReservationModuleTest {
 
         verify(reservationRepository, times(1)).findById(1L);
         verify(reservationRepository, times(1)).save(any(Reservation.class));
+    }
+
+    // 리플레이 관련 새 테스트 케이스 추가 (선택사항)
+    @Test
+    @DisplayName("예약 모듈 - YouTube URL 포함한 예약 생성 테스트")
+    void createReservationWithYoutubeUrlSuccess() {
+        // Given
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
+        when(instructorRepository.findById(1L)).thenReturn(Optional.of(testInstructor));
+        when(lectureRepository.findById("LECTURE-123")).thenReturn(Optional.of(testLecture));
+        when(reservationRepository.save(any(Reservation.class))).thenReturn(testReservation);
+
+        // 리플레이 서비스 모킹
+        ReplayResponse replayResponse = new ReplayResponse();
+        replayResponse.setReplayId(1L);
+        replayResponse.setReservationId(1L);
+        replayResponse.setFileUrl("https://youtube.com/watch?v=abcdefg");
+        when(replayService.saveReplay(any())).thenReturn(replayResponse);
+
+        // YouTube URL 포함한 요청 DTO 생성
+        ReservationRequestDto requestWithYoutube = ReservationRequestDto.builder()
+                .memberId(1L)
+                .instructorId(1L)
+                .lectureId("LECTURE-123")
+                .requestDetail("테스트 요청사항")
+                .scheduleDate("2025-05-15")
+                .youtubeUrl("https://youtube.com/watch?v=abcdefg")
+                .build();
+
+        // When
+        ReservationResponseDto responseDto = reservationService.createReservation(requestWithYoutube);
+
+        // Then
+        assertNotNull(responseDto);
+        verify(replayService).saveReplay(any());
     }
 }

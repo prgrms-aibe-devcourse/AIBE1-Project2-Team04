@@ -3,6 +3,7 @@ package com.reboot.reservation;
 import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.lecture.repository.LectureRepository;
+import com.reboot.replay.service.ReplayService;
 import com.reboot.reservation.controller.ReservationController;
 import com.reboot.reservation.repository.ReservationRepository;
 import com.reboot.reservation.service.ReservationService;
@@ -85,6 +86,15 @@ public class ReservationTestConfig {
     }
 
     /**
+     * ReplayService 빈 모킹 (추가)
+     */
+    @Bean
+    @Primary
+    public ReplayService replayService() {
+        return Mockito.mock(ReplayService.class);
+    }
+
+    /**
      * ReservationService 빈
      */
     @Bean
@@ -92,8 +102,14 @@ public class ReservationTestConfig {
     public ReservationService reservationService(ReservationRepository reservationRepository,
                                                  MemberRepository memberRepository,
                                                  InstructorRepository instructorRepository,
-                                                 LectureRepository lectureRepository) {
-        return new ReservationService(reservationRepository, memberRepository, instructorRepository, lectureRepository);
+                                                 LectureRepository lectureRepository,
+                                                 ReplayService replayService) { // 매개변수 추가
+        return new ReservationService(
+                reservationRepository,
+                memberRepository,
+                instructorRepository,
+                lectureRepository,
+                replayService); // 매개변수 추가
     }
 
     /**
@@ -103,7 +119,12 @@ public class ReservationTestConfig {
     @Primary
     public ReservationController reservationController(ReservationService reservationService,
                                                        LectureService lectureService,
-                                                       MemberService memberService) {
-        return new ReservationController(reservationService, lectureService, memberService);
+                                                       MemberService memberService,
+                                                       ReplayService replayService) { // 매개변수 추가
+        return new ReservationController(
+                reservationService,
+                lectureService,
+                memberService,
+                replayService); // 매개변수 추가
     }
 }
