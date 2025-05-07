@@ -124,7 +124,7 @@ public class ReservationControllerTest {
 
         // 테스트용 강의 객체 생성
         testLecture = Lecture.builder()
-                .id("LECTURE-123")
+                .id(1L)
                 .instructor(testInstructor)
                 .info(lectureInfo)
                 .metadata(lectureMetaData)
@@ -137,7 +137,7 @@ public class ReservationControllerTest {
                 .memberName("홍길동")
                 .instructorId(1L)
                 .instructorName("강사김")
-                .lectureId("LECTURE-123")
+                .lectureId(1L)
                 .lectureTitle("롤 초보 탈출 강의")
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
@@ -158,17 +158,17 @@ public class ReservationControllerTest {
     void reservationFormTest() throws Exception {
         // Member, Lecture 서비스 모킹
         when(memberService.getMember(anyLong())).thenReturn(testMember);
-        when(lectureService.getLecture(anyString())).thenReturn(testLecture);
+        when(lectureService.getLecture(anyLong())).thenReturn(testLecture);
 
         mockMvc.perform(get("/reservation/new")
-                        .param("lectureId", "LECTURE-123")
+                        .param("lectureId", "1")
                         .param("memberId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("member", "lecture", "reservationRequestDto"))
                 .andExpect(view().name("reservation/reservationForm"));
 
         verify(memberService, times(1)).getMember(1L);
-        verify(lectureService, times(1)).getLecture("LECTURE-123");
+        verify(lectureService, times(1)).getLecture(1L);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class ReservationControllerTest {
                 .memberName("홍길동")
                 .instructorId(1L)
                 .instructorName("강사김")
-                .lectureId("LECTURE-123")
+                .lectureId(1L)
                 .lectureTitle("롤 초보 탈출 강의")
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
@@ -311,7 +311,7 @@ public class ReservationControllerTest {
                         .memberName("홍길동")
                         .instructorId(1L)
                         .instructorName("강사김")
-                        .lectureId("LECTURE-456")
+                        .lectureId(2L)
                         .lectureTitle("JPA 강의")
                         .requestDetail("두 번째 테스트 요청사항")
                         .scheduleDate("2025-06-15")

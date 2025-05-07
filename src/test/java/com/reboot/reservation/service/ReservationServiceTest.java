@@ -109,7 +109,7 @@ public class ReservationServiceTest {
 
         // 테스트용 강의 객체 생성
         testLecture = Lecture.builder()
-                .id("LECTURE-123")
+                .id(1L)
                 .instructor(testInstructor)
                 .info(lectureInfo)  // LectureInfo 설정 추가
                 .metadata(lectureMetaData)  // LectureMetaData 설정 추가
@@ -131,7 +131,7 @@ public class ReservationServiceTest {
         validRequestDto = ReservationRequestDto.builder()
                 .memberId(1L)
                 .instructorId(1L)
-                .lectureId("LECTURE-123")
+                .lectureId(1L)
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
                 .build();
@@ -143,7 +143,7 @@ public class ReservationServiceTest {
         // Given
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
         when(instructorRepository.findById(1L)).thenReturn(Optional.of(testInstructor));
-        when(lectureRepository.findById("LECTURE-123")).thenReturn(Optional.of(testLecture));
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(testLecture));
         when(reservationRepository.save(any(Reservation.class))).thenReturn(testReservation);
 
         // When
@@ -154,7 +154,7 @@ public class ReservationServiceTest {
         assertEquals(1L, responseDto.getReservationId());
         assertEquals("홍길동", responseDto.getMemberName());
         assertEquals("강사김", responseDto.getInstructorName());
-        assertEquals("LECTURE-123", responseDto.getLectureId());
+        assertEquals(1L, responseDto.getLectureId());
         assertEquals("롤 초보 탈출 강의", responseDto.getLectureTitle());  // 강의 제목 추가
         assertEquals("테스트 요청사항", responseDto.getRequestDetail());
         assertEquals("2025-05-15", responseDto.getScheduleDate());
@@ -162,7 +162,7 @@ public class ReservationServiceTest {
 
         verify(memberRepository, times(1)).findById(1L);
         verify(instructorRepository, times(1)).findById(1L);
-        verify(lectureRepository, times(1)).findById("LECTURE-123");
+        verify(lectureRepository, times(1)).findById(1L);
         verify(reservationRepository, times(1)).save(any(Reservation.class));
     }
 
@@ -174,7 +174,7 @@ public class ReservationServiceTest {
         ReservationRequestDto invalidRequest = ReservationRequestDto.builder()
                 .memberId(999L)
                 .instructorId(1L)
-                .lectureId("LECTURE-123")
+                .lectureId(1L)
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
                 .build();
@@ -193,7 +193,7 @@ public class ReservationServiceTest {
         ReservationRequestDto invalidRequest = ReservationRequestDto.builder()
                 .memberId(1L)
                 .instructorId(999L)
-                .lectureId("LECTURE-123")
+                .lectureId(1L)
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
                 .build();
@@ -209,11 +209,11 @@ public class ReservationServiceTest {
         // Given
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
         when(instructorRepository.findById(1L)).thenReturn(Optional.of(testInstructor));
-        when(lectureRepository.findById("NONEXISTENT")).thenReturn(Optional.empty());
+        when(lectureRepository.findById(2L)).thenReturn(Optional.empty());
         ReservationRequestDto invalidRequest = ReservationRequestDto.builder()
                 .memberId(1L)
                 .instructorId(1L)
-                .lectureId("NONEXISTENT")
+                .lectureId(2L)
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
                 .build();
@@ -230,7 +230,7 @@ public class ReservationServiceTest {
         ReservationRequestDto invalidRequest = ReservationRequestDto.builder()
                 .memberId(null)
                 .instructorId(1L)
-                .lectureId("LECTURE-123")
+                .lectureId(1L)
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
                 .build();
@@ -253,7 +253,7 @@ public class ReservationServiceTest {
         assertNotNull(responseDto);
         assertEquals(1L, responseDto.getReservationId());
         assertEquals("홍길동", responseDto.getMemberName());
-        assertEquals("LECTURE-123", responseDto.getLectureId());
+        assertEquals(1L, responseDto.getLectureId());
         assertEquals("롤 초보 탈출 강의", responseDto.getLectureTitle());  // 강의 제목 확인 추가
     }
 

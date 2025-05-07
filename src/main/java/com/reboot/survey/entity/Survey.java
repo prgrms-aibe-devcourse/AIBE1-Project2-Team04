@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.entity;
 
 import com.reboot.auth.entity.Member;
@@ -36,3 +37,4 @@ public class Survey {
     @Enumerated(EnumType.STRING)
     private LecturePreference lecturePreference;
 }
+*/

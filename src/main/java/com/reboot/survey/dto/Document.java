@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.dto;
 
 import lombok.AllArgsConstructor;
@@ -13,5 +14,5 @@ import java.util.Map;
 @AllArgsConstructor
 public class Document {
     private String content;
-    private Map<String, String> metadata;
-}
+    private Map<String, Object> metadata;
+}*/

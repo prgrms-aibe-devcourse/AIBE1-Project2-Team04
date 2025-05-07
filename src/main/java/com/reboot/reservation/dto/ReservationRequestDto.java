@@ -9,7 +9,7 @@ import lombok.*;
 public class ReservationRequestDto {
     private Long memberId;
     private Long instructorId;
-    private String lectureId;
+    private Long lectureId;
     private String requestDetail;
     private String scheduleDate;
 

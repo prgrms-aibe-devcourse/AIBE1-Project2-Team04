@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.auth.entity.Member;
@@ -29,12 +30,14 @@ public class SurveyService {
         this.recommendationService = recommendationService;
     }
 
-    /**
+    */
+/**
      * 사용자의 설문조사를 저장하고 즉시 강의 추천을 제공합니다.
      * @param memberId 회원 ID
      * @param surveyRequest 설문조사 요청 DTO
      * @return 추천된 강의 목록
-     */
+     *//*
+
     public RecommendationResponse submitSurveyAndGetRecommendations(Long memberId, SurveyRequest surveyRequest) {
         // 1. 회원 정보 조회
         Member member = memberRepository.findById(memberId)
@@ -59,3 +62,4 @@ public class SurveyService {
         return recommendations;
     }
 }
+*/

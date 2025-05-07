@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.auth.entity.Instructor;
@@ -48,7 +49,7 @@ public class DataPreparationService {
         // 각 문서를 임베딩하고 벡터 DB에 저장
         for (Document document : documents) {
             float[] embedding = embeddingService.generateEmbedding(document.getContent());
-            vectorDbClient.upsert(document.getMetadata().get("lectureId"), embedding, document.getMetadata());
+            vectorDbClient.upsert(document.getMetadata().get("lectureId").toString(), embedding, document.getMetadata());
         }
 
         log.info("벡터 DB 초기화 완료: {} 개의 강의 데이터 인덱싱됨", documents.size());
@@ -84,8 +85,8 @@ public class DataPreparationService {
             documentContent.append("강사 리뷰 수: ").append(instructor.getReviewNum()).append("\n");
 
             // 메타데이터 생성
-            Map<String, String> metadata = new HashMap<>();
-            metadata.put("lectureId", lecture.getId());
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("lectureId", lecture.getId().toString());
             metadata.put("gameType", lecture.getInfo().getGameType());
             metadata.put("instructorId", String.valueOf(instructor.getInstructorId()));
             metadata.put("price", lecture.getInfo().getPrice().toString());
@@ -110,10 +111,11 @@ public class DataPreparationService {
 
         for (Document document : documents) {
             float[] embedding = embeddingService.generateEmbedding(document.getContent());
-            vectorDbClient.upsert(document.getMetadata().get("lectureId"), embedding, document.getMetadata());
+            vectorDbClient.upsert(document.getMetadata().get("lectureId").toString(), embedding, document.getMetadata());
         }
 
         log.info("새 강의가 벡터 DB에 추가되었습니다. 강의 ID: {}", lecture.getId());
     }
 }
 
+*/

@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.survey.dto.LlmRequest;
@@ -7,4 +8,4 @@ import org.springframework.stereotype.Service;
 @Service
 public interface LlmClient {
     LlmResponse generateCompletion(LlmRequest request);
-}
+}*/

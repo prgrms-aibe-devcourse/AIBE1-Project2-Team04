@@ -3,69 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>강의 예약</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; }
-        .container { display: flex; max-width: 1000px; margin: 40px auto; gap: 32px; }
-        .lecture-info { flex: 2; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
-        .reservation-card { flex: 1; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
-        .lecture-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 12px; }
-        .lecture-desc { color: #444; margin-bottom: 24px; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
+        .section { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px #0001; margin-bottom: 24px; }
+        .section-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; }
+        .section-subtitle { font-size: 1.1rem; font-weight: bold; margin-bottom: 16px; color: #444; }
         .price { font-size: 1.2rem; color: #2e7dff; font-weight: bold; }
         .form-label { display: block; margin: 16px 0 8px; font-weight: 500; }
-        .form-input, .form-textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
-        .form-textarea { resize: vertical; min-height: 60px; }
-        .form-btn { width: 100%; margin-top: 24px; padding: 12px 0; background: #2e7dff; color: #fff; border: none; border-radius: 6px; font-size: 1.1rem; cursor: pointer; }
-        .form-btn:hover { background: #185bb5; }
-        .calendar-input { background: #f7f9fa; }
-        .replay-link { display: inline-block; margin: 12px 0; color: #2e7dff; text-decoration: underline; }
-        .section-divider { border-top: 1px solid #eee; margin: 24px 0 16px; padding-top: 8px; }
-        .replay-toggle { color: #2e7dff; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; user-select: none; }
-        .replay-toggle:hover { text-decoration: underline; }
-        .replay-fields { max-height: 0; overflow: hidden; transition: max-height 0.3s; }
-        .replay-fields.show { max-height: 200px; }
-        .replay-note { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        .form-input, .form-textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .btn-box { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+        .btn { padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 0.95rem; border: none; }
+        .btn-primary { background: #2e7dff; color: #fff; }
+        .btn-secondary { background: #f1f2f6; color: #333; }
+        .btn-success { background: #2ecc71; color: #fff; }
+        .replay-list { margin-top: 20px; }
+        .replay-item { background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 16px; position: relative; }
+        .replay-item-title { font-weight: 500; margin-bottom: 8px; }
+        .replay-item-actions { position: absolute; right: 16px; top: 16px; }
+        .btn-icon { background: none; border: none; color: #2e7dff; cursor: pointer; font-size: 1.1rem; }
+        .btn-icon:hover { color: #0056b3; }
+        .replay-form { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        .preview-container { margin-top: 20px; width: 100%; height: 315px; display: none; }
+        .preview-container iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+        .submit-container { margin-top: 40px; display: flex; justify-content: center; }
+        .submit-btn { padding: 15px 40px; font-size: 1.1rem; background: #2e7dff; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+        .submit-btn:hover { background: #185bb5; }
+        .replay-controls { display: flex; gap: 10px; }
+        .replay-controls button { padding: 8px 16px; border-radius: 4px; font-size: 0.9rem; }
     </style>
-    <!-- 캘린더용 jQuery UI -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <script>
-        $(function() {
-            $("#scheduleDate").datepicker({
-                dateFormat: "yy-mm-dd",
-                minDate: 0
-            });
-
-            // 리플레이 토글 기능
-            $("#replay-toggle").click(function() {
-                $("#replay-fields").toggleClass("show");
-                var isExpanded = $("#replay-fields").hasClass("show");
-                $(this).html(isExpanded ? '리플레이 등록 <span style="margin-left:4px;">▲</span>' : '리플레이 등록 <span style="margin-left:4px;">▼</span>');
-
-                // 토글 상태에 따라 필드 활성화/비활성화
-                if(isExpanded) {
-                    $("#youtubeUrl").prop("disabled", false);
-                } else {
-                    $("#youtubeUrl").prop("disabled", true);
-                }
-            });
-        });
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 <div class="container">
-    <!-- 좌측: 강의 정보 -->
-    <div class="lecture-info">
-        <div class="lecture-title" th:text="${lecture.title}"></div>
-        <div class="lecture-desc" th:text="${lecture.description}"></div>
-        <div class="price">
-            <span th:text="${#numbers.formatInteger(lecture.price, 0, 'COMMA')}"></span>원
-        </div>
-        <!-- 필요시 추가 정보, 안내 등 -->
+    <!-- 강의 정보 섹션 -->
+    <div class="section">
+        <h2 class="section-title">발란스형 강의</h2>
+        <p>모든 포지션 기본기 제공</p>
+        <div class="price">14,000원</div>
     </div>
-    <!-- 우측: 예약 카드 -->
-    <div class="reservation-card">
-        <form th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post">
+
+    <!-- 예약 정보 섹션 -->
+    <div class="section">
+        <h2 class="section-title">예약 정보</h2>
+        <form id="reservationForm" th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post">
             <input type="hidden" th:field="*{memberId}" />
             <input type="hidden" th:field="*{lectureId}" />
             <input type="hidden" th:field="*{instructorId}" />
@@ -74,23 +60,192 @@
             <textarea th:field="*{requestDetail}" class="form-textarea" placeholder="요청사항을 입력하세요"></textarea>
 
             <label class="form-label">강의 일정 선택</label>
-            <input type="text" id="scheduleDate" th:field="*{scheduleDate}" class="form-input calendar-input" readonly placeholder="날짜를 선택하세요"/>
-
-            <!-- 리플레이 섹션 -->
-            <div class="section-divider"></div>
-            <div class="replay-toggle" id="replay-toggle">리플레이 등록 <span style="margin-left:4px;">▼</span></div>
-
-            <div id="replay-fields" class="replay-fields">
-                <label class="form-label">YouTube URL</label>
-                <input type="text" id="youtubeUrl" name="youtubeUrl" class="form-input" placeholder="YouTube 영상 URL을 입력하세요" disabled>
-                <div class="replay-note">YouTube 영상 URL을 입력하시면 이 예약과 연결된 리플레이가 생성됩니다.</div>
-            </div>
-
-            <a th:href="@{/replay/list}" target="_blank" class="replay-link">리플레이 목록 보기</a>
-
-            <button type="submit" class="form-btn">예약완료</button>
+            <input type="text" id="scheduleDate" th:field="*{scheduleDate}" class="form-input" readonly placeholder="날짜를 선택하세요"/>
         </form>
     </div>
+
+    <!-- 리플레이 관리 섹션 -->
+    <div class="section">
+        <h2 class="section-title">리플레이 관리</h2>
+        <p>강의 리플레이를 업로드하고 관리하세요. 여러 개의 리플레이를 추가할 수 있습니다.</p>
+
+        <!-- 리플레이 목록 -->
+        <div id="replay-list" class="replay-list">
+            <!-- 기존 리플레이 항목들 (있는 경우) -->
+            <div th:if="${existingReplays != null && !existingReplays.isEmpty()}" th:each="replay : ${existingReplays}" class="replay-item">
+                <div class="replay-item-title" th:text="'리플레이 #' + ${replay.replayId}"></div>
+                <div class="replay-item-actions">
+                    <button type="button" class="btn-icon view-replay" th:data-url="${replay.fileUrl}"><i class="fas fa-eye"></i></button>
+                    <button type="button" class="btn-icon edit-replay" th:data-id="${replay.replayId}" th:data-url="${replay.fileUrl}"><i class="fas fa-edit"></i></button>
+                    <button type="button" class="btn-icon delete-replay" th:data-id="${replay.replayId}"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 리플레이 추가 버튼 -->
+        <button type="button" id="add-replay-btn" class="btn btn-primary" style="margin-top: 20px;">
+            <i class="fas fa-plus"></i> 리플레이 추가
+        </button>
+
+        <!-- 새 리플레이 폼 (처음에는 숨김) -->
+        <div id="new-replay-form" class="replay-form" style="display: none;">
+            <h3 class="section-subtitle">새 리플레이 추가</h3>
+
+            <label class="form-label">YouTube URL</label>
+            <input type="text" id="youtube-url" class="form-input" placeholder="YouTube 영상 URL을 입력하세요">
+
+            <div class="replay-controls">
+                <button type="button" id="preview-btn" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> 미리보기
+                </button>
+                <button type="button" id="save-replay-btn" class="btn btn-success">
+                    <i class="fas fa-save"></i> 저장
+                </button>
+                <button type="button" id="cancel-replay-btn" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> 취소
+                </button>
+            </div>
+
+            <!-- 미리보기 컨테이너 -->
+            <div id="preview-container" class="preview-container"></div>
+        </div>
+    </div>
+
+    <!-- 예약 완료 버튼 (맨 아래로 이동) -->
+    <div class="submit-container">
+        <button type="submit" form="reservationForm" class="submit-btn">예약완료</button>
+    </div>
 </div>
+
+<script>
+    $(function() {
+        // 날짜 선택기 초기화
+        $("#scheduleDate").datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: 0
+        });
+
+        // 리플레이 추가 버튼 클릭 이벤트
+        $("#add-replay-btn").click(function() {
+            $("#new-replay-form").show();
+            $("#youtube-url").val("");
+            $("#preview-container").hide();
+        });
+
+        // 취소 버튼 클릭 이벤트
+        $("#cancel-replay-btn").click(function() {
+            $("#new-replay-form").hide();
+        });
+
+        // 미리보기 버튼 클릭 이벤트
+        $("#preview-btn").click(function() {
+            const youtubeUrl = $("#youtube-url").val().trim();
+            if (!youtubeUrl) {
+                alert("YouTube URL을 입력해주세요.");
+                return;
+            }
+
+            const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
+            if (embedUrl) {
+                $("#preview-container").html(`<iframe src="${embedUrl}" allowfullscreen></iframe>`);
+                $("#preview-container").show();
+            } else {
+                alert("유효한 YouTube URL이 아닙니다.");
+            }
+        });
+
+        // 리플레이 저장 버튼 클릭 이벤트
+        $("#save-replay-btn").click(function() {
+            const youtubeUrl = $("#youtube-url").val().trim();
+            if (!youtubeUrl) {
+                alert("YouTube URL을 입력해주세요.");
+                return;
+            }
+
+            // 임시 저장 (실제로는 AJAX 요청으로 서버에 저장)
+            const replayId = Date.now(); // 임시 ID (실제로는 서버에서 생성)
+
+            // 새 리플레이 항목 추가
+            const replayItem = `
+                <div class="replay-item" data-id="${replayId}">
+                    <div class="replay-item-title">리플레이 #${replayId}</div>
+                    <div class="replay-item-actions">
+                        <button type="button" class="btn-icon view-replay" data-url="${youtubeUrl}"><i class="fas fa-eye"></i></button>
+                        <button type="button" class="btn-icon edit-replay" data-id="${replayId}" data-url="${youtubeUrl}"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn-icon delete-replay" data-id="${replayId}"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+
+            $("#replay-list").append(replayItem);
+            $("#new-replay-form").hide();
+
+            // 폼에 hidden input 추가 (실제 저장을 위해)
+            const hiddenInput = `<input type="hidden" name="replayUrls[]" value="${youtubeUrl}">`;
+            $("#reservationForm").append(hiddenInput);
+        });
+
+        // 동적으로 추가된 요소에 대한 이벤트 위임
+        $(document).on("click", ".view-replay", function() {
+            const url = $(this).data("url");
+            const embedUrl = getYouTubeEmbedUrl(url);
+            if (embedUrl) {
+                $("#preview-container").html(`<iframe src="${embedUrl}" allowfullscreen></iframe>`);
+                $("#preview-container").show();
+                $("#new-replay-form").show();
+            }
+        });
+
+        $(document).on("click", ".edit-replay", function() {
+            const id = $(this).data("id");
+            const url = $(this).data("url");
+
+            $("#youtube-url").val(url);
+            $("#new-replay-form").show();
+
+            // 미리보기 표시
+            const embedUrl = getYouTubeEmbedUrl(url);
+            if (embedUrl) {
+                $("#preview-container").html(`<iframe src="${embedUrl}" allowfullscreen></iframe>`);
+                $("#preview-container").show();
+            }
+
+            // 임시로 현재 편집 중인 리플레이 ID 저장
+            $("#save-replay-btn").data("edit-id", id);
+        });
+
+        $(document).on("click", ".delete-replay", function() {
+            if (confirm("이 리플레이를 삭제하시겠습니까?")) {
+                const id = $(this).data("id");
+                $(`.replay-item[data-id="${id}"]`).remove();
+                $(`input[name="replayUrls[]"][value="${id}"]`).remove();
+            }
+        });
+
+        // YouTube URL을 임베드 URL로 변환하는 함수
+        function getYouTubeEmbedUrl(url) {
+            let videoId = null;
+
+            // 일반 YouTube URL (watch?v=VIDEO_ID)
+            if (url.includes('youtube.com/watch?v=')) {
+                const urlParams = new URLSearchParams(url.split('?')[1]);
+                videoId = urlParams.get('v');
+            }
+            // 단축 URL (youtu.be/VIDEO_ID)
+            else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1];
+                if (videoId.includes('?')) {
+                    videoId = videoId.substring(0, videoId.indexOf('?'));
+                }
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            return null;
+        }
+    });
+</script>
 </body>
 </html>

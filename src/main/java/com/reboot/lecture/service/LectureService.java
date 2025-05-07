@@ -12,7 +12,7 @@ public class LectureService {
     private final LectureRepository lectureRepository;
 
     @Transactional(readOnly = true)
-    public Lecture getLecture(String lectureId) {
+    public Lecture getLecture(Long lectureId) {
         return lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new RuntimeException("강의를 찾을 수 없습니다."));
     }

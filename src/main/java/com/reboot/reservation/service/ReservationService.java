@@ -89,6 +89,21 @@ public class ReservationService {
     }
 
     /**
+     * 회원 ID와 강의 ID로 해당하는 예약 목록 조회
+     * @param memberId 회원 ID
+     * @param lectureId 강의 ID
+     * @return 조회된 예약 목록
+     */
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDto> getReservationsByMemberAndLecture(Long memberId, Long lectureId) {
+        List<Reservation> reservations = reservationRepository.findByMemberMemberIdAndLectureId(memberId, lectureId);
+
+        return reservations.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 예약 ID로 예약 상세 조회 (리플레이 정보 포함)
      */
     @Transactional(readOnly = true)

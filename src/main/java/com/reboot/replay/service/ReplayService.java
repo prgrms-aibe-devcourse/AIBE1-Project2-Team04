@@ -41,6 +41,15 @@ public class ReplayService {
         return convertToResponseDto(savedReplay);
     }
 
+    // 모든 리플레이 목록 조회
+    public List<ReplayResponse> getAllReplays() {
+        List<Replay> replays = replayRepository.findAll();
+
+        return replays.stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+    }
+
     // 리플레이 조회
     public ReplayResponse getReplay(Long replayId) {
         Replay replay = replayRepository.findById(replayId)

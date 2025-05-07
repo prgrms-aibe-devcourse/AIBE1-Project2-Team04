@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.dto;
 
 import lombok.Data;
@@ -9,4 +10,4 @@ public class RecommendationResponse {
     private Long surveyId;
     private List<LectureRecommendation> recommendations;
     private String overallRecommendation;
-}
+}*/

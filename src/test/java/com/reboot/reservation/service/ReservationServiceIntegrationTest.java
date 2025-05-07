@@ -53,7 +53,7 @@ class ReservationServiceIntegrationTest {
         // 필요한 mock 설정
         when(memberRepository.findById(anyLong())).thenReturn(Optional.of(new Member()));
         when(instructorRepository.findById(anyLong())).thenReturn(Optional.of(new Instructor()));
-        when(lectureRepository.findById(anyString())).thenReturn(Optional.of(new Lecture()));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(new Lecture()));
     }
 
     @Test
@@ -62,7 +62,7 @@ class ReservationServiceIntegrationTest {
         ReservationRequestDto requestDto = new ReservationRequestDto();
         requestDto.setMemberId(1L);
         requestDto.setInstructorId(1L);
-        requestDto.setLectureId("lecture1");
+        requestDto.setLectureId(1L);
         requestDto.setYoutubeUrl("https://youtube.com/watch?v=abcdefg");
 
         Reservation savedReservation = new Reservation();

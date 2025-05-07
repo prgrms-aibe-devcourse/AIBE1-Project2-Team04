@@ -88,7 +88,7 @@ class ReservationReplayIntegrationTest {
 
         // 테스트 강의 설정
         testLecture = new Lecture();
-        testLecture.setId("lecture1");
+        testLecture.setId(1L);
         testLecture.setInfo(lectureInfo); // 강의 정보 설정
 
         // 테스트 예약 설정
@@ -126,7 +126,7 @@ class ReservationReplayIntegrationTest {
         ReservationRequestDto requestDto = new ReservationRequestDto();
         requestDto.setMemberId(1L);
         requestDto.setInstructorId(1L);
-        requestDto.setLectureId("lecture1");
+        requestDto.setLectureId(1L);
         requestDto.setYoutubeUrl("https://youtube.com/watch?v=abcdefg");
         requestDto.setScheduleDate("2025-05-15");
         requestDto.setRequestDetail("테스트 요청사항");
@@ -134,7 +134,7 @@ class ReservationReplayIntegrationTest {
         // 모킹 설정
         when(memberRepository.findById(1L)).thenReturn(Optional.of(testMember));
         when(instructorRepository.findById(1L)).thenReturn(Optional.of(testInstructor));
-        when(lectureRepository.findById("lecture1")).thenReturn(Optional.of(testLecture));
+        when(lectureRepository.findById(1L)).thenReturn(Optional.of(testLecture));
         when(reservationRepository.save(any(Reservation.class))).thenReturn(testReservation);
 
         // 리플레이 생성 모킹
@@ -148,7 +148,7 @@ class ReservationReplayIntegrationTest {
                 .memberName("테스트 사용자")
                 .instructorId(1L)
                 .instructorName("강사이름")
-                .lectureId("lecture1")
+                .lectureId(1L)
                 .lectureTitle("테스트 강의")
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")
@@ -192,7 +192,7 @@ class ReservationReplayIntegrationTest {
                 .memberName("테스트 사용자")
                 .instructorId(1L)
                 .instructorName("강사이름")
-                .lectureId("lecture1")
+                .lectureId(1L)
                 .lectureTitle("테스트 강의")
                 .requestDetail("테스트 요청사항")
                 .scheduleDate("2025-05-15")

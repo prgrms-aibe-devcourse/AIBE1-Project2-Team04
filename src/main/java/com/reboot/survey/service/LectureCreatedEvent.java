@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.lecture.entity.Lecture;
@@ -12,4 +13,4 @@ public class LectureCreatedEvent extends ApplicationEvent {
         super(source);
         this.lecture = lecture;
     }
-}
+}*/

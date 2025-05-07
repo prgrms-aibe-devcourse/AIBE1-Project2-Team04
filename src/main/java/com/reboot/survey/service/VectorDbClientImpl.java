@@ -1,3 +1,4 @@
+/*
 package com.reboot.survey.service;
 
 import com.reboot.survey.dto.SearchResult;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 public class VectorDbClientImpl implements VectorDbClient {
     
     @Override
-    public void upsert(String id, float[] embedding, Map<String, String> metadata) {
+    public void upsert(String id, float[] embedding, Map<String, Object> metadata) {
         // Implementation for storing vectors and metadata
         // This is where you would connect to your vector database (like Supabase, Pinecone, etc.)
     }
@@ -21,4 +22,4 @@ public class VectorDbClientImpl implements VectorDbClient {
         // This should return actual results from your vector database
         return new ArrayList<>(); // Placeholder - replace with actual implementation
     }
-}
+}*/
