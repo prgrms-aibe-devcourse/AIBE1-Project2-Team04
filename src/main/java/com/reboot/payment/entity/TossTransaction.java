@@ -41,5 +41,5 @@ public class TossTransaction {
     private String responseCode;
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
-    private String status;
+    private String tossStatus;
 }

@@ -96,7 +96,7 @@ class PaymentRepositoryTest {
         Payment payment = Payment.builder()
                 .reservation(savedReservation)
                 .price(35000)
-                .date(LocalDateTime.now())
+                .paymentAt(LocalDateTime.now())
                 .method("CARD")
                 .status("READY")
                 .build();
@@ -140,7 +140,7 @@ class PaymentRepositoryTest {
         Payment payment = Payment.builder()
                 .reservation(savedReservation)
                 .price(10000)
-                .date(LocalDateTime.now())
+                .paymentAt(LocalDateTime.now())
                 .method("TOSS_MONEY")
                 .status("COMPLETE")
                 .build();

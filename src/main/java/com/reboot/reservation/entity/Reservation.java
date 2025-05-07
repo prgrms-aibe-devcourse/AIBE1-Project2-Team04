@@ -33,7 +33,6 @@ public class Reservation {
     private String scheduleDate;  // 강의 일정 (yyyy-MM-dd 등)
     private LocalDateTime date;
     private String status;
-    private String PaymentStatus;
 
     //추후 기능구현
 //    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)

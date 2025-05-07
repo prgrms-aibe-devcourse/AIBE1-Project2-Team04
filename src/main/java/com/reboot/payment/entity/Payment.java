@@ -22,9 +22,9 @@ public class Payment {
 
     private Integer price;
 
-    private LocalDateTime date;
+    private LocalDateTime paymentAt;
 
-    private String method; // 예: CARD, TOSS_MONEY 등
+    private String method;
 
-    private String status; // 예: READY, COMPLETE, FAIL 등
+    private String status;
 }
