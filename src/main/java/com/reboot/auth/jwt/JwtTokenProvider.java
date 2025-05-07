@@ -23,10 +23,17 @@ import java.util.List;
 @Log
 public class JwtTokenProvider {
 
+    public final String CATEGORY_ACCESS = "access";
+    public final String CATEGORY_REFRESH = "refresh";
+
     @Value("${jwt.secret}")
     private String secretKey;
     // @Value("${jwt.expiration-ms}")
     // private long expirationMs;
+    @Value("${jwt.access-expiration-ms}")
+    private long accessExpirationMs;
+    @Value("${jwt.refresh-expiration-ms}")
+    private long refreshExpirationMs;
 
     public SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -36,7 +43,7 @@ public class JwtTokenProvider {
     public String generateToken(String category, String username, String role) {
 
         Instant now = Instant.now();
-        Date expiration = new Date(now.toEpochMilli() + SetExpirationMs(category));
+        Date expiration = new Date(now.toEpochMilli() + GetExpirationMs(category));
 
         return Jwts.builder()
                 .claim("category", category)
@@ -52,7 +59,7 @@ public class JwtTokenProvider {
         try {
             return parseClaims(token).get("category", String.class);
         } catch (JwtException e) {
-            throw new BadCredentialsException("Invalid or expired JWT token", e);
+            throw new BadCredentialsException("Invalid Category JWT token", e);
         }
     }
 
@@ -60,7 +67,15 @@ public class JwtTokenProvider {
         try {
             return parseClaims(token).get("username", String.class);
         } catch (JwtException e) {
-            throw new BadCredentialsException("Invalid or expired JWT token", e);
+            throw new BadCredentialsException("Invalid Username JWT token", e);
+        }
+    }
+
+    public String getRole(String token) {
+        try {
+            return parseClaims(token).get("role", String.class);
+        } catch (JwtException e) {
+            throw new BadCredentialsException("Invalid Role JWT token", e);
         }
     }
 
@@ -81,7 +96,7 @@ public class JwtTokenProvider {
                         .toList();
             }
 
-            throw new BadCredentialsException("Invalid roles claim in JWT: unexpected type " + rolesObj.getClass());
+            throw new BadCredentialsException("Invalid roles claim in JWT: unexpected type " + rolesObj);
 
         } catch (JwtException e) {
             throw new BadCredentialsException("Failed to extract roles from token", e);
@@ -119,14 +134,16 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    private long SetExpirationMs(String category) {
+    public long GetExpirationMs(String category) {
         long expirationMs = 0L;
 
-        if(category.equals("access")) {
-            expirationMs = 600000; // 10분
+        if(category.equals(CATEGORY_ACCESS)) {
+            // expirationMs = 600000; // 10분
+            expirationMs = accessExpirationMs;
         }
-        else if(category.equals("refresh")) {
-            expirationMs = 86400000; // 1일
+        else if(category.equals(CATEGORY_REFRESH)) {
+            // expirationMs = 86400000; // 1일
+            expirationMs = refreshExpirationMs;
         }
 
         return expirationMs;

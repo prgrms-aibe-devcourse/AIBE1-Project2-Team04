@@ -19,7 +19,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
-        String accessToken = req.getHeader("access");
+        String accessToken = req.getHeader(jwtTokenProvider.CATEGORY_ACCESS);
 
         if (accessToken == null) {
             chain.doFilter(req, res);
@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String category = jwtTokenProvider.getCategory(accessToken);
-        if (!category.equals("access")) {
+        if (!category.equals(jwtTokenProvider.CATEGORY_ACCESS)) {
             PrintWriter writer = res.getWriter();
             writer.println("Invalid Access Token");
 
