@@ -1,6 +1,8 @@
 package com.reboot.reservation.controller;
 
 import com.reboot.lecture.entity.Lecture;
+import com.reboot.replay.dto.ReplayResponse;
+import com.reboot.replay.service.ReplayService;
 import com.reboot.reservation.dto.ReservationCancelDto;
 import com.reboot.reservation.dto.ReservationRequestDto;
 import com.reboot.reservation.dto.ReservationResponseDto;
@@ -13,9 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 예약(Reservation) 관련 HTTP 요청을 처리하는 컨트롤러.
- */
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/reservation")
@@ -23,11 +24,9 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final LectureService lectureService;
     private final MemberService memberService;
-
+    private final ReplayService replayService;
     /**
      * 예약 폼 페이지 진입
-     * - GET /reservation/new?lectureId=xxx
-     * - 강의 정보를 조회하여 예약 폼에 전달
      */
     @GetMapping("/new")
     public String reservationForm(@RequestParam String lectureId, @RequestParam Long memberId, Model model) {
@@ -40,20 +39,30 @@ public class ReservationController {
                 lecture.getInstructor().getInstructorId(),
                 lecture.getId(),
                 null,
-                null
+                null,
+                null  // youtubeUrl 추가
         ));
         return "reservation/reservationForm";
     }
 
     /**
      * 예약 생성 요청 처리
-     * - POST /reservation
-     * - 폼에서 입력받은 데이터를 바탕으로 예약 생성
      */
     @PostMapping
     public String createReservation(@ModelAttribute ReservationRequestDto dto, Model model) {
         ReservationResponseDto reservation = reservationService.createReservation(dto);
         model.addAttribute("reservation", reservation);
+
+        // 리플레이 정보 추가 (있는 경우)
+        if (reservation.getReplayId() != null) {
+            try {
+                ReplayResponse replay = replayService.getReplay(reservation.getReplayId());
+                model.addAttribute("replay", replay);
+            } catch (Exception e) {
+                // 리플레이 정보 조회 실패시 무시
+            }
+        }
+
         return "reservation/reservationResult";
     }
 
@@ -80,12 +89,22 @@ public class ReservationController {
 
     /**
      * 예약 상세 조회
-     * - GET /reservation/{id}
      */
     @GetMapping("/{id}")
     public String getReservation(@PathVariable Long id, Model model) {
         ReservationResponseDto reservation = reservationService.getReservation(id);
         model.addAttribute("reservation", reservation);
+
+        // 리플레이 정보 추가 (있는 경우)
+        if (reservation.getReplayId() != null) {
+            try {
+                ReplayResponse replay = replayService.getReplay(reservation.getReplayId());
+                model.addAttribute("replay", replay);
+            } catch (Exception e) {
+                // 리플레이 정보 조회 실패시 무시
+            }
+        }
+
         return "reservation/reservationDetail";
     }
 

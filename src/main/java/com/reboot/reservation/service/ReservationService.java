@@ -3,6 +3,9 @@ package com.reboot.reservation.service;
 import com.reboot.reservation.dto.ReservationCancelDto;
 import com.reboot.reservation.dto.ReservationRequestDto;
 import com.reboot.reservation.dto.ReservationResponseDto;
+import com.reboot.replay.dto.ReplayRequest;
+import com.reboot.replay.dto.ReplayResponse;
+import com.reboot.replay.service.ReplayService;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.lecture.entity.Lecture;
 import com.reboot.auth.entity.Member;
@@ -19,9 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 예약(Reservation) 도메인의 비즈니스 로직을 담당하는 서비스 클래스
- */
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -29,20 +29,21 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final InstructorRepository instructorRepository;
     private final LectureRepository lectureRepository;
+    private final ReplayService replayService; // ReplayService 주입
 
     /**
-     * 새로운 예약을 생성한다.
+     * 새로운 예약을 생성한다. 리플레이 URL이 있으면 함께 생성.
      * @param dto 예약 요청 DTO (회원ID, 강사ID, 강의ID 등)
      * @return 생성된 예약의 응답 DTO
      */
     @Transactional
     public ReservationResponseDto createReservation(ReservationRequestDto dto) {
-
+        // 기존 검증 로직
         if(dto.getMemberId() == null) throw new IllegalArgumentException("memberId is null");
         if(dto.getLectureId() == null) throw new IllegalArgumentException("lectureId is null");
         if(dto.getInstructorId() == null) throw new IllegalArgumentException("instructorId is null");
 
-        // 회원, 강사, 강의 엔티티를 각각 조회 (존재하지 않으면 예외 발생)
+        // 회원, 강사, 강의 엔티티를 각각 조회
         Member member = memberRepository.findById(dto.getMemberId())
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
@@ -65,19 +66,52 @@ public class ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        // 엔티티를 DTO로 변환하여 반환
-        return convertToDto(savedReservation);
+        // 리플레이 URL이 있으면 리플레이 생성
+        ReservationResponseDto responseDto = convertToDto(savedReservation);
+
+        if (dto.getYoutubeUrl() != null && !dto.getYoutubeUrl().trim().isEmpty()) {
+            try {
+                ReplayRequest replayRequest = new ReplayRequest();
+                replayRequest.setReservationId(savedReservation.getReservationId());
+                replayRequest.setFileUrl(dto.getYoutubeUrl());
+
+                ReplayResponse replayResponse = replayService.saveReplay(replayRequest);
+                responseDto.setReplayId(replayResponse.getReplayId());
+                responseDto.setReplayUrl(replayResponse.getFileUrl());
+            } catch (Exception e) {
+                // 리플레이 생성 실패해도 예약은 성공한 것으로 처리
+                // 로깅 추가
+                System.out.println("리플레이 생성 실패: " + e.getMessage());
+            }
+        }
+
+        return responseDto;
     }
 
     /**
-     * 예약 ID로 예약 상세 조회
+     * 예약 ID로 예약 상세 조회 (리플레이 정보 포함)
      */
     @Transactional(readOnly = true)
     public ReservationResponseDto getReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 
-        return convertToDto(reservation);
+        ReservationResponseDto dto = convertToDto(reservation);
+
+        // 리플레이 정보 조회
+        try {
+            List<ReplayResponse> replays = replayService.getReplaysByReservationId(reservationId);
+            if (!replays.isEmpty()) {
+                ReplayResponse replay = replays.get(0);  // 첫 번째 리플레이 정보만 사용
+                dto.setReplayId(replay.getReplayId());
+                dto.setReplayUrl(replay.getFileUrl());
+            }
+        } catch (Exception e) {
+            // 리플레이 정보 조회 실패해도 예약 정보는 반환
+            System.out.println("리플레이 정보 조회 실패: " + e.getMessage());
+        }
+
+        return dto;
     }
 
     /**
@@ -105,6 +139,10 @@ public class ReservationService {
         reservation.setStatus("취소");
         reservation.setCancelReason(cancelDto.getCancelReason());
         Reservation savedReservation = reservationRepository.save(reservation);
+
+        if (reservation.getReplay() != null) {
+            replayService.deleteReplay(reservation.getReplay().getReplayId());
+        }
 
         return convertToDto(savedReservation);
     }
@@ -151,6 +189,12 @@ public class ReservationService {
             dto.setLectureTitle(reservation.getLecture().getInfo().getTitle());
         } else {
             dto.setLectureTitle(""); // 정보가 없을 경우 빈 문자열로 설정
+        }
+
+        // 리플레이 정보 추가 (엔티티 관계를 통해 직접 조회)
+        if (reservation.getReplay() != null) {
+            dto.setReplayId(reservation.getReplay().getReplayId());
+            dto.setReplayUrl(reservation.getReplay().getFileUrl());
         }
 
         return dto;

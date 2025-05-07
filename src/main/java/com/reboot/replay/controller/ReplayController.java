@@ -3,6 +3,7 @@ package com.reboot.replay.controller;
 import com.reboot.replay.dto.ReplayRequest;
 import com.reboot.replay.dto.ReplayResponse;
 import com.reboot.replay.service.ReplayService;
+import com.reboot.reservation.dto.ReservationResponseDto;
 import com.reboot.reservation.service.ReservationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -146,6 +147,32 @@ public class ReplayController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/replays/" + replayId;
+        }
+    }
+
+    // ReplayController에 추가
+    @GetMapping("/reservation/add/{reservationId}")
+    public String showAddReplayForm(@PathVariable Long reservationId, Model model) {
+        try {
+            // 예약 정보 조회
+            ReservationResponseDto reservation = reservationService.getReservation(reservationId);
+            model.addAttribute("reservation", reservation);
+
+            // 이미 리플레이가 있는지 확인
+            List<ReplayResponse> existingReplays = replayService.getReplaysByReservationId(reservationId);
+            if (!existingReplays.isEmpty()) {
+                // 리플레이가 이미 있으면 리플레이 상세 페이지로 리디렉션
+                return "redirect:/replays/" + existingReplays.get(0).getReplayId();
+            }
+
+            // 새 리플레이 요청 객체 생성
+            ReplayRequest replayRequest = new ReplayRequest();
+            replayRequest.setReservationId(reservationId);
+            model.addAttribute("replayRequest", replayRequest);
+
+            return "replay/upload-form";
+        } catch (Exception e) {
+            return "redirect:/error";
         }
     }
 }

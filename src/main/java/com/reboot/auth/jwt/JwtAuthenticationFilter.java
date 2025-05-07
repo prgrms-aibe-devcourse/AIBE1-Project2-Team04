@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.jwt;
 
 import jakarta.servlet.FilterChain;
@@ -29,4 +28,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         chain.doFilter(req, res);
     }
-}*/
+}
