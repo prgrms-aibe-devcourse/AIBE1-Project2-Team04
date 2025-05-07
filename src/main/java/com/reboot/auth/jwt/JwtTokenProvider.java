@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Log
@@ -69,14 +67,22 @@ public class JwtTokenProvider {
     @SuppressWarnings("unchecked")
     public List<String> getRoles(String token) {
         try {
-            Object rolesObj = parseClaims(token).get("roles");
-            if (!(rolesObj instanceof List<?> rolesList)) {
-                throw new BadCredentialsException("Invalid roles claim in JWT");
+            Object rolesObj = parseClaims(token).get("role");
+
+            if (rolesObj instanceof String roleStr) {
+                // 단일 문자열이면 리스트로 감싸서 반환
+                return List.of(roleStr);
             }
-            return rolesList.stream()
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .toList();
+
+            if (rolesObj instanceof List<?> rolesList) {
+                return rolesList.stream()
+                        .filter(String.class::isInstance)
+                        .map(String.class::cast)
+                        .toList();
+            }
+
+            throw new BadCredentialsException("Invalid roles claim in JWT: unexpected type " + rolesObj.getClass());
+
         } catch (JwtException e) {
             throw new BadCredentialsException("Failed to extract roles from token", e);
         }
