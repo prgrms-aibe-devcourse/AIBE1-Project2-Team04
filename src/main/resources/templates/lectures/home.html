@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RE:BOOT 게임 강의 플랫폼</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fafafa;
+        }
+        .top-banner {
+            background-color: #fcf9e5;
+            padding: 12px;
+            text-align: center;
+            color: #333;
+            font-size: 14px;
+            position: relative;
+        }
+        .top-banner img {
+            height: 30px;
+            margin: 0 5px;
+        }
+        .close-banner {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            cursor: pointer;
+        }
+        .navbar {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .search-box {
+            border-radius: 20px;
+            padding-left: 15px;
+        }
+        .game-category {
+            display: inline-block;
+            text-align: center;
+            margin: 10px;
+            width: 80px;
+        }
+        .game-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 18px;
+            color: white;
+        }
+        .game-name {
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lecture-card {
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .lecture-card:hover {
+            transform: translateY(-5px);
+        }
+        .section-title {
+            font-weight: bold;
+            margin: 30px 0 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .see-all {
+            font-size: 14px;
+            color: #666;
+        }
+        .game-lol { background-color: #0a5ebb; }
+        .game-valorant { background-color: #fa4454; }
+        .game-overwatch { background-color: #f99e1a; }
+        .game-pubg { background-color: #f3db05; }
+        .game-fifa { background-color: #1fa44f; }
+        .game-starcraft { background-color: #0b2253; }
+        .game-maple { background-color: #3bb75e; }
+        .game-lost-ark { background-color: #3a76f0; }
+        .stars {
+            color: #ffc107;
+        }
+        .discount-rate {
+            color: #dc3545;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .price {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .hot-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .profile-pic {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 0;
+            overflow: hidden;
+        }
+        .dropdown-menu.show {
+            display: block;
+            width: 200px;
+        }
+        .dropdown-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        .dropdown-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #0a5ebb;
+            margin-right: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<!-- 상단 배너 -->
+<div class="top-banner">
+    강사진의 코칭을 통해 게임 실력을 크게 성장시켜 보세요!
+    <span class="close-banner">×</span>
+</div>
+
+<!-- 네비게이션 바 -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/lectures/home}">Re:Boot</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="d-flex mx-auto" style="width: 40%;" th:action="@{/lectures/search}" method="get">
+                <input class="form-control search-box" type="search" placeholder="전문 강의를 검색해보세요!" name="keyword">
+            </form>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        나무늘보_이렐리아779373753401
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 게임 필터 탭 -->
+<div class="container mt-3">
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">홈</a>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" th:href="@{'/lestures/game/' + ${gameTypes}}" role="button">
+                강의 목록
+            </a>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">강의 목록</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" th:href="@{'/lectures/detail' + ${#ids}}" role="button">
+                강사 목록
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">강사 목록</a></li>
+            </ul>
+        </li>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">맞춤 강의</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">후기</a>
+        </li>
+    </ul>
+</div>
+
+<!-- 게임 카테고리 아이콘 -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="game-category" th:each="gameType : ${gameTypes}">
+                <div class="position-relative">
+                    <div class="game-icon" th:classappend="${'game-' + gameType.toLowerCase()}">
+                        <span th:text="${#strings.substring(gameType, 0, 1)}"></span>
+                    </div>
+                    <div id="gameDropdown" class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>리그오브레전드</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>발로란트</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>전략적팀전투</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>배틀그라운드</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>오버워치</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>FC 온라인</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>철권</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>스타크래프트</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>메이플스토리</a>
+                        <a class="dropdown-item" href="#"><span class="dropdown-icon"></span>카트라이더러쉬플러스</a>
+                    </div>
+                </div>
+                <div class="game-name" th:text="${gameType}">게임명</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 컨텐츠 영역 -->
+<div class="container mt-3">
+    <!-- 인기 강의 섹션 -->
+    <div class="section-title">
+        <h4>🔥 주목받는 인기 강의</h4>
+        <a href="#" class="see-all">더보기</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 col-sm-6" th:each="lecture : ${lectures}">
+            <div class="card lecture-card">
+                <div class="position-relative">
+                    <img th:src="${lecture.imageUrl != null ? lecture.imageUrl : 'https://via.placeholder.com/300x180'}"
+                         class="card-img-top" style="height: 180px; object-fit: cover;">
+                    <div class="hot-tag" th:if="${lecture.reviewCount > 10}">HOT</div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted" th:text="${lecture.Nickname}">강사명</small>
+                        <small>
+                            <span class="stars">★</span>
+                            <span th:text="${lecture.averageRating}">4.5</span>
+                            <small class="text-muted" th:text="'(' + ${lecture.reviewCount} + ')'">(23)</small>
+                        </small>
+                    </div>
+                    <h6 class="card-title mb-2" th:text="${lecture.title}">강의 제목</h6>
+                    <div class="mb-2">
+                        <span class="badge bg-primary" th:text="${lecture.gameType}">게임</span>
+                        <span class="badge bg-secondary" th:text="${lecture.position}">포지션</span>
+                        <span class="badge bg-info" th:text="${lecture.lectureRank}">랭크</span>
+                    </div>
+                    <div>
+                        <span class="discount-rate">50%</span>
+                        <span class="price" th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA')}">49,000</span>
+                        <span class="original-price" th:text="${#numbers.formatInteger(lecture.price.multiply(new java.math.BigDecimal(2)), 3, 'COMMA')}">98,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관심사 기반 섹션 -->
+    <div class="section-title">
+        <h4>👀 관심사 기반의 추천 강의</h4>
+        <a href="#" class="see-all">더보기</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 col-sm-6" th:each="lecture : ${lectures}">
+            <div class="card lecture-card">
+                <div class="position-relative">
+                    <img th:src="${lecture.imageUrl != null ? lecture.imageUrl : 'https://via.placeholder.com/300x180'}"
+                         class="card-img-top" style="height: 180px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted" th:text="${lecture.Nickname}">강사명</small>
+                        <small>
+                            <span class="stars">★</span>
+                            <span th:text="${lecture.averageRating}">4.5</span>
+                            <small class="text-muted" th:text="'(' + ${lecture.reviewCount} + ')'">(23)</small>
+                        </small>
+                    </div>
+                    <h6 class="card-title mb-2" th:text="${lecture.title}">강의 제목</h6>
+                    <div class="mb-2">
+                        <span class="badge bg-primary" th:text="${lecture.gameType}">게임</span>
+                        <span class="badge bg-secondary" th:text="${lecture.position}">포지션</span>
+                        <span class="badge bg-info" th:text="${lecture.lectureRank}">랭크</span>
+                    </div>
+                    <div>
+                        <span class="discount-rate">50%</span>
+                        <span class="price" th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA')}">49,000</span>
+                        <span class="original-price" th:text="${#numbers.formatInteger(lecture.price.multiply(new java.math.BigDecimal(2)), 3, 'COMMA')}">98,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 게임 카테고리 클릭 시 드롭다운 메뉴 표시
+    document.querySelectorAll('.game-icon').forEach(icon => {
+        icon.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdown = document.getElementById('gameDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            dropdown.style.position = 'absolute';
+            dropdown.style.top = (this.offsetTop + this.offsetHeight + 5) + 'px';
+            dropdown.style.left = this.offsetLeft + 'px';
+            dropdown.style.zIndex = 1000;
+        });
+    });
+
+    // 배너 닫기
+    document.querySelector('.close-banner').addEventListener('click', function() {
+        document.querySelector('.top-banner').style.display = 'none';
+    });
+</script>
+</body>
+</html>

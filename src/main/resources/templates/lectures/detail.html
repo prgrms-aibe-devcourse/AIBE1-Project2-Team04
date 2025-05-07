@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RE:BOOT - 강의 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #fafafa;
+        }
+        .top-banner {
+            background-color: #fcf9e5;
+            padding: 12px;
+            text-align: center;
+            color: #333;
+            font-size: 14px;
+            position: relative;
+        }
+        .top-banner img {
+            height: 30px;
+            margin: 0 5px;
+        }
+        .close-banner {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            cursor: pointer;
+        }
+        .navbar {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .search-box {
+            border-radius: 20px;
+            padding-left: 15px;
+        }
+        .lecture-image {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .lecture-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        .lecture-meta {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .instructor-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        .instructor-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .price-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .discount-rate {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .current-price {
+            font-weight: bold;
+            font-size: 28px;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 16px;
+            margin-left: 5px;
+        }
+        .enroll-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+        .lecture-info {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #666;
+        }
+        .stars {
+            color: #ffc107;
+        }
+        .profile-pic {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .tab-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            color: #666;
+            padding: 10px 20px;
+        }
+        .nav-tabs .nav-link.active {
+            border-bottom: 3px solid #8a54ff;
+            color: #8a54ff;
+            font-weight: bold;
+            background-color: transparent;
+        }
+    </style>
+</head>
+<body>
+<!-- 상단 배너 -->
+<div class="top-banner">
+    강사진의 코칭을 통해 게임 실력을 크게 성장시켜 보세요!
+    <span class="close-banner">×</span>
+</div>
+
+<!-- 네비게이션 바 -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="#">Re:Boot</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="d-flex mx-auto" style="width: 40%;" th:action="@{/lectures/search}" method="get">
+                <input class="form-control search-box" type="search" placeholder="전문 강의를 검색해보세요!" name="keyword">
+            </form>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        나무늘보_이렐리아779373753401
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 게임 필터 탭 -->
+<div class="container mt-3">
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link" href="#">홈</a>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button">
+                강의 목록
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">강의 목록</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">
+                강사 목록
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">강사 목록</a></li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">맞춤 강의</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">후기</a>
+        </li>
+    </ul>
+</div>
+
+<!-- 강의 상세 정보 -->
+<div class="container mt-4">
+    <div class="row">
+        <!-- 좌측 컨텐츠 영역 -->
+        <div class="col-lg-8">
+            <!-- 강의 이미지 -->
+            <div class="lecture-image">
+                <img th:src="${lecture.imageUrl != null ? lecture.imageUrl : 'https://via.placeholder.com/800x450'}"
+                     alt="강의 이미지" class="img-fluid">
+            </div>
+
+            <!-- 강의 기본 정보 -->
+            <h1 class="lecture-title" th:text="${lecture.title}">강의 제목</h1>
+            <div class="lecture-meta">
+                <span class="badge bg-primary me-2" th:text="${lecture.gameType}">리그오브레전드</span>
+                <span class="badge bg-secondary me-2" th:text="${lecture.position}">미드</span>
+                <span class="badge bg-info me-2" th:text="${lecture.lectureRank}">다이아몬드</span>
+                <span class="stars">★</span>
+                <span th:text="${lecture.averageRating}">4.9</span>
+                <span class="text-muted" th:text="'(' + ${lecture.reviewCount} + ' 리뷰)'">(128 리뷰)</span>
+                <span class="ms-3 text-muted" th:text="'수강생 ' + ${lecture.totalMembers} + '명'">수강생 1,248명</span>
+            </div>
+
+            <!-- 강사 정보 -->
+            <div class="instructor-info">
+                <img src="https://via.placeholder.com/50x50" alt="강사 이미지" class="instructor-image">
+                <div>
+                    <div class="instructor-name" th:text="${lecture.Nickname}">강사 닉네임</div>
+                    <div class="text-muted">강사 소개</div>
+                </div>
+            </div>
+
+            <!-- 탭 네비게이션 -->
+            <ul class="nav nav-tabs" id="lectureTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">강의 설명</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="curriculum-tab" data-bs-toggle="tab" data-bs-target="#curriculum" type="button" role="tab">커리큘럼</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">수강평</button>
+                </li>
+            </ul>
+
+            <!-- 탭 컨텐츠 -->
+            <div class="tab-content" id="lectureTabContent">
+                <!-- 강의 설명 탭 -->
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                    <h4 class="mb-3">강의 소개</h4>
+                    <p th:text="${lecture.description}">
+                        상세한 강의 설명 내용이 이곳에 표시됩니다. 강의의 목표, 대상 수강생, 기대할 수 있는 효과 등을 설명합니다.
+                        여러 문단으로 구성될 수 있으며, 강사가 작성한 내용이 그대로 표시됩니다.
+                    </p>
+
+                    <h4 class="mt-4 mb-3">이런 분들께 추천해요</h4>
+                    <ul>
+                        <li>실버 ~ 플래티넘 티어 유저 중 미드 포지션에서 실력을 향상시키고 싶은 분</li>
+                        <li>자신의 게임 플레이를 체계적으로 분석하고 싶은 분</li>
+                        <li>효율적인 연습 방법을 통해 빠르게 실력을 향상시키고 싶은 분</li>
+                        <li>기본기를 다지고 자신만의 플레이 스타일을 찾고 싶은 분</li>
+                    </ul>
+                </div>
+
+                <!-- 커리큘럼 탭 -->
+                <div class="tab-pane fade" id="curriculum" role="tabpanel" aria-labelledby="curriculum-tab">
+                    <h4 class="mb-3">학습 내용</h4>
+                    <div class="accordion" id="accordionCurriculum">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    1. 기초 개념 마스터하기
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionCurriculum">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                기본 컨트롤과 포지셔닝
+                                            </div>
+                                            <span class="badge bg-secondary">15:30</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                효과적인 CS 먹기 기술
+                                            </div>
+                                            <span class="badge bg-secondary">12:45</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                미니맵 활용과 시야 관리
+                                            </div>
+                                            <span class="badge bg-secondary">18:20</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    2. 중급 전략과 맵 컨트롤
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionCurriculum">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                효과적인 로밍 타이밍
+                                            </div>
+                                            <span class="badge bg-secondary">20:15</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                적극적인 맵 컨트롤 방법
+                                            </div>
+                                            <span class="badge bg-secondary">16:40</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                정글러와의 협업
+                                            </div>
+                                            <span class="badge bg-secondary">14:50</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    3. 고급 마이크로/메크로 플레이
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionCurriculum">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                팀파이트 포지셔닝
+                                            </div>
+                                            <span class="badge bg-secondary">22:10</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                승리를 위한 오브젝트 운영
+                                            </div>
+                                            <span class="badge bg-secondary">19:35</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                후반 운영과 역전극 만들기
+                                            </div>
+                                            <span class="badge bg-secondary">25:00</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 수강평 탭 -->
+                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">수강생 리뷰</h4>
+                        <div>
+                            <span class="stars fs-4">★</span>
+                            <span class="fs-4" th:text="${lecture.averageRating}">4.9</span>
+                            <span class="text-muted" th:text="'(' + ${lecture.reviewCount} + ')'">128</span>
+                        </div>
+                    </div>
+
+                    <!-- 리뷰 목록 -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <strong>사용자1</strong>
+                                    <span class="text-muted ms-2">2023.11.15</span>
+                                </div>
+                                <div class="stars">★★★★★ 5.0</div>
+                            </div>
+                            <p class="card-text">정말 유용한 강의였습니다. 설명이 매우 명확하고 이해하기 쉬웠어요. 특히 맵 컨트롤 부분이 많은 도움이 되었습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <strong>사용자2</strong>
+                                    <span class="text-muted ms-2">2023.11.10</span>
+                                </div>
+                                <div class="stars">★★★★☆ 4.0</div>
+                            </div>
+                            <p class="card-text">전반적으로 좋은 강의였지만, 몇몇 부분은 조금 더 자세한 설명이 있었으면 좋겠습니다. 그래도 실력 향상에 큰 도움이 되었어요!</p>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <strong>사용자3</strong>
+                                    <span class="text-muted ms-2">2023.11.05</span>
+                                </div>
+                                <div class="stars">★★★★★ 5.0</div>
+                            </div>
+                            <p class="card-text">강사님의 노하우가 정말 많이 담겨있는 강의입니다. 이 강의 듣고 티어가 두 단계나 올랐어요! 정말 추천합니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 더보기 버튼 -->
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-primary">리뷰 더보기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 우측 사이드바 -->
+        <div class="col-lg-4">
+            <!-- 가격 정보 -->
+            <div class="price-box">
+                <div class="d-flex align-items-center">
+                    <span class="discount-rate">50%</span>
+                    <span class="current-price" th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA') + '원'}">49,000원</span>
+                    <span class="original-price" th:text="${#numbers.formatInteger(lecture.price.multiply(new java.math.BigDecimal(2)), 3, 'COMMA') + '원'}">98,000원</span>
+                </div>
+                <hr>
+                <button class="btn btn-primary enroll-btn">수강 신청하기</button>
+            </div>
+
+            <!-- 강의 정보 -->
+            <div class="lecture-info">
+                <h5 class="mb-3">강의 정보</h5>
+                <div class="info-item">
+                    <div class="info-label">게임 타입</div>
+                    <div th:text="${lecture.gameType}">리그오브레전드</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">랭크 대상</div>
+                    <div th:text="${lecture.lectureRank}">다이아몬드</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">포지션</div>
+                    <div th:text="${lecture.position}">미드</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">학습 기간</div>
+                    <div th:text="${lecture.duration + '일'}">30일</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">수강생 수</div>
+                    <div th:text="${lecture.totalMembers + '명'}">1,248명</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">등록일</div>
+                    <div th:text="${#temporals.format(lecture.createdAt, 'yyyy.MM.dd')}">2023.10.15</div>
+                </div>
+            </div>
+
+            <!-- 공유하기 -->
+            <div class="lecture-info">
+                <h5 class="mb-3">강의 공유하기</h5>
+                <div class="d-flex justify-content-around">
+                    <a href="#" class="btn btn-outline-secondary">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary">
+                        <i class="bi bi-link-45deg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 배너 닫기
+    document.querySelector('.close-banner').addEventListener('click', function() {
+        document.querySelector('.top-banner').style.display = 'none';
+    });
+</script>
+</body>
+</html>

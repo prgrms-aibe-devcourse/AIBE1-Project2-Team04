@@ -57,6 +57,8 @@ jwt:
   # openssl rand -base64 32
   secret: ${JWT_SECRET}
   expiration-ms: ${JWT_EXPIRATION_MS} # 1시간
+  access-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS} # 600000 (10분)
+  refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS} # 86400000 (1일)
 
 # Swagger
 # 여러 가지 설정 on-off 및 dev, prod 분기

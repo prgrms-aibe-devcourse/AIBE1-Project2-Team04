@@ -6,8 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-// 강의 관련 비즈니스 로직(강의 조회, 필터링, 검색 등) 처리
-// 구현체(Impl) 별도
+// 강의 조회, 필터링, 검색 인터페이스
 public interface LectureService {
 
 

@@ -2,24 +2,24 @@ package com.reboot.lecture.controller;
 
 import com.reboot.lecture.dto.LectureResponse;
 import com.reboot.lecture.service.LectureService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
 // 강의 관련 요청을 처리 (강의 목록 조회, 검색, 상세 페이지 등)
 // 강의 관련 뷰를 제공하는 엔드포인트 정의
+@Tag(name = "강의 API", description = "강의 조회, 검색, 필터링 API")
+@RestController
 @Controller
-@RequestMapping("/lectures") // 기본 경로
+@RequestMapping("/api/lectures") // 기본 경로
 @RequiredArgsConstructor
 public class LectureController {
 
@@ -50,7 +50,7 @@ public class LectureController {
             @RequestParam(defaultValue = "popularity") String sortBy,
             @RequestParam(required = false) String rank,
             @RequestParam(required = false) String position,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             Model model) {
 
         // 페이징 정보 설정 (한 페이지에 30개 항목)
@@ -87,7 +87,7 @@ public class LectureController {
     public String searchLectures(
             @RequestParam String keyword,
             @RequestParam(required = false) String gameType,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             Model model) {
 
         // 페이징 정보 설정 (한 페이지에 30개 항목)

@@ -124,4 +124,22 @@ public interface LectureRepository extends JpaRepository<Lecture, String> {
      // Instructor 정보가 함께 로드된 강의 객체
     @Query("SELECT l FROM Lecture l JOIN FETCH l.instructor WHERE l.id = :id AND l.isActive = true")
     Lecture findByIdWithInstructor(@Param("id") String id);
+
+
+
+
+
+    // <<<<<<<<<<  강의 CRUD 관련 추가 메서드  >>>>>>>>>>
+
+
+
+    // 강사 ID로 강의 목록 조회 (삭제되지 않은 강의)
+    // 특정 강사가 생성한 모든 강의를 조회하기 위한 메서드
+    List<Lecture> findByInstructorInstructorIdAndDeletedAtIsNull(Long instructorId);
+
+
+    // 강의 ID와 강사 ID로 강의 조회
+    // 특정 강사의 특정 강의를 조회하기 위한 메서드
+    @Query("SELECT l FROM Lecture l WHERE l.id = :lectureId AND l.instructor.instructorId = :instructorId AND l.deletedAt IS NULL")
+    Lecture findByIdAndInstructorId(@Param("lectureId") String lectureId, @Param("instructorId") Long instructorId);
 }

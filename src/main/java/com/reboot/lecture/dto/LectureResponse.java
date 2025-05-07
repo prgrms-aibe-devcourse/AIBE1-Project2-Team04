@@ -34,7 +34,11 @@ public class LectureResponse {
     private Integer totalMembers; // 총 수강생 수
     private LocalDateTime createdAt; // 강의 등록 시간 (최신순 정렬에 필요)
 
+    // 필드 추가
+    private Boolean isActive; // 강의 활성화 상태
 
+
+    // 메서드에 추가 -> .isActive
     public static LectureResponse fromEntity(Lecture lecture) {
         return LectureResponse.builder()
                 .id(lecture.getId()) // 강의 ID
@@ -49,6 +53,7 @@ public class LectureResponse {
                 .reviewCount(lecture.getReviewCount()) // 총 리뷰 개수
                 .totalMembers(lecture.getTotalMembers()) // 총 수강생 수
                 .createdAt(lecture.getCreatedAt()) // 생성 시간
+                .isActive(lecture.getIsActive()) // 활성화 상태
                 .build();
     }
 

@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-// 강의 서비스 인터페이스 구현
-// 강의 관련 비즈니스 로직(조회) 실제 처리
+// 강의 조회, 필터링, 검색하는 비즈니스 로직 처리
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
