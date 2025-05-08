@@ -10,8 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ProfileDTO {
+
+    // 읽기 전용, 변경 불가
     private String name;
-    private String nickname;
+    private String username;
     private String email;
-    private String phone;
+
+    // 변경 가능
+    private String nickname; // 2-50자 사이
+    private String phone; // 형식: 010-1234-5678, 선택 입력
 }

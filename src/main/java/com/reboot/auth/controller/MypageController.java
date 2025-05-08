@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.reboot.auth.repository.ReservationRepository;
-import com.reboot.auth.entity.Reservation;
+// import com.reboot.auth.entity.Reservation;
 import org.springframework.validation.annotation.Validated;
 
 import java.security.Principal;
@@ -66,21 +66,35 @@ public class MypageController {
     //프로필 수정 페이지
     @GetMapping("/profile")
     public String profileEditForm(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
         Member member = mypageService.getCurrentMember(principal.getName());
+
+        ProfileDTO profileDTO = ProfileDTO.builder()
+                .username(member.getUsername()) // 읽기 전용
+                .name(member.getName())         // 읽기 전용
+                .email(member.getEmail())       // 일기 전용
+                .nickname(member.getNickname()) // 변경 가능
+                .phone(member.getPhone())       // 변경 가능
+                .build();
+
+        model.addAttribute("profileDTO", profileDTO);
         model.addAttribute("member",member);
         return "mypage/profile-edit";
     }
 
     // 프로필 정보 업데이트
     @PostMapping("/profile")
-    public String updateProfile(@ModelAttribute @Validated ProfileDTO profileDTO,
-                                BindingResult bindingResult,
+    public String updateProfile(@ModelAttribute ProfileDTO profileDTO,
                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
                                 Principal principal,
                                 RedirectAttributes redirectAttributes) {
-        // 유효성 검증 실패 시 처리
-        if (bindingResult.hasErrors()) {
-            return "mypage/profile-edit";
+        // 간단한 유효성 검사
+        if (profileDTO.getNickname() == null || profileDTO.getNickname().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "닉네임은 필수 입력 항목입니다.");
+            return "redirect:/mypage/profile";
         }
 
         try {
@@ -93,12 +107,32 @@ public class MypageController {
     }
 
     //비밀번호 변경
+    @GetMapping("/password")
+    public String passwordChangeForm(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        Member member = mypageService.getCurrentMember(principal.getName());
+        model.addAttribute("member", member);
+        return "mypage/password-change";
+    }
+
     @PostMapping("/password")
     public String changePassword(@RequestParam("currentPassword") String currentPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmPassword") String confirmPassword,
                                  Principal principal,
                                  RedirectAttributes redirectAttributes) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        // 비밀번호 유효성 검사
+        if (newPassword == null || newPassword.length() < 8) {
+            redirectAttributes.addFlashAttribute("error", "새 비밀번호는 최소 8자 이상이어야 합니다.");
+            return "redirect:/mypage/password";
+        }
 
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");

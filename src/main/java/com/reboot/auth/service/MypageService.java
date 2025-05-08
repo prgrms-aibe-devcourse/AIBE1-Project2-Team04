@@ -38,7 +38,7 @@ public class MypageService {
     public void updateProfile(String username, ProfileDTO profileDTO, MultipartFile profileImage) throws IOException {
         Member member = getCurrentMember(username);
 
-        member.setName(profileDTO.getName());
+        //Nickname, Phone, Image 만 변경 가능
         member.setNickname(profileDTO.getNickname());
         member.setPhone(profileDTO.getPhone());
 
