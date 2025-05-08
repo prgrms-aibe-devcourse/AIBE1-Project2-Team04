@@ -136,11 +136,3 @@ public class RefundService {
                 .orElseThrow(() -> new RuntimeException("환불 내역을 찾을 수 없습니다"));
     }
 }
-
-/**
- //     * 특정 결제 건에 대한 환불 이력 목록 조회
- //     */
-//    public List<RefundHistory> getRefundHistoriesByPayment(Long paymentId) {
-//        Payment payment = getPayment(paymentId);
-//        return refundRepository.findByPayment(payment);
-//    }

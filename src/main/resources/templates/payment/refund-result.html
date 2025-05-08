@@ -13,6 +13,8 @@
     <div th:if="${message}" class="alert alert-success">
         <p th:text="${message}"></p>
         <p th:if="${refundNo}"><strong>환불 번호:</strong> <span th:text="${refundNo}"></span></p>
+        <p th:if="${status}"><strong>환불 상태:</strong> <span th:text="${status}"></span></p>
+
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger">

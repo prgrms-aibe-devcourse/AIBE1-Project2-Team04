@@ -8,8 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/refunds")
@@ -42,24 +40,12 @@ public class RefundController {
             }
 
             model.addAttribute("refundNo", refundHistory.getRefundNo());
+            model.addAttribute("status", refundHistory.getStatus());
         } catch (Exception e) {
             model.addAttribute("errorMessage", "환불 처리 중 오류: " + e.getMessage());
         }
         return "payment/refund-result";
     }
-
-//    // 결제별 환불 내역 조회
-//    @GetMapping("/history/payment/{paymentId}")
-//    public String getRefundHistoriesByPayment(@PathVariable Long paymentId, Model model) {
-//        try {
-//            List<RefundHistory> refundHistories = refundService.getRefundHistoriesByPayment(paymentId);
-//            model.addAttribute("refundHistories", refundHistories);
-//            model.addAttribute("paymentId", paymentId);
-//        } catch (Exception e) {
-//            model.addAttribute("errorMessage", "환불 내역 조회 중 오류: " + e.getMessage());
-//        }
-//        return "payment/refund-history";
-//    }
 
     // 환불 번호로 환불 내역 상세 조회
     @GetMapping("/history/refund/{refundNo}")
