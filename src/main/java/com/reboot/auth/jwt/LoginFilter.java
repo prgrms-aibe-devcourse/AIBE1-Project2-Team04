@@ -60,12 +60,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_ACCESS, accessToken));
         response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
+        response.sendRedirect("/");
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     // 로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        response.sendRedirect("/auth/login?error");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
