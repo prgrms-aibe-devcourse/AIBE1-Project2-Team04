@@ -12,9 +12,7 @@ import java.util.Optional;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
 
-    static List<Game> findByMemberId(Long memberId) {
-        return null;
-    }
+    List<Game> findByMemberId(Long memberId);
 
 
 
