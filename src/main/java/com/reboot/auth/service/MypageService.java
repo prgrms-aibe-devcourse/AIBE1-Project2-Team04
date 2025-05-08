@@ -2,7 +2,6 @@ package com.reboot.auth.service;
 
 import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Member;
-import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
@@ -10,19 +9,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Service
 public class MypageService {
 
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FileUploadService fileUploadService;
 
     public MypageService(MemberRepository memberRepository,
                          ReservationRepository reservationRepository,
-                         PasswordEncoder passwordEncoder) {
+                         PasswordEncoder passwordEncoder,
+                         FileUploadService fileUploadService) {
         this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.passwordEncoder = passwordEncoder;
+        this.fileUploadService = fileUploadService;
     }
 
     public Member getCurrentMember(String username) {
@@ -31,13 +35,18 @@ public class MypageService {
 
     // 프로필 업데이트
     @Transactional
-    public void updateProfile(String username, ProfileDTO profileDTO) {
+    public void updateProfile(String username, ProfileDTO profileDTO, MultipartFile profileImage) throws IOException {
         Member member = getCurrentMember(username);
 
         member.setName(profileDTO.getName());
         member.setNickname(profileDTO.getNickname());
         member.setPhone(profileDTO.getPhone());
 
+        // 프로필 이미지 처리
+        if (profileImage != null && !profileImage.isEmpty()) {
+            String imageUrl = fileUploadService.uploadImageToSupabase(profileImage);
+            member.setProfileImage(imageUrl);
+        }
         // 저장
         memberRepository.save(member);
     }

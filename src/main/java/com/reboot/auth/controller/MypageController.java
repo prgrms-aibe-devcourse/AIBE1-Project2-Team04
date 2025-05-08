@@ -10,11 +10,13 @@ import com.reboot.auth.repository.ReservationRepository;
 import com.reboot.auth.service.MypageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.reboot.auth.repository.ReservationRepository;
 import com.reboot.auth.entity.Reservation;
+import org.springframework.validation.annotation.Validated;
 
 import java.security.Principal;
 import java.util.List;
@@ -71,15 +73,21 @@ public class MypageController {
 
     // 프로필 정보 업데이트
     @PostMapping("/profile")
-    public String updateProfile(@ModelAttribute ProfileDTO profileDTO,
-                                @RequestParam(value = "profileImage", required = false)MultipartFile profileImage,
+    public String updateProfile(@ModelAttribute @Validated ProfileDTO profileDTO,
+                                BindingResult bindingResult,
+                                @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
                                 Principal principal,
                                 RedirectAttributes redirectAttributes) {
+        // 유효성 검증 실패 시 처리
+        if (bindingResult.hasErrors()) {
+            return "mypage/profile-edit";
+        }
+
         try {
-            mypageService.updateProfile(principal.getName(), profileDTO);
-            redirectAttributes.addAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
+            mypageService.updateProfile(principal.getName(), profileDTO, profileImage);
+            redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "프로필 업데이트 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("error", "프로필 업데이트 중 오류가 발생했습니다: " + e.getMessage());
         }
         return "redirect:/mypage";
     }
