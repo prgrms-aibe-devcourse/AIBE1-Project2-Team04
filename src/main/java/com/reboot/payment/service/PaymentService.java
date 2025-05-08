@@ -138,8 +138,8 @@ public class PaymentService {
 
     // 결제 성공 처리 메서드
     @Transactional
-    public void processPaymentSuccess(String paymentKey, String orderNo, Integer amount) {
-        System.out.println("결제 성공 처리 시작: paymentKey=" + paymentKey + ", orderNo=" + orderNo + ", amount=" + amount);
+    public void processPaymentSuccess( String orderNo, Integer amount) {
+        System.out.println("결제 성공 처리 시작: orderNo=" + orderNo + ", amount=" + amount);
 
         try {
             // 1. orderNo에서 paymentId 추출

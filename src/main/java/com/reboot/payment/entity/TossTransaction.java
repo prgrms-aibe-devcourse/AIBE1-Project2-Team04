@@ -34,7 +34,6 @@ public class TossTransaction {
     private String retCancelUrl;
     private String payToken;
     private String checkoutPage;
-    private String paymentKey;
     private String payMethod;
     private String cardCompany;
     private String bankCode;
