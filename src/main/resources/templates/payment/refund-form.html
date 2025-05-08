@@ -17,18 +17,12 @@
 
     <form th:action="@{/refunds/process}" method="post">
         <input type="hidden" name="paymentId" th:value="${payment.paymentId}">
-        <input type="hidden" name="amount" th:value="${payment.getPrice()}">
-
-<!--        <div class="form-group">-->
-<!--            <label for="amount">환불 금액 (원)</label>-->
-<!--            <input type="number" id="amount" name="amount" th:max="${payment.price}" placeholder="전액 환불은 비워두세요">-->
-<!--        </div>-->
-
+        <!-- 전액 환불 기본값 -->
+        <input type="hidden" name="amount" th:value="${payment.price}">
         <div class="form-group">
             <label for="reason">환불 사유</label>
             <textarea id="reason" name="reason" rows="3" placeholder="환불 사유를 입력하세요"></textarea>
         </div>
-
         <button type="submit" class="btn btn-primary">환불 요청</button>
         <a th:href="@{/}" class="btn btn-secondary">취소</a>
     </form>

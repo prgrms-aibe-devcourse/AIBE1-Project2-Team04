@@ -48,30 +48,18 @@ public class RefundController {
         return "payment/refund-result";
     }
 
-    // 환불 상태 확인
-    @GetMapping("/status")
-    public String refundStatus(@RequestParam Long paymentId, Model model) {
-        try {
-            model.addAttribute("refundStatus", refundService.checkRefundStatus(paymentId));
-            model.addAttribute("paymentId", paymentId);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "환불 상태 확인 중 오류: " + e.getMessage());
-        }
-        return "payment/refund-status";
-    }
-
-    // 결제별 환불 내역 조회
-    @GetMapping("/history/payment/{paymentId}")
-    public String getRefundHistoriesByPayment(@PathVariable Long paymentId, Model model) {
-        try {
-            List<RefundHistory> refundHistories = refundService.getRefundHistoriesByPayment(paymentId);
-            model.addAttribute("refundHistories", refundHistories);
-            model.addAttribute("paymentId", paymentId);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "환불 내역 조회 중 오류: " + e.getMessage());
-        }
-        return "payment/refund-history";
-    }
+//    // 결제별 환불 내역 조회
+//    @GetMapping("/history/payment/{paymentId}")
+//    public String getRefundHistoriesByPayment(@PathVariable Long paymentId, Model model) {
+//        try {
+//            List<RefundHistory> refundHistories = refundService.getRefundHistoriesByPayment(paymentId);
+//            model.addAttribute("refundHistories", refundHistories);
+//            model.addAttribute("paymentId", paymentId);
+//        } catch (Exception e) {
+//            model.addAttribute("errorMessage", "환불 내역 조회 중 오류: " + e.getMessage());
+//        }
+//        return "payment/refund-history";
+//    }
 
     // 환불 번호로 환불 내역 상세 조회
     @GetMapping("/history/refund/{refundNo}")

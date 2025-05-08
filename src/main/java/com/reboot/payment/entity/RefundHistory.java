@@ -23,8 +23,7 @@ public class RefundHistory {
     private String refundReason;
     private LocalDateTime requestedAt;
     private LocalDateTime completedAt;
-    private String status; // REFUND_REQUESTED, REFUND_PROCESSING, REFUND_COMPLETED, REFUND_FAILED
-
+    private String status;
     // 토스 API 응답 관련 필드
     private String responseCode;
     private String responseMessage;
