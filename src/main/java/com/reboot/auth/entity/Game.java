@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.entity;
 
 import jakarta.persistence.*;
@@ -26,4 +25,3 @@ public class Game {
     @Column(name = "game_position")
     private String gamePosition;
 }
-*/

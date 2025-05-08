@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.controller;
 
 import com.reboot.auth.dto.SignupDTO;
@@ -23,4 +22,3 @@ public class SignupController {
         return "redirect:/sign";
     }
 }
-*/
