@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.dto;
 
 public record SignupDTO(
@@ -8,3 +9,4 @@ public record SignupDTO(
         String nickname
 ) {
 }
+*/

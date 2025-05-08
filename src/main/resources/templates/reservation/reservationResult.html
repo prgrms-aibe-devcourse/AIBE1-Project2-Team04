@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>예약 결과</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
+        .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
         h2 { margin-top: 0; color: #333; }
         .info-row { margin-bottom: 12px; }
         .info-label { font-weight: 500; color: #555; }
@@ -16,19 +21,91 @@
         hr { margin: 24px 0; border: none; border-top: 1px solid #eee; }
         .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
         .btn { padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block; text-align: center; }
-        .btn-primary { background: #2e7dff; color: #fff; }
-        .btn-secondary { background: #f1f2f6; color: #333; }
-        .btn-danger { background: #ff4757; color: #fff; }
-        .btn-success { background: #2b8a3e; color: #fff; }
+        .btn-primary { background: #2e7dff; color: #fff; border: none; }
+        .btn-primary:hover { background: #1a68e5; }
+        .btn-secondary { background: #f1f2f6; color: #333; border: none; }
+        .btn-secondary:hover { background: #e1e2e6; }
+        .btn-danger { background: #ff4757; color: #fff; border: none; }
+        .btn-danger:hover { background: #e03131; }
+        .btn-success { background: #2b8a3e; color: #fff; border: none; }
+        .btn-success:hover { background: #237032; }
+
+        /* 리플레이 섹션 스타일 */
         .replay-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid #eee; }
         .replay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .video-container { margin-top: 16px; border-radius: 8px; overflow: hidden; }
-        .video-container iframe { width: 100%; height: 250px; border: none; }
+        .replay-list { margin-top: 20px; }
+        .replay-item { background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 16px; position: relative; }
+        .replay-item-title { font-weight: 500; margin-bottom: 8px; }
+        .replay-item-actions { position: absolute; right: 16px; top: 16px; }
+        .btn-icon { background: none; border: none; color: #2e7dff; cursor: pointer; font-size: 1.1rem; }
+        .btn-icon:hover { color: #0056b3; }
+        .btn-icon.active { color: #ff6b6b; } /* 활성화된 눈 아이콘 스타일 */
+        .replay-form { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        /* 미리보기 컨테이너 높이 증가 */
+        .preview-container { margin-top: 20px; width: 100%; height: 450px; display: none; }
+        .preview-container iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+        .replay-controls { display: flex; gap: 10px; margin-top: 15px; }
+        .replay-controls button { padding: 8px 16px; border-radius: 4px; font-size: 0.9rem; }
+        .form-label { display: block; margin: 16px 0 8px; font-weight: 500; }
+        .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
         .no-replay { background: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center; color: #666; }
+        /* 로딩 스피너 */
+        .loading-spinner { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.5); 
+            z-index: 9999; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .spinner-border { 
+            width: 3rem; 
+            height: 3rem; 
+            color: white; 
+        }
+        /* 알림 메시지 */
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        /* 페이지 로딩 효과 */
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
-<body>
+<body class="fade-in">
+<div id="loading-spinner" class="loading-spinner">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
 <div class="container">
+    <!-- 알림 메시지 -->
+    <div id="alert-success" class="alert alert-success" role="alert"></div>
+    <div id="alert-danger" class="alert alert-danger" role="alert"></div>
+
     <h2>예약 결과</h2>
 
     <div class="info-row">
@@ -58,7 +135,7 @@
 
     <div class="info-row">
         <span class="info-label">상태:</span>
-        <span class="status" th:classappend="${reservation.status == '예약완료'} ? 'status-complete' : 'status-cancel'"
+        <span class="status" th:classappend="${reservation.status == '예약완료' ? 'status-complete' : (reservation.status == '취소' ? 'status-cancel' : '')}"
               th:text="${reservation.status}"></span>
     </div>
 
@@ -79,53 +156,201 @@
         <div class="info-value" th:text="${reservation.scheduleDate ?: '-'}"></div>
     </div>
 
-    <!-- 리플레이 섹션 -->
+    <!-- 리플레이 섹션 (수정됨) -->
     <div class="replay-section">
         <div class="replay-header">
             <h3 style="margin: 0;">리플레이</h3>
-            <!-- 리플레이가 없고 예약이 취소되지 않은 경우 -->
-            <a th:if="${replay == null && reservation.status != '취소'}"
-               th:href="@{/replays/upload(reservationId=${reservation.reservationId})}"
-               class="btn btn-success btn-sm">리플레이 등록</a>
         </div>
 
-        <!-- 리플레이가 존재하는 경우 -->
-        <div th:if="${replay != null}" class="replay-content">
-            <div class="info-row">
-                <span class="info-label">리플레이 ID:</span>
-                <span class="info-value" th:text="${replay.replayId}"></span>
+        <p>이 예약에 등록된 강의 리플레이 목록입니다.</p>
+
+        <!-- 리플레이 목록 -->
+        <div id="replay-list" class="replay-list">
+            <!-- 리플레이 항목들 (있는 경우) -->
+            <div th:if="${reservation.replays != null && !reservation.replays.isEmpty()}" th:each="replay, replayStat : ${reservation.replays}" class="replay-item" th:data-id="${replay.replayId}">
+                <div class="replay-item-title" th:text="'리플레이 ' + (${replayStat.index} + 1)"></div>
+                <div th:if="${replay.date != null}" style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">
+                    <span th:text="'업로드: ' + ${#temporals.format(replay.date, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+                <div class="replay-item-actions">
+                    <button type="button" class="btn-icon view-replay" th:data-url="${replay.fileUrl}"><i class="fas fa-eye"></i></button>
+                </div>
             </div>
 
-            <div class="info-row">
-                <span class="info-label">업로드 일시:</span>
-                <span class="info-value" th:text="${#temporals.format(replay.date, 'yyyy-MM-dd HH:mm')}"></span>
-            </div>
-
-            <!-- 리플레이 비디오 표시 -->
-            <div class="video-container" th:if="${replay.youtubeEmbedUrl != null}">
-                <iframe th:src="${replay.youtubeEmbedUrl}" allowfullscreen></iframe>
-            </div>
-
-            <div class="actions" style="margin-top: 12px;">
-                <a th:href="@{/replays/{id}(id=${replay.replayId})}" class="btn btn-secondary">상세보기</a>
-                <a th:href="@{/replays/{id}/edit(id=${replay.replayId})}" class="btn btn-primary">수정</a>
+            <!-- 리플레이가 없는 경우 -->
+            <div th:if="${reservation.replays == null || reservation.replays.isEmpty()}" class="no-replay">
+                <p>아직 등록된 리플레이가 없습니다.</p>
+                <div th:if="${reservation.status != '취소'}">
+                    <p>예약 화면에서 리플레이를 추가할 수 있습니다.</p>
+                </div>
             </div>
         </div>
 
-        <!-- 리플레이가 없는 경우 -->
-        <div th:if="${replay == null}" class="no-replay">
-            <p>아직 등록된 리플레이가 없습니다.</p>
-            <div th:if="${reservation.status != '취소'}">
-                <p>리플레이를 등록하려면 위의 '리플레이 등록' 버튼을 클릭하세요.</p>
-            </div>
-        </div>
+        <!-- 미리보기 컨테이너 -->
+        <div id="preview-container" class="preview-container"></div>
     </div>
 
+    <!-- 리플레이 목록 버튼 삭제하고 필요한 버튼만 유지 -->
     <div class="actions">
-        <a th:href="@{/replays/reservation/{id}(id=${reservation.reservationId})}" class="btn btn-secondary">리플레이 목록</a>
-        <a th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}" class="btn btn-primary">다시 예약하기</a>
-        <a th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}" class="btn btn-danger">예약 취소하기</a>
+        <a id="reservation-again-btn" th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}" class="btn btn-primary">다시 예약하기</a>
+        <a id="reservation-cancel-btn" th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}" class="btn btn-danger">예약 취소하기</a>
     </div>
 </div>
+
+<script>
+    $(function() {
+        // 플래시 메시지 확인 및 표시
+        if (/*[[${message}]]*/) {
+            showSuccessAlert(/*[[${message}]]*/);
+        }
+        if (/*[[${error}]]*/) {
+            showErrorAlert(/*[[${error}]]*/);
+        }
+        
+        // 로딩 스피너 표시/숨김 함수
+        function showLoading() {
+            $("#loading-spinner").css("display", "flex");
+        }
+        
+        function hideLoading() {
+            $("#loading-spinner").hide();
+        }
+        
+        // 알림 메시지 표시 함수
+        function showSuccessAlert(message) {
+            if (message) {
+                $("#alert-success").text(message).show().delay(3000).fadeOut();
+            }
+        }
+        
+        function showErrorAlert(message) {
+            if (message) {
+                $("#alert-danger").text(message).show().delay(3000).fadeOut();
+            }
+        }
+        
+        // 페이지 로드시 캐시 초기화 확인
+        const needsRefresh = localStorage.getItem('refreshAfterSubmit');
+        if (needsRefresh === 'true') {
+            localStorage.removeItem('refreshAfterSubmit');
+            // 페이지 강제 새로고침 (캐시 무시)
+            setTimeout(function() {
+                location.reload(true);
+            }, 100);
+        }
+        
+        // 취소 후 새로고침 확인
+        const needsRefreshAfterCancel = localStorage.getItem('refreshAfterCancel');
+        if (needsRefreshAfterCancel === 'true') {
+            localStorage.removeItem('refreshAfterCancel');
+            // 페이지 강제 새로고침 (캐시 무시)
+            setTimeout(function() {
+                location.reload(true);
+            }, 100);
+        }
+
+        // 다시 예약하기 버튼 클릭 시 리플레이 URL 저장
+        $("#reservation-again-btn").click(function() {
+            showLoading();
+            
+            // 현재 리플레이 URL들 localStorage에 저장
+            const replayUrls = [];
+            $(".view-replay").each(function() {
+                replayUrls.push($(this).data("url"));
+            });
+
+            if (replayUrls.length > 0) {
+                console.log("다음 리플레이 URL들을 새 예약에 추가:", replayUrls);
+                localStorage.setItem('pendingReplayUrls', JSON.stringify(replayUrls));
+            }
+        });
+
+        // 예약 취소 버튼 클릭 시 캐시 초기화
+        $("#reservation-cancel-btn").click(function() {
+            localStorage.setItem('refreshAfterCancel', 'true');
+        });
+
+        // 토글 기능이 추가된 동적 이벤트 위임
+        $(document).on("click", ".view-replay", function(e) {
+            e.preventDefault(); // 기본 동작 방지
+
+            console.log("눈알 클릭 이벤트 발생");
+
+            const $this = $(this);
+            const url = $this.data("url");
+
+            // URL 확인
+            console.log("URL 값:", url);
+
+            const previewContainer = $("#preview-container");
+            
+            console.log("눈알 클릭됨, URL:", url);
+            
+            // 이미 같은 영상이 표시 중이면 토글(닫기)
+            if (previewContainer.is(":visible") && previewContainer.data("current-url") === url) {
+                previewContainer.hide();
+                $(".view-replay").removeClass("active");
+                return false;
+            }
+
+            // 다른 모든 눈 아이콘에서 활성화 제거
+            $(".view-replay").removeClass("active");
+            // 현재 눈 아이콘 활성화
+            $this.addClass("active");
+            
+            const embedUrl = getYouTubeEmbedUrl(url);
+            console.log("임베드 URL:", embedUrl);
+            
+            if (embedUrl) {
+                // 미리보기 생성 및 표시
+                previewContainer.html(`<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
+                previewContainer.data("current-url", url); // 현재 URL 저장
+                previewContainer.show();
+            } else {
+                alert("유효한 YouTube URL이 아닙니다.");
+            }
+            
+            return false; // 이벤트 중단
+        });
+
+        // YouTube URL을 임베드 URL로 변환하는 함수
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return null;
+            
+            let videoId = null;
+
+            // URL 디버깅
+            console.log("변환할 URL:", url);
+
+            // 일반 YouTube URL (watch?v=VIDEO_ID)
+            if (url.includes('youtube.com/watch?v=')) {
+                const urlParts = url.split('?');
+                if (urlParts.length > 1) {
+                    const urlParams = new URLSearchParams(urlParts[1]);
+                    videoId = urlParams.get('v');
+                }
+            }
+            // 단축 URL (youtu.be/VIDEO_ID)
+            else if (url.includes('youtu.be/')) {
+                const parts = url.split('youtu.be/');
+                if (parts.length > 1) {
+                    videoId = parts[1];
+                    // URL에 추가 파라미터가 있으면 제거
+                    if (videoId.includes('?')) {
+                        videoId = videoId.substring(0, videoId.indexOf('?'));
+                    }
+                }
+            }
+
+            console.log("추출된 Video ID:", videoId);
+            
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            return null;
+        }
+    });
+</script>
 </body>
 </html>

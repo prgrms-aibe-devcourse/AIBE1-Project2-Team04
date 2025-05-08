@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.service;
 
 import com.reboot.auth.entity.Member;
@@ -31,3 +32,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .build()).orElse(null);
     }
 }
+*/

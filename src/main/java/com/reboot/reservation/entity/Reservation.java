@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -45,6 +47,11 @@ public class Reservation {
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
     private Payment payment;
 
-    @OneToOne(mappedBy = "reservation")
-    private Replay replay;
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
+    @Builder.Default  // 이 어노테이션 추가
+    private List<Replay> replays = new ArrayList<>();
+
+    public Replay getReplay() {
+        return replays != null && !replays.isEmpty() ? replays.get(0) : null;
+    }
 }
