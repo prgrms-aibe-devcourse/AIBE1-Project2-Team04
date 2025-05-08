@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>환불 내역</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>환불 내역</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div th:unless="${errorMessage}">
+        <p><strong>결제 ID:</strong> <span th:text="${paymentId}"></span></p>
+
+        <div th:if="${#lists.isEmpty(refundHistories)}" class="alert alert-info">
+            <p>환불 내역이 없습니다.</p>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(refundHistories)}" class="table">
+            <thead>
+            <tr>
+                <th>환불 ID</th>
+                <th>환불 번호</th>
+                <th>환불 금액</th>
+                <th>환불 사유</th>
+                <th>요청 일시</th>
+                <th>완료 일시</th>
+                <th>상태</th>
+                <th>상세</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="refund : ${refundHistories}">
+                <td th:text="${refund.refundId}"></td>
+                <td th:text="${refund.refundNo}"></td>
+                <td th:text="${refund.refundAmount}"></td>
+                <td th:text="${refund.refundReason}"></td>
+                <td th:text="${refund.requestedAt}"></td>
+                <td th:text="${refund.completedAt}"></td>
+                <td th:text="${refund.status}"></td>
+                <td>
+                    <a th:href="@{/refunds/history/refund/{refundNo}(refundNo=${refund.refundNo})}" class="btn btn-sm btn-info">상세</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="buttons">
+        <a th:href="@{/}" class="btn btn-primary">홈으로</a>
+    </div>
+</div>
+</body>
+</html>

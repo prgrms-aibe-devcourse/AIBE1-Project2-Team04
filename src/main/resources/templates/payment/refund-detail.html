@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>환불 상세 내역</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>환불 상세 내역</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div th:unless="${errorMessage}" class="refund-detail">
+        <div class="card">
+            <div class="card-header">
+                <h2>환불 정보</h2>
+            </div>
+            <div class="card-body">
+                <p><strong>환불 ID:</strong> <span th:text="${refundHistory.refundId}"></span></p>
+                <p><strong>환불 번호:</strong> <span th:text="${refundHistory.refundNo}"></span></p>
+                <p><strong>결제 ID:</strong> <span th:text="${refundHistory.payment.paymentId}"></span></p>
+                <p><strong>환불 금액:</strong> <span th:text="${refundHistory.refundAmount}"></span>원</p>
+                <p><strong>환불 사유:</strong> <span th:text="${refundHistory.refundReason}"></span></p>
+                <p><strong>요청 일시:</strong> <span th:text="${refundHistory.requestedAt}"></span></p>
+                <p><strong>완료 일시:</strong> <span th:text="${refundHistory.completedAt}"></span></p>
+                <p><strong>상태:</strong> <span th:text="${refundHistory.status}"></span></p>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2>응답 정보</h2>
+            </div>
+            <div class="card-body">
+                <p><strong>응답 코드:</strong> <span th:text="${refundHistory.responseCode}"></span></p>
+                <p><strong>응답 메시지:</strong> <span th:text="${refundHistory.responseMessage}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="buttons mt-4">
+        <a th:href="@{/refunds/history/payment/{paymentId}(paymentId=${refundHistory.payment.paymentId})}" class="btn btn-secondary">환불 내역 목록</a>
+        <a th:href="@{/}" class="btn btn-primary">홈으로</a>
+    </div>
+</div>
+</body>
+</html>
