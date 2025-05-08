@@ -3,7 +3,6 @@ package com.reboot.auth.service;
 import com.reboot.auth.entity.RefreshToken;
 import com.reboot.auth.jwt.JwtTokenProvider;
 import com.reboot.auth.repository.RefreshTokenRepository;
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

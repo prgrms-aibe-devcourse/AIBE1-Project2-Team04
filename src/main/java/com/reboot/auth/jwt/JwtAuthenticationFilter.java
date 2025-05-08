@@ -1,7 +1,6 @@
 package com.reboot.auth.jwt;
 
 import com.reboot.auth.service.ReissueService;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
