@@ -113,7 +113,7 @@ public class LectureController {
     // 강의 상세 페이지 (특정 ID의 강의 상세 정보 표시)
     @GetMapping("/{id}") // /api/lectures/{id}
     public String lectureDetail(
-            @PathVariable String id,
+            @PathVariable Long id,
             Model model) {
         // ID로 강의 상세 정보 조회 (없으면 LectureNotFoundException 발생)
         LectureResponse lecture = lectureService.getLectureById(id);
@@ -146,7 +146,7 @@ public class LectureController {
     @Operation(summary = "게임별 강의 목록 조회", description = "특정 게임 타입에 대한 강의 목록 조회 (정렬 옵션 적용)")
     public Page<LectureResponse> getLecturesByGameType(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @PathVariable String gameType,
-            @Parameter(description = "정렬 기준 (popularity, newest, reviews, priceLow, priceHigh)")
+            @Parameter(description = "정렬 기준 (인기순, 최신순, 리뷰순, 낮은 가격순, 높은 가격순)")
             @RequestParam(defaultValue = "popularity") String sortBy,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기(강의 개수)") @RequestParam(defaultValue = "30") int size) {
@@ -202,7 +202,7 @@ public class LectureController {
     @ResponseBody
     @Operation(summary = "강의 상세 정보 조회", description = "특정 ID의 강의 상세 정보 조회")
     public LectureResponse getLectureByIdApi(
-            @Parameter(description = "강의 ID") @PathVariable String id) {
+            @Parameter(description = "강의 ID") @PathVariable Long id) {
         return lectureService.getLectureById(id);
     }
 }

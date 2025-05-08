@@ -42,5 +42,5 @@ public interface LectureService {
     // 특정 ID의 강의 상세 정보 조회
     // 강의 상세 페이지에서 특정 강의의 모든 정보를 조회할 때 사용
     // 강사 정보를 함께 로딩하여 N+1 문제를 방지
-    LectureResponse getLectureById(String id);
+    LectureResponse getLectureById(Long id);
 }

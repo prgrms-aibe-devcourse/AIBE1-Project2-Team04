@@ -41,7 +41,7 @@ public class LectureTestController {
     @Operation(summary = "테스트: 게임별 강의 목록 조회", description = "특정 게임 타입에 대한 강의 목록 조회 (정렬 옵션 적용)")
     public Page<LectureResponse> getLecturesByGameType(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @PathVariable String gameType,
-            @Parameter(description = "정렬 기준 (popularity, newest, reviews, priceLow, priceHigh)")
+            @Parameter(description = "정렬 기준 (인기순, 최신순, 리뷰순, 낮은 가격순, 높은 가격순)")
             @RequestParam(defaultValue = "popularity") String sortBy,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기(강의 개수)") @RequestParam(defaultValue = "30") int size) {
@@ -92,7 +92,7 @@ public class LectureTestController {
     @GetMapping("/detail/{id}")
     @Operation(summary = "테스트: 강의 상세 정보 조회", description = "특정 ID의 강의 상세 정보 조회")
     public LectureResponse getLectureById(
-            @Parameter(description = "강의 ID") @PathVariable String id) {
+            @Parameter(description = "강의 ID") @PathVariable Long id) {
         return lectureService.getLectureById(id);
     }
 }

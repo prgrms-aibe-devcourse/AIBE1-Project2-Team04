@@ -22,8 +22,9 @@ import java.time.LocalDateTime;
 @Builder
 public class Lecture {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id; // 강의 고유 식별자(UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "lecture_id")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id", nullable = false)

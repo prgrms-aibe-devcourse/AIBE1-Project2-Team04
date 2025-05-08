@@ -41,7 +41,8 @@ public class LectureResponse {
     // 메서드에 추가 -> .isActive
     public static LectureResponse fromEntity(Lecture lecture) {
         return LectureResponse.builder()
-                .id(lecture.getId()) // 강의 ID
+                .id(String.format("LECTURE-%d", lecture.getId())) // 강의 ID + 프리픽스 추가
+                // ex) LECTURE-1001, 1002, ...
                 .Nickname(lecture.getInstructor().getNickname()) // 강사 닉네임 (ID 아님)
                 .title(lecture.getTitle()) // 강의 제목
                 .gameType(lecture.getGameType()) // 게임 타입

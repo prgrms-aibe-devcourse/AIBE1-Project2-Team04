@@ -29,13 +29,19 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long> {
 
     // 특정 게임에 전문성을 가진 강사 목록 조회
     // LIKE 연산자를 사용하여 쉼표로 구분된 게임 목록에서 검색
-    @Query("SELECT i FROM Instructor i WHERE i.isActive = true AND " + "(i.expertiseGameTypes LIKE CONCAT('%', :gameType, '%'))")
+    @Query(value = "SELECT DISTINCT * FROM Instructor i" +
+            "WHERE i.is_active = true " +
+            "AND (:gameType IS NULL OR REGEXP_LIKE(i.expertise_game_types, REPLACE(:gameType, ' ', '|')))",
+            nativeQuery = true)
     List<Instructor> findByExpertiseGameType(@Param("gameType") String gameType);
 
 
     // 특정 포지션에 전문성을 가진 강사 목록 조회
     // LIKE 연산자를 사용하여 쉼표로 구분된 포지션 목록에서 검색
-    @Query("SELECT i FROM Instructor i WHERE i.isActive = true AND " + "(i.expertisePositions LIKE CONCAT('%', :position, '%'))")
+    @Query(value = "SELECT DISTINCT * FROM Instructor i " +
+            "WHERE i.is_active = true " +
+            "AND (:position IS NULL OR REGEXP_LIKE(i.expertise_positions, REPLACE(:position, ' ', '|')))",
+            nativeQuery = true)
     List<Instructor> findByExpertisePosition(@Param("position") String position);
 
 
@@ -60,9 +66,13 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long> {
 
 
     // 닉네임이나 소개에 특정 키워드가 포함된 강사 검색
-    @Query("SELECT i FROM Instructor i WHERE i.isActive = true AND " +
-            "(LOWER(i.nickname) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(i.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    // 공백으로 구분된 복수 키워드 지원
+    @Query(value = "SELECT DISTINCT * FROM Instructor i " +
+            "WHERE i.is_active = true " +
+            "AND (:keyword IS NULL OR " +
+            "REGEXP_LIKE(LOWER(i.nickname), LOWER(REPLACE(:keyword, ' ', '|'))) " +
+            "OR REGEXP_LIKE(LOWER(i.description), LOWER(REPLACE(:keyword, ' ', '|')) ))",
+            nativeQuery = true)
     List<Instructor> searchInstructors(@Param("keyword") String keyword);
 
 

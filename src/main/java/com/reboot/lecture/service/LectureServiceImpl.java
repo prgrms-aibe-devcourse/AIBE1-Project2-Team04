@@ -104,7 +104,7 @@ public class LectureServiceImpl implements LectureService {
 
     // 특정 강사 ID의 강의 상세 정보 조회
     @Override
-    public LectureResponse getLectureById(String id) {
+    public LectureResponse getLectureById(Long id) {
         // 강사 정보를 함께 로딩하여 N+1 문제를 방지
         Lecture lecture = lectureRepository.findByIdWithInstructor(id);
         if (lecture == null) {

@@ -67,9 +67,13 @@ public interface LectureRepository extends JpaRepository<Lecture, String> {
 
     // 제목 또는 설명에 특정 키워드가 포함된 강의 검색
     // 홈 화면 검색 기능 구현을 위한 메서드
-    @Query("SELECT l FROM Lecture l WHERE l.isActive = true " +
-            "AND (LOWER(l.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(l.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    // 공백으로 구분된 복수 키워드 검색 지원
+    @Query(value = "SELECT DISTINCT * FROM lecture l " +
+            "WHERE l.is_active = true " +
+            "AND (:keyword IS NULL OR " +
+            "REGEXP_LIKE(LOWER(l.title), LOWER(REPLACE(:keyword, ' ', '|'))) " +
+            "OR REGEXP_LIKE(LOWER(l.description), LOWER(REPLACE(:keyword, ' ', '|'))))",
+            nativeQuery = true)
     Page<Lecture> findByTitleOrDescriptionContainingAndIsActiveTrue(
             @Param("keyword") String keyword,
             Pageable pageable);
@@ -77,9 +81,12 @@ public interface LectureRepository extends JpaRepository<Lecture, String> {
 
     // 게임별 강의 키워드 검색 (제목 또는 설명)
     // 게임 카테고리 내에서 검색 기능 구현을 위한 메서드
-    @Query("SELECT l FROM Lecture l WHERE l.gameType = :gameType AND l.isActive = true " +
-            "AND (LOWER(l.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(l.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    @Query(value = "SELECT DISTINCT * FROM lecture l " +
+            "WHERE l.is_active = true AND l.game_type = :gameType " +
+            "AND (:keyword IS NULL OR " +
+            "REGEXP_LIKE(LOWER(l.title), LOWER(REPLACE(:keyword, ' ' '|'))) " +
+            "OR REGEXP_LIKE(LOWER(l.description), LOWER(REPLACE(:keyword, ' ', '|'))))",
+            nativeQuery = true)
     Page<Lecture> findByTitleOrDescriptionContainingAndGameTypeAndIsActiveTrue(
             @Param("gameType") String gameType,
             @Param("keyword") String keyword,
@@ -123,7 +130,7 @@ public interface LectureRepository extends JpaRepository<Lecture, String> {
      // 강의 ID
      // Instructor 정보가 함께 로드된 강의 객체
     @Query("SELECT l FROM Lecture l JOIN FETCH l.instructor WHERE l.id = :id AND l.isActive = true")
-    Lecture findByIdWithInstructor(@Param("id") String id);
+    Lecture findByIdWithInstructor(@Param("id") Long id);
 
 
 
@@ -141,5 +148,5 @@ public interface LectureRepository extends JpaRepository<Lecture, String> {
     // 강의 ID와 강사 ID로 강의 조회
     // 특정 강사의 특정 강의를 조회하기 위한 메서드
     @Query("SELECT l FROM Lecture l WHERE l.id = :lectureId AND l.instructor.instructorId = :instructorId AND l.deletedAt IS NULL")
-    Lecture findByIdAndInstructorId(@Param("lectureId") String lectureId, @Param("instructorId") Long instructorId);
+    Lecture findByIdAndInstructorId(@Param("lectureId") Long lectureId, @Param("instructorId") Long instructorId);
 }

@@ -48,13 +48,13 @@ public class Instructor {
     // 추가 필드 - InstructorRepository 에서 사용중인 추가 필드
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true; // 강의 활성화 상태
+    private Boolean isActive = true; // 강사 활성화 상태 (목록에서 보여줄 때 필요)
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt; // 강의 등록 시간 -> 신규 강의 표시 및 최신순 정렬에 사용
+    private LocalDateTime createdAt; // 강사(계정) 등록 시간 -> 신규 강사 표시 및 최신순 정렬 사용
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt; // 강의 삭제 시간 (소프트 삭제용)
+    private LocalDateTime deletedAt; // 강사 삭제 시간 (소프트 삭제용)
 
     @Column(name = "total_members")
     private Integer totalMembers; // 총 수강생 수

@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LectureDto {
-    private String id; // 강의 고유 식별자
-    private String instructorId; // 강사 고유 식별자
+    private Long id; // 강의 고유 식별자
+    private Long instructorId; // 강사 고유 식별자
     private String instructorName; // 강사 이름
     private String title; // 강의 제목
     private String description; // 강의 상세 설명
