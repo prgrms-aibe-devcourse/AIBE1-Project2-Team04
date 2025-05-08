@@ -1,8 +1,8 @@
 package com.reboot.lecture.controller;
 
 import com.reboot.auth.entity.Instructor;
-import com.reboot.lecture.dto.LectureRequest;
-import com.reboot.lecture.dto.LectureResponse;
+import com.reboot.lecture.dto.LectureRequestDto;
+import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.service.InstructorLectureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,13 +22,13 @@ public class InstructorLectureTestController {
 
     @GetMapping
     @Operation(summary = "테스트: 강사 강의 목록 조회", description = "지정한 강사의 모든 강의 조회")
-    public List<LectureResponse> getMyLectures(@RequestParam Long instructorId) {
+    public List<LectureResponseDto> getMyLectures(@RequestParam Long instructorId) {
         return instructorLectureService.getLecturesByInstructor(instructorId);
     }
 
     @GetMapping("/{lectureId}")
     @Operation(summary = "테스트: 강의 상세 조회", description = "강사 ID와 강의 ID로 강의 상세 정보 조회")
-    public LectureResponse getLecture(
+    public LectureResponseDto getLecture(
             @PathVariable String lectureId,
             @RequestParam Long instructorId) {
         return instructorLectureService.getLectureByIdAndInstructor(lectureId, instructorId);
@@ -36,9 +36,9 @@ public class InstructorLectureTestController {
 
     @PostMapping
     @Operation(summary = "테스트: 새 강의 생성", description = "지정한 강사로 새 강의 생성")
-    public LectureResponse createLecture(
+    public LectureResponseDto createLecture(
             @RequestParam Long instructorId,
-            @RequestBody LectureRequest request) {
+            @RequestBody LectureRequestDto request) {
         // Instructor 객체를 직접 생성해서 전달
         Instructor instructor = new Instructor();
         instructor.setInstructorId(instructorId);
@@ -47,10 +47,10 @@ public class InstructorLectureTestController {
 
     @PutMapping("/{lectureId}")
     @Operation(summary = "테스트: 강의 수정", description = "강사 ID와 강의 ID로 강의 정보 수정")
-    public LectureResponse updateLecture(
+    public LectureResponseDto updateLecture(
             @PathVariable String lectureId,
             @RequestParam Long instructorId,
-            @RequestBody LectureRequest request) {
+            @RequestBody LectureRequestDto request) {
         return instructorLectureService.updateLecture(lectureId, request, instructorId);
     }
 
@@ -64,7 +64,7 @@ public class InstructorLectureTestController {
 
     @PatchMapping("/{lectureId}/toggle-active")
     @Operation(summary = "테스트: 활성화/비활성화 토글", description = "강의 활성화 상태 토글 (본인 강의만)")
-    public LectureResponse toggleLectureActive(
+    public LectureResponseDto toggleLectureActive(
             @PathVariable String lectureId,
             @RequestParam Long instructorId) {
         return instructorLectureService.toggleLectureActive(lectureId, instructorId);

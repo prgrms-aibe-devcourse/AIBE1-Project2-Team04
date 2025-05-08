@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class Instructor {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "instructor_id")
     private Long instructorId;
 

@@ -2,8 +2,8 @@ package com.reboot.lecture.controller;
 
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.service.AuthService;
-import com.reboot.lecture.dto.LectureRequest;
-import com.reboot.lecture.dto.LectureResponse;
+import com.reboot.lecture.dto.LectureRequestDto;
+import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.service.InstructorLectureService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,9 +34,9 @@ public class InstructorLectureController {
     // 현재 로그인한 강사의 모든 강의 목록 조회
     @GetMapping
     @Operation(summary = "강사 강의 목록 조회", description = "지정한 강사의 모든 강의 조회")
-    public ResponseEntity<List<LectureResponse>> getMyLectures() {
+    public ResponseEntity<List<LectureResponseDto>> getMyLectures() {
         Instructor instructor = authService.getCurrentInstructor();
-        List<LectureResponse> lectures = instructorLectureService.getLecturesByInstructor(instructor.getInstructorId());
+        List<LectureResponseDto> lectures = instructorLectureService.getLecturesByInstructor(instructor.getInstructorId());
         return ResponseEntity.ok(lectures);
     }
 
@@ -44,9 +44,9 @@ public class InstructorLectureController {
     // 강의 상세 정보 조회 (본인 강의만)
     @GetMapping("/{lectureId}")
     @Operation(summary = "강의 상세 조회", description = "강사 ID와 강의 ID로 강의 상세 정보 조회")
-    public ResponseEntity<LectureResponse> getLecture(@PathVariable String lectureId) {
+    public ResponseEntity<LectureResponseDto> getLecture(@PathVariable String lectureId) {
         Instructor instructor = authService.getCurrentInstructor();
-        LectureResponse lecture = instructorLectureService.getLectureByIdAndInstructor(
+        LectureResponseDto lecture = instructorLectureService.getLectureByIdAndInstructor(
                 lectureId, instructor.getInstructorId());
         return ResponseEntity.ok(lecture);
     }
@@ -55,9 +55,9 @@ public class InstructorLectureController {
     // 새 강의 생성
     @PostMapping
     @Operation(summary = "새 강의 생성", description = "지정한 강사로 새 강의 생성")
-    public ResponseEntity<LectureResponse> createLecture(@RequestBody LectureRequest request) {
+    public ResponseEntity<LectureResponseDto> createLecture(@RequestBody LectureRequestDto request) {
         Instructor instructor = authService.getCurrentInstructor();
-        LectureResponse createdLecture = instructorLectureService.createLecture(request, instructor);
+        LectureResponseDto createdLecture = instructorLectureService.createLecture(request, instructor);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLecture);
     }
 
@@ -65,12 +65,12 @@ public class InstructorLectureController {
     // 기존 강의 수정 (본인 강의만)
     @PutMapping("/{lectureId}")
     @Operation(summary = "강의 수정", description = "강사 ID와 강의 ID로 강의 정보 수정")
-    public ResponseEntity<LectureResponse> updateLecture(
+    public ResponseEntity<LectureResponseDto> updateLecture(
             @PathVariable String lectureId,
-            @RequestBody LectureRequest request) {
+            @RequestBody LectureRequestDto request) {
 
         Instructor instructor = authService.getCurrentInstructor();
-        LectureResponse updatedLecture = instructorLectureService.updateLecture(
+        LectureResponseDto updatedLecture = instructorLectureService.updateLecture(
                 lectureId, request, instructor.getInstructorId());
         return ResponseEntity.ok(updatedLecture);
     }
@@ -89,9 +89,9 @@ public class InstructorLectureController {
     // 강의 활성화/비활성화 토글 (본인 강의만)
     @PatchMapping("/{lectureId}/toggle-active")
     @Operation(summary = "활성화/비활성화 토글", description = "강의 활성화 상태 토글 (본인 강의만)")
-    public ResponseEntity<LectureResponse> toggleLectureActive(@PathVariable String lectureId) {
+    public ResponseEntity<LectureResponseDto> toggleLectureActive(@PathVariable String lectureId) {
         Instructor instructor = authService.getCurrentInstructor();
-        LectureResponse lecture = instructorLectureService.toggleLectureActive(
+        LectureResponseDto lecture = instructorLectureService.toggleLectureActive(
                 lectureId, instructor.getInstructorId());
         return ResponseEntity.ok(lecture);
     }

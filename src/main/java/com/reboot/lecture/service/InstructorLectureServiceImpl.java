@@ -1,8 +1,8 @@
 package com.reboot.lecture.service;
 
 import com.reboot.auth.entity.Instructor;
-import com.reboot.lecture.dto.LectureRequest;
-import com.reboot.lecture.dto.LectureResponse;
+import com.reboot.lecture.dto.LectureRequestDto;
+import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.entity.Lecture;
 import com.reboot.lecture.exception.LectureNotFoundException;
 import com.reboot.lecture.exception.UnauthorizedLectureAccessException;
@@ -29,11 +29,11 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     // 삭제되지 않은 모든 강의 포함 (활성/비활성 모두)
     @Override
     @Transactional(readOnly = true)
-    public List<LectureResponse> getLecturesByInstructor(Long instructorId) {
+    public List<LectureResponseDto> getLecturesByInstructor(Long instructorId) {
 
         List<Lecture> lectures = lectureRepository.findByInstructorInstructorIdAndDeletedAtIsNull(instructorId);
         return lectures.stream()
-                .map(LectureResponse::fromEntity)
+                .map(LectureResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -42,21 +42,21 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     // 권한 검증 후 조회
     @Override
     @Transactional(readOnly = true)
-    public LectureResponse getLectureByIdAndInstructor(String lectureId, Long instructorId) {
+    public LectureResponseDto getLectureByIdAndInstructor(String lectureId, Long instructorId) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
         // 권한 검증: 본인 강의인지 확인
         validateLectureOwnership(lecture, instructorId);
 
-        return LectureResponse.fromEntity(lecture);
+        return LectureResponseDto.fromEntity(lecture);
     }
 
 
     // 새 강의 생성
     @Override
     @Transactional
-    public LectureResponse createLecture(LectureRequest request, Instructor instructor) {
+    public LectureResponseDto createLecture(LectureRequestDto request, Instructor instructor) {
         Lecture lecture = request.toEntity();
 
         // 강사 정보 설정
@@ -65,7 +65,7 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
         // 저장
         Lecture savedLecture = lectureRepository.save(lecture);
 
-        return LectureResponse.fromEntity(savedLecture);
+        return LectureResponseDto.fromEntity(savedLecture);
     }
 
 
@@ -73,7 +73,7 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     // 권한 검증 후 수정
     @Override
     @Transactional
-    public LectureResponse updateLecture(String lectureId, LectureRequest request, Long instructorId) {
+    public LectureResponseDto updateLecture(String lectureId, LectureRequestDto request, Long instructorId) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
@@ -93,7 +93,7 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
         // 저장
         Lecture updatedLecture = lectureRepository.save(lecture);
 
-        return LectureResponse.fromEntity(updatedLecture);
+        return LectureResponseDto.fromEntity(updatedLecture);
     }
 
 
@@ -120,7 +120,7 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     // 권한 검증 후 토글
     @Override
     @Transactional
-    public LectureResponse toggleLectureActive(String lectureId, Long instructorId) {
+    public LectureResponseDto toggleLectureActive(String lectureId, Long instructorId) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
@@ -133,7 +133,7 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
         // 저장
         Lecture updatedLecture = lectureRepository.save(lecture);
 
-        return LectureResponse.fromEntity(updatedLecture);
+        return LectureResponseDto.fromEntity(updatedLecture);
     }
 
 

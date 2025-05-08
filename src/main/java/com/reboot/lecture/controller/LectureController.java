@@ -1,6 +1,6 @@
 package com.reboot.lecture.controller;
 
-import com.reboot.lecture.dto.LectureResponse;
+import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.service.LectureService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,7 @@ public class LectureController {
     @GetMapping("/home") // /api/lectures/home
     public String home(Model model) {
         // 인기 강의 목록 조회 (인기순 정렬)
-        List<LectureResponse> popularLectures = lectureService.getActivePopularLectures();
+        List<LectureResponseDto> popularLectures = lectureService.getActivePopularLectures();
         // 활성화된 모든 게임 타입 목록 조회 (네비게이션 메뉴)
         List<String> gameTypes = lectureService.getAllActiveGameTypes();
 
@@ -56,7 +56,7 @@ public class LectureController {
         // 페이징 정보 설정 (한 페이지에 30개 항목)
         Pageable pageable = PageRequest.of(page, 30);
 
-        Page<LectureResponse> lectures;
+        Page<LectureResponseDto> lectures;
         if (rank != null || position != null) {
             // 필터가 적용된 경우 (랭크 또는 포지션)
             lectures = lectureService.getFilteredLectures(gameType, rank, position, sortBy, pageable);
@@ -88,7 +88,7 @@ public class LectureController {
 
         // 페이징 정보 설정 (한 페이지에 30개 항목)
         Pageable pageable = PageRequest.of(page, 30);
-        Page<LectureResponse> searchResults;
+        Page<LectureResponseDto> searchResults;
 
         // 게임 타입이 지정된 경우와 전체 검색의 경우를 구분하여 처리
         if (gameType != null && !gameType.isEmpty()) {
@@ -116,7 +116,7 @@ public class LectureController {
             @PathVariable Long id,
             Model model) {
         // ID로 강의 상세 정보 조회 (없으면 LectureNotFoundException 발생)
-        LectureResponse lecture = lectureService.getLectureById(id);
+        LectureResponseDto lecture = lectureService.getLectureById(id);
         model.addAttribute("lecture", lecture);
 
         return "lectures/detail";
@@ -127,14 +127,14 @@ public class LectureController {
     @GetMapping("/popular")
     @ResponseBody
     @Operation(summary = "인기 강의 목록 조회", description = "인기순으로 정렬된 활성화된 강의 목록 조회")
-    public List<LectureResponse> getActivePopularLectures() {
+    public List<LectureResponseDto> getActivePopularLectures() {
         return lectureService.getActivePopularLectures();
     }
 
     @GetMapping
     @ResponseBody
     @Operation(summary = "전체 강의 목록 조회", description = "페이징 처리된 모든 활성화된 강의 목록 조회")
-    public Page<LectureResponse> getAllActiveLectures(
+    public Page<LectureResponseDto> getAllActiveLectures(
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기") @RequestParam(defaultValue = "30") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -144,7 +144,7 @@ public class LectureController {
     @GetMapping("/lecture-list/game/{gameType}")
     @ResponseBody
     @Operation(summary = "게임별 강의 목록 조회", description = "특정 게임 타입에 대한 강의 목록 조회 (정렬 옵션 적용)")
-    public Page<LectureResponse> getLecturesByGameType(
+    public Page<LectureResponseDto> getLecturesByGameType(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @PathVariable String gameType,
             @Parameter(description = "정렬 기준 (인기순, 최신순, 리뷰순, 낮은 가격순, 높은 가격순)")
             @RequestParam(defaultValue = "popularity") String sortBy,
@@ -157,7 +157,7 @@ public class LectureController {
     @GetMapping("/filtered")
     @ResponseBody
     @Operation(summary = "필터링된 강의 목록 조회", description = "게임 타입, 랭크, 포지션 등으로 필터링된 강의 목록 조회")
-    public Page<LectureResponse> getFilteredLectures(
+    public Page<LectureResponseDto> getFilteredLectures(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @RequestParam String gameType,
             @Parameter(description = "랭크 (예: bronze, silver, gold)") @RequestParam(required = false) String lectureRank,
             @Parameter(description = "포지션 (예: top, jungle, mid)") @RequestParam(required = false) String position,
@@ -171,7 +171,7 @@ public class LectureController {
     @GetMapping("/search-api")
     @ResponseBody
     @Operation(summary = "강의 검색", description = "키워드로 강의 검색 (제목, 설명에서 검색)")
-    public Page<LectureResponse> searchLecturesApi(
+    public Page<LectureResponseDto> searchLecturesApi(
             @Parameter(description = "검색 키워드") @RequestParam String keyword,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기(강의 개수)") @RequestParam(defaultValue = "30") int size) {
@@ -182,7 +182,7 @@ public class LectureController {
     @GetMapping("/search-api/game/{gameType}")
     @ResponseBody
     @Operation(summary = "게임별 강의 검색", description = "특정 게임 타입 내에서 키워드로 강의 검색")
-    public Page<LectureResponse> searchLecturesByGameTypeApi(
+    public Page<LectureResponseDto> searchLecturesByGameTypeApi(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @PathVariable String gameType,
             @Parameter(description = "검색 키워드") @RequestParam String keyword,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
@@ -201,7 +201,7 @@ public class LectureController {
     @GetMapping("/detail/{id}")
     @ResponseBody
     @Operation(summary = "강의 상세 정보 조회", description = "특정 ID의 강의 상세 정보 조회")
-    public LectureResponse getLectureByIdApi(
+    public LectureResponseDto getLectureByIdApi(
             @Parameter(description = "강의 ID") @PathVariable Long id) {
         return lectureService.getLectureById(id);
     }
