@@ -83,6 +83,7 @@
     <div class="replay-section">
         <div class="replay-header">
             <h3 style="margin: 0;">리플레이</h3>
+            <!-- 리플레이가 없고 예약이 취소되지 않은 경우 -->
             <a th:if="${replay == null && reservation.status != '취소'}"
                th:href="@{/replays/upload(reservationId=${reservation.reservationId})}"
                class="btn btn-success btn-sm">리플레이 등록</a>

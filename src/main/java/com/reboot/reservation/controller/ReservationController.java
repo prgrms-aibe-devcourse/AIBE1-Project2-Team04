@@ -1,6 +1,7 @@
 package com.reboot.reservation.controller;
 
 import com.reboot.lecture.entity.Lecture;
+import com.reboot.replay.dto.ReplayRequest;
 import com.reboot.replay.dto.ReplayResponse;
 import com.reboot.replay.service.ReplayService;
 import com.reboot.reservation.dto.ReservationCancelDto;
@@ -10,10 +11,12 @@ import com.reboot.auth.entity.Member;
 import com.reboot.lecture.service.LectureService;
 import com.reboot.auth.service.MemberService;
 import com.reboot.reservation.service.ReservationService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -63,21 +66,30 @@ public class ReservationController {
      * 예약 생성 요청 처리
      */
     @PostMapping
-    public String createReservation(@ModelAttribute ReservationRequestDto dto, Model model) {
-        ReservationResponseDto reservation = reservationService.createReservation(dto);
-        model.addAttribute("reservation", reservation);
+    public String createReservation(@ModelAttribute ReservationRequestDto requestDto,
+                                    @RequestParam(required = false) List<String> replayUrls,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            // 예약 생성
+            ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
 
-        // 리플레이 정보 추가 (있는 경우)
-        if (reservation.getReplayId() != null) {
-            try {
-                ReplayResponse replay = replayService.getReplay(reservation.getReplayId());
-                model.addAttribute("replay", replay);
-            } catch (Exception e) {
-                // 리플레이 정보 조회 실패시 무시
+            // 리플레이 URLs가 있으면 처리
+            if (replayUrls != null && !replayUrls.isEmpty()) {
+                for (String url : replayUrls) {
+                    ReplayRequest replayRequest = new ReplayRequest();
+                    replayRequest.setReservationId(responseDto.getReservationId());
+                    replayRequest.setFileUrl(url);
+                    replayService.saveReplay(replayRequest);
+                }
             }
-        }
 
-        return "reservation/reservationResult";
+            // 리다이렉트 시 예약 ID 전달
+            return "redirect:/reservation/" + responseDto.getReservationId();
+        } catch (Exception e) {
+            // 오류 처리
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/reservation/new?lectureId=" + requestDto.getLectureId() + "&memberId=" + requestDto.getMemberId();
+        }
     }
 
     /**
@@ -88,6 +100,26 @@ public class ReservationController {
     public String cancelForm(@PathVariable Long id, Model model) {
         model.addAttribute("reservationCancelDto", new ReservationCancelDto(id, null));
         return "reservation/reservationCancel";
+    }
+
+    @GetMapping("/{reservationId}")
+    public String viewReservation(@PathVariable Long reservationId, Model model) {
+        try {
+            // 예약 정보 로드
+            ReservationResponseDto reservation = reservationService.getReservation(reservationId);
+            model.addAttribute("reservation", reservation);
+
+            // 예약에 연결된 리플레이 로드 (중요!)
+            List<ReplayResponse> replays = replayService.getReplaysByReservationId(reservationId);
+            if (!replays.isEmpty()) {
+                model.addAttribute("replay", replays.get(0)); // 첫 번째 리플레이 표시
+                model.addAttribute("allReplays", replays); // 모든 리플레이 목록도 추가
+            }
+
+            return "reservation/view";
+        } catch (EntityNotFoundException e) {
+            return "redirect:/error";
+        }
     }
 
     /**

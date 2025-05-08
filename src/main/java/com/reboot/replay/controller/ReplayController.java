@@ -44,6 +44,32 @@ public class ReplayController {
         return "replay/upload-form";
     }
 
+    // ReplayController에 추가
+    @GetMapping("/reservation/add/{reservationId}")
+    public String showAddReplayForm(@PathVariable Long reservationId, Model model) {
+        try {
+            // 예약 정보 조회
+            ReservationResponseDto reservation = reservationService.getReservation(reservationId);
+            model.addAttribute("reservation", reservation);
+
+            // 이미 리플레이가 있는지 확인
+            List<ReplayResponse> existingReplays = replayService.getReplaysByReservationId(reservationId);
+            if (!existingReplays.isEmpty()) {
+                // 리플레이가 이미 있는 경우, 템플릿에서 처리하기 위해 모델에 추가
+                model.addAttribute("existingReplays", existingReplays);
+            }
+
+            // 새 리플레이 요청 객체 생성
+            ReplayRequest replayRequest = new ReplayRequest();
+            replayRequest.setReservationId(reservationId);
+            model.addAttribute("replayRequest", replayRequest);
+
+            return "replay/upload-form";
+        } catch (Exception e) {
+            return "redirect:/error";
+        }
+    }
+
     @GetMapping
     public String listAllReplays(Model model) {
         List<ReplayResponse> replays = replayService.getAllReplays();
@@ -154,32 +180,6 @@ public class ReplayController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/replays/" + replayId;
-        }
-    }
-
-    // ReplayController에 추가
-    @GetMapping("/reservation/add/{reservationId}")
-    public String showAddReplayForm(@PathVariable Long reservationId, Model model) {
-        try {
-            // 예약 정보 조회
-            ReservationResponseDto reservation = reservationService.getReservation(reservationId);
-            model.addAttribute("reservation", reservation);
-
-            // 이미 리플레이가 있는지 확인
-            List<ReplayResponse> existingReplays = replayService.getReplaysByReservationId(reservationId);
-            if (!existingReplays.isEmpty()) {
-                // 리플레이가 이미 있으면 리플레이 상세 페이지로 리디렉션
-                return "redirect:/replays/" + existingReplays.get(0).getReplayId();
-            }
-
-            // 새 리플레이 요청 객체 생성
-            ReplayRequest replayRequest = new ReplayRequest();
-            replayRequest.setReservationId(reservationId);
-            model.addAttribute("replayRequest", replayRequest);
-
-            return "replay/upload-form";
-        } catch (Exception e) {
-            return "redirect:/error";
         }
     }
 }

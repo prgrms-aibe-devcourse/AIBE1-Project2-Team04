@@ -154,9 +154,9 @@
             }
         });
 
-        // 리플레이 저장 버튼 클릭 이벤트
-        $("#save-replay-btn").click(function() {
-            const youtubeUrl = $("#youtube-url").val().trim();
+        // 저장 버튼 클릭 이벤트
+        $("#save-replay-btn").click(function() {  // id를 "saveReplayBtn"에서 "save-replay-btn"으로 수정
+            const youtubeUrl = $("#youtube-url").val().trim();  // id를 "youtubeUrl"에서 "youtube-url"로 수정
             if (!youtubeUrl) {
                 alert("YouTube URL을 입력해주세요.");
                 return;
@@ -180,11 +180,26 @@
             $("#replay-list").append(replayItem);
             $("#new-replay-form").hide();
 
-            // 폼에 hidden input 추가 (실제 저장을 위해)
-            const hiddenInput = `<input type="hidden" name="replayUrls[]" value="${youtubeUrl}">`;
-            $("#reservationForm").append(hiddenInput);
+            // 폼에 hidden input 추가 (수정된 방식)
+            $("<input>").attr({
+                type: "hidden",
+                name: "replayRequests[0].fileUrl",  // 이름 형식 변경
+                value: youtubeUrl
+            }).appendTo("#reservationForm");
+
+            // 여러 개의 리플레이가 추가되었을 경우 인덱스 조정
+            updateReplayInputIndices();
         });
 
+        // 리플레이 input 필드의 인덱스 업데이트 함수 추가
+        function updateReplayInputIndices() {
+            const replayInputs = $("#reservationForm input[name^='replayRequests']");
+            replayInputs.each(function(index) {
+                const oldName = $(this).attr("name");
+                const newName = oldName.replace(/\d+/, index);
+                $(this).attr("name", newName);
+            });
+        }
         // 동적으로 추가된 요소에 대한 이벤트 위임
         $(document).on("click", ".view-replay", function() {
             const url = $(this).data("url");
@@ -218,7 +233,13 @@
             if (confirm("이 리플레이를 삭제하시겠습니까?")) {
                 const id = $(this).data("id");
                 $(`.replay-item[data-id="${id}"]`).remove();
-                $(`input[name="replayUrls[]"][value="${id}"]`).remove();
+
+                // 수정된 방식으로 hidden input 제거
+                const url = $(this).closest(".replay-item").find(".view-replay").data("url");
+                $(`input[name^='replayRequests'][value='${url}']`).remove();
+
+                // 인덱스 재조정
+                updateReplayInputIndices();
             }
         });
 
