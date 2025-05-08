@@ -3,7 +3,6 @@ package com.reboot.auth.controller;
 import com.reboot.auth.jwt.JwtTokenProvider;
 import com.reboot.auth.service.RefreshTokenService;
 import com.reboot.auth.service.ReissueService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -11,9 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.time.Instant;
-import java.util.Date;
 
 @Controller
 @ResponseBody
@@ -47,14 +43,11 @@ public class ReissueController {
             refreshTokenService.deleteRefreshToken(token);
             refreshTokenService.addRefreshEntity(username, newRefresh);
 
-            response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, newAccess);
+            response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_ACCESS, newAccess));
             response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_REFRESH, newRefresh));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-    // refresh token 추출
-
 }

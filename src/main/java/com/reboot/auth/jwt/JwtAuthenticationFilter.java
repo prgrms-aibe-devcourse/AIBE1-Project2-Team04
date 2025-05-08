@@ -1,5 +1,6 @@
 package com.reboot.auth.jwt;
 
+import com.reboot.auth.service.ReissueService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,25 +17,30 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final ReissueService reissueService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
         String accessToken = jwtTokenProvider.getTokenFromCookies(jwtTokenProvider.CATEGORY_ACCESS, req);
+        String refreshToken = jwtTokenProvider.getTokenFromCookies(jwtTokenProvider.CATEGORY_REFRESH, req);
 
-        if (accessToken == null) {
+        if (isStringEmpty(accessToken) || isStringEmpty(refreshToken)) {
             chain.doFilter(req, res);
             return;
         }
 
         // 만료 여부 확인
-        try {
-            jwtTokenProvider.validateToken(accessToken);
-        } catch (ExpiredJwtException e) {
-            PrintWriter writer = res.getWriter();
-            writer.println("Expired Access Token");
+        if (!jwtTokenProvider.validateToken(accessToken)){
+            accessToken = reissueService.reissueAccessToken(refreshToken);
 
-            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            if(isStringEmpty(accessToken)){
+                PrintWriter writer = res.getWriter();
+                writer.println("Invalid Refresh Token");
+
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            res.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_ACCESS, accessToken));
         }
 
         String category = jwtTokenProvider.getCategory(accessToken);
@@ -50,5 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         chain.doFilter(req, res);
+    }
+
+    private boolean isStringEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 }
