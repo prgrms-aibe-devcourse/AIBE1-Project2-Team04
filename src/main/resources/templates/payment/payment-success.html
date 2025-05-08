@@ -6,6 +6,6 @@
 <body>
 <h2>결제가 성공적으로 완료되었습니다!</h2>
 <a href="/">메인으로 돌아가기</a><br>
-<a href="/payments/cancel">결제 취소하기</a>
+<a th:href="@{/refunds/form(paymentId=${paymentId})}">결제 취소하기</a>
 </body>
 </html>

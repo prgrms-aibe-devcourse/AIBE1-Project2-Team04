@@ -36,7 +36,6 @@ public class PaymentController {
             @RequestParam(required = false) String payMethod, // 결제수단
             @RequestParam(required = false) String cardCompany, // 카드사 코드 (카드 결제시)
             @RequestParam(required = false) String bankCode,   // 은행 코드 (토스머니 결제시)
-//            @RequestParam(required = false) String paymentKey, // 결제 성공 시 결제키
             @RequestParam(required = false) Integer amount,    // 결제 금액
             Model model
     ) {
@@ -58,6 +57,13 @@ public class PaymentController {
             try {
                 // Payment 상태 및 TossTransaction 모두 반영
                 paymentService.processPaymentSuccess(orderNo, amount);
+
+                // orderNo에서 paymentId 추출
+                String[] parts = orderNo.split("-");
+                Long paymentId = Long.parseLong(parts[0]);
+
+                // paymentId를 모델에 추가
+                model.addAttribute("paymentId", paymentId);
 
                 // 기타 결제 상세 내역도 업데이트
                 paymentService.saveTossTransaction(orderNo, status, payMethod, cardCompany, bankCode);
