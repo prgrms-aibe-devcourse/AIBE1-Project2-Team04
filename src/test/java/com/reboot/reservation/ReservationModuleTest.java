@@ -104,7 +104,6 @@ public class ReservationModuleTest {
         testInstructor = new Instructor();
         testInstructor.setInstructorId(1L);
         testInstructor.setMember(instructorMember);
-        testInstructor.setMemberId(instructorMember.getMemberId());
         testInstructor.setCareer("10년 경력의 프로게이머");
         testInstructor.setDescription("친절하게 가르칩니다");
         testInstructor.setReviewNum(5);
@@ -222,7 +221,7 @@ public class ReservationModuleTest {
                 .build();
 
         List<Reservation> reservationList = Arrays.asList(testReservation, secondReservation);
-        when(reservationRepository.findByMemberMemberId(1L)).thenReturn(reservationList);
+        when(reservationRepository.findByMember_MemberId(1L)).thenReturn(reservationList);
 
         // When
         List<ReservationResponseDto> responseDtos = reservationService.getReservationsByMember(1L);

@@ -1,5 +1,8 @@
 package com.reboot.reservation.service;
 
+import com.reboot.replay.entity.Replay;
+import com.reboot.replay.repository.ReplayRepository;
+import com.reboot.reservation.dto.ReplayResponseDto;
 import com.reboot.reservation.dto.ReservationCancelDto;
 import com.reboot.reservation.dto.ReservationRequestDto;
 import com.reboot.reservation.dto.ReservationResponseDto;
@@ -14,6 +17,7 @@ import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.lecture.repository.LectureRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.reservation.repository.ReservationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,8 +28,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final ReplayRepository replayRepository;
     private final MemberRepository memberRepository;
     private final InstructorRepository instructorRepository;
     private final LectureRepository lectureRepository;
@@ -96,34 +102,46 @@ public class ReservationService {
      */
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> getReservationsByMemberAndLecture(Long memberId, Long lectureId) {
-        List<Reservation> reservations = reservationRepository.findByMemberMemberIdAndLectureId(memberId, lectureId);
+        List<Reservation> reservations = reservationRepository.findByMember_MemberIdAndLectureId(memberId, lectureId);
 
         return reservations.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 예약 ID로 예약 상세 조회 (리플레이 정보 포함)
-     */
     @Transactional(readOnly = true)
     public ReservationResponseDto getReservation(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findByReservationId(reservationId)
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 
         ReservationResponseDto dto = convertToDto(reservation);
 
         // 리플레이 정보 조회
         try {
-            List<ReplayResponse> replays = replayService.getReplaysByReservationId(reservationId);
+            List<Replay> replays = replayRepository.findByReservationReservationId(reservationId);
             if (!replays.isEmpty()) {
-                ReplayResponse replay = replays.get(0);  // 첫 번째 리플레이 정보만 사용
-                dto.setReplayId(replay.getReplayId());
-                dto.setReplayUrl(replay.getFileUrl());
+                // 리플레이 목록을 ReplayResponse로 변환하여 DTO에 설정
+                List<ReplayResponse> replayResponses = replays.stream()
+                        .map(replay -> new ReplayResponse(
+                                replay.getReplayId(),
+                                replay.getReservation().getReservationId(),
+                                replay.getFileUrl(),
+                                replay.getDate()
+                        ))
+                        .collect(Collectors.toList());
+
+                dto.setReplays(replayResponses);
+
+                // 기존 호환성을 위해 첫 번째 리플레이 정보 설정
+                if (!replayResponses.isEmpty()) {
+                    ReplayResponse firstReplay = replayResponses.get(0);
+                    dto.setReplayId(firstReplay.getReplayId());
+                    dto.setReplayUrl(firstReplay.getFileUrl());
+                }
             }
         } catch (Exception e) {
             // 리플레이 정보 조회 실패해도 예약 정보는 반환
-            System.out.println("리플레이 정보 조회 실패: " + e.getMessage());
+            log.error("리플레이 정보 조회 실패: " + e.getMessage(), e);
         }
 
         return dto;
@@ -134,7 +152,7 @@ public class ReservationService {
      */
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> getReservationsByMember(Long memberId) {
-        List<Reservation> reservations = reservationRepository.findByMemberMemberId(memberId);
+        List<Reservation> reservations = reservationRepository.findByMember_MemberId(memberId);
 
         return reservations.stream()
                 .map(this::convertToDto)
@@ -155,8 +173,10 @@ public class ReservationService {
         reservation.setCancelReason(cancelDto.getCancelReason());
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        if (reservation.getReplay() != null) {
-            replayService.deleteReplay(reservation.getReplay().getReplayId());
+        // 연관된 모든 리플레이 삭제
+        List<Replay> replays = replayRepository.findByReservationReservationId(reservation.getReservationId());
+        for (Replay replay : replays) {
+            replayService.deleteReplay(replay.getReplayId());
         }
 
         return convertToDto(savedReservation);

@@ -13,8 +13,17 @@ public class Instructor {
     private Long instructorId;
 
     @OneToOne
-    @MapsId  // instructor_id를 PK이자 FK로 사용
+    @JoinColumn(name = "instructor_id") // 명시적으로 조인 컬럼 지정
+    @MapsId
     private Member member;
+
+//    @OneToOne
+//    @JoinColumn(name = "instructor_id")
+//    private Member member;
+
+//    @Column(name = "member_id", insertable = false, updatable = false)
+//    private Long memberId;
+
 
     // 강사정보
     @Column(length = 1000)

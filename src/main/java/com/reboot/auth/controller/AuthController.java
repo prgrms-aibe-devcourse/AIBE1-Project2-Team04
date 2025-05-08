@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.controller;
 
 import org.springframework.stereotype.Controller;
@@ -26,3 +27,4 @@ public class AuthController {
         return "auth/admin";
     }
 }
+*/

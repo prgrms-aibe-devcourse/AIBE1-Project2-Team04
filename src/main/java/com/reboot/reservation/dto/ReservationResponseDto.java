@@ -1,7 +1,10 @@
 package com.reboot.reservation.dto;
 
+import com.reboot.replay.dto.ReplayResponse;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -24,6 +27,9 @@ public class ReservationResponseDto {
     // 리플레이 정보 추가
     private Long replayId;
     private String replayUrl;
+
+    // 리플레이 목록 추가 (필드 위치 이동)
+    private List<ReplayResponse> replays = new ArrayList<>();
 
     // replayId가 존재하는지 확인하는 헬퍼 메소드
     public boolean hasReplay() {
