@@ -145,8 +145,8 @@
         </div>
 
         <!-- 오류 메시지 표시 -->
-        <div th:if="${error}" class="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded">
-            <p th:text="${error}"></p>
+        <div id="errorDiv" class="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded">
+            <p id="errorMsg"></p>
         </div>
 
         <!-- 회원가입 폼 -->
@@ -278,6 +278,26 @@
                     </div>
                 </div>
 
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">휴대폰 번호</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        <input
+                                id="phone"
+                                name="phone"
+                                type="tel"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="닉네임을 입력하세요"
+                        />
+                    </div>
+                </div>
+
+                <!-- Signup Type  -->
+                <input type="hidden" id="signupType" th:value="${signupType}"/>
+
                 <!-- 약관 동의 섹션 -->
                 <div class="space-y-3 mt-6 pt-4 border-t border-gray-200">
                     <div class="flex items-center">
@@ -383,6 +403,8 @@
 </footer>
 
 <script>
+    const WEB_URL = 'http:localhost:8080';
+
     document.addEventListener('DOMContentLoaded', function () {
         // 비밀번호 표시/숨김 토글
         const togglePassword = document.getElementById('togglePassword');
@@ -534,14 +556,23 @@
                 registerButton.disabled = true;
                 registerButton.classList.add('opacity-50', 'cursor-not-allowed');
             }
+
+            document.getElementById('errorDiv').style.display = 'hidden';
         }
 
         // 초기 폼 유효성 검사
         validateForm();
 
+        // 회원가입 에러 영역
+        const errorDiv = document.getElementById('errorDiv');
+        const errorMsg = document.getElementById('errorMsg');
+        errorDiv.style.display = 'none';
+
         // 회원가입 폼 제출
         const registerForm = document.querySelector('form');
-        registerForm.addEventListener('submit', function (e) {
+        registerForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
             // 필수 약관 동의 확인
             if (!agreeTerms.classList.contains('checked') || !agreePrivacy.classList.contains('checked')) {
                 e.preventDefault();
@@ -563,8 +594,52 @@
             marketingInput.name = 'marketingAgreed';
             marketingInput.value = marketingAgreed;
             this.appendChild(marketingInput);
+
+            const signupData = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value,
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                nickname: document.getElementById("nickname").value,
+                phone: document.getElementById("phone").value,
+                role: document.getElementById('signupType').value
+            };
+
+            let result;
+
+            if(signupData.role === 'user'){
+                result = await signProcess_User(signupData);
+            }
+            else if (signupData.role === 'instructor') {
+            }
+
+            if(result.success) {
+                window.location.href = '/auth/login';
+            }
+            else{
+                errorDiv.style.display = 'block';
+                errorMsg.textContent = result.message;
+            }
         });
     });
+
+
+    // 일반 유저 회원가입
+    async function signProcess_User(dto) {
+        const response = await fetch('http://localhost:8080/auth/sign', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dto)
+        });
+
+        return await response.json();
+    }
+
+    // 강사 회원가입
+    function signProcess_instructor(dto) {
+    }
 </script>
 </body>
 </html>

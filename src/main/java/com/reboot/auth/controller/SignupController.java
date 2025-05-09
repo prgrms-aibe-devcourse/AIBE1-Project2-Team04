@@ -1,9 +1,12 @@
 package com.reboot.auth.controller;
 
 import com.reboot.auth.dto.SignupDTO;
+import com.reboot.auth.dto.SignupResponse;
 import com.reboot.auth.service.SignupService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -17,10 +20,14 @@ public class SignupController {
     }
 
     @PostMapping("/sign")
-    public String signupProcess(SignupDTO signupDTO) {
-        if (signupService.signupProcess(signupDTO)) {
-            return "/auth/login";
+    public ResponseEntity<?> signupProcess(@RequestBody SignupDTO dto) {
+        SignupResponse validation = signupService.validate(dto);
+
+        if (!validation.isSuccess()) {
+            return ResponseEntity.badRequest().body(validation);
         }
-        return "redirect:/auth/sign";
+
+        signupService.signupProcess(dto);
+        return ResponseEntity.ok(new SignupResponse(true, "", "회원가입 성공"));
     }
 }

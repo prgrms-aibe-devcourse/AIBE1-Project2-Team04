@@ -1,6 +1,7 @@
 package com.reboot.auth.service;
 
 import com.reboot.auth.dto.SignupDTO;
+import com.reboot.auth.dto.SignupResponse;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.MemberRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,19 +18,25 @@ public class SignupService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public boolean signupProcess(SignupDTO signupDTO) {
-        if (isUsernameExist(signupDTO.username())) {
-            System.out.printf("이미 등록된 사용자 : %s", signupDTO.username());
-            return false;
-        }
-
+    public void signupProcess(SignupDTO signupDTO) {
         Member member = createMember(signupDTO);
         memberRepository.save(member);
-        return true;
     }
 
-    private boolean isUsernameExist(String username) {
-        return memberRepository.existsByUsername(username);
+    public SignupResponse validate(SignupDTO dto) {
+        if (memberRepository.existsByUsername(dto.username())) {
+            return new SignupResponse(false, "username", "이미 사용 중인 아이디입니다.");
+        }
+
+        if (memberRepository.existsByEmail(dto.email())) {
+            return new SignupResponse(false, "email", "이미 사용 중인 이메일입니다.");
+        }
+
+        if (memberRepository.existsByNickname(dto.nickname())) {
+            return new SignupResponse(false, "nickname", "이미 사용 중인 닉네임입니다.");
+        }
+
+        return new SignupResponse(true, "", "");
     }
 
     private Member createMember(SignupDTO dto) {
@@ -39,7 +46,11 @@ public class SignupService {
         member.setName(dto.name());
         member.setEmail(dto.email());
         member.setNickname(dto.nickname());
-        member.setRole("USER");
+        member.setProfileImage(dto.profile_image());
+        member.setPhone(dto.phone());
+        member.setRole(dto.role());
         return member;
     }
+
+
 }
