@@ -3,3 +3,13 @@ spring:
     name: reboot
   profiles:
     active: dev
+
+# 임시 Supabase 설정
+supabase:
+  url: https://vwfudodwkqbyfwacayns.supabase.co
+  key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3ZnVkb2R3a3FieWZ3YWNheW5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3Njk0NjYsImV4cCI6MjA2MjM0NTQ2Nn0.HlNt6FMvqe-kF9zdOcyLtYnQVPHj_482kp9s_i18ZFM
+  bucket:
+    name: profile-images
+default:
+  profile:
+    image: Profile_Image.png
