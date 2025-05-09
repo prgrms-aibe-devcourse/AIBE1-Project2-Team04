@@ -1,6 +1,6 @@
 package com.reboot.auth.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import com.reboot.auth.service.ReissueService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,29 +16,34 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final ReissueService reissueService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
-        String accessToken = req.getHeader("access");
+        String accessToken = jwtTokenProvider.getTokenFromCookies(jwtTokenProvider.CATEGORY_ACCESS, req);
+        String refreshToken = jwtTokenProvider.getTokenFromCookies(jwtTokenProvider.CATEGORY_REFRESH, req);
 
-        if (accessToken == null) {
+        if (isStringEmpty(accessToken) || isStringEmpty(refreshToken)) {
             chain.doFilter(req, res);
             return;
         }
 
         // 만료 여부 확인
-        try {
-            jwtTokenProvider.validateToken(accessToken);
-        } catch (ExpiredJwtException e) {
-            PrintWriter writer = res.getWriter();
-            writer.println("Expired Access Token");
+        if (!jwtTokenProvider.validateToken(accessToken)){
+            accessToken = reissueService.reissueAccessToken(refreshToken);
 
-            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            if(isStringEmpty(accessToken)){
+                PrintWriter writer = res.getWriter();
+                writer.println("Invalid Refresh Token");
+
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            res.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_ACCESS, accessToken));
         }
 
         String category = jwtTokenProvider.getCategory(accessToken);
-        if (!category.equals("access")) {
+        if (!category.equals(jwtTokenProvider.CATEGORY_ACCESS)) {
             PrintWriter writer = res.getWriter();
             writer.println("Invalid Access Token");
 
@@ -50,5 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         chain.doFilter(req, res);
+    }
+
+    private boolean isStringEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 }
