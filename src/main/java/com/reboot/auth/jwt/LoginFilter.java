@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.jwt;
 
 import com.reboot.auth.service.RefreshTokenService;
@@ -71,4 +70,4 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.sendRedirect("/auth/login?error");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
-}*/
+}

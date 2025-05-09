@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.jwt;
 
 import com.reboot.auth.repository.RefreshTokenRepository;
@@ -96,4 +95,4 @@ public class CustomLogoutFilter extends GenericFilterBean {
         cookie.setPath("/");
         return cookie;
     }
-}*/
+}
