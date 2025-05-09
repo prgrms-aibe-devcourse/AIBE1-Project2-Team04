@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.controller;
 
 import com.reboot.auth.jwt.JwtTokenProvider;
@@ -51,4 +50,4 @@ public class ReissueController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-}*/
+}

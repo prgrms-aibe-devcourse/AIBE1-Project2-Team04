@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.controller;
 
 import org.springframework.stereotype.Controller;
@@ -23,4 +22,4 @@ public class AuthController {
     public String sign() {
         return "/auth/signup";
     }
-}*/
+}

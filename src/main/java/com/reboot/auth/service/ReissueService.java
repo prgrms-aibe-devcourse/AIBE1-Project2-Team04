@@ -1,4 +1,3 @@
-/*
 package com.reboot.auth.service;
 
 import com.reboot.auth.jwt.JwtTokenProvider;
@@ -40,4 +39,4 @@ public class ReissueService {
         String role = jwtTokenProvider.getRole(token);
         return jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_REFRESH, username, role);
     }
-}*/
+}
