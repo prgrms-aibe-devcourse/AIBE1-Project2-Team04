@@ -1,4 +1,3 @@
-/*
 package com.reboot.survey.repository;
 
 import com.reboot.auth.entity.Member;
@@ -11,4 +10,4 @@ import java.util.List;
 @Repository
 public interface SurveyRepository extends JpaRepository<Survey, Long> {
     List<Survey> findByMemberOrderByIdDesc(Member member);
-}*/
+}

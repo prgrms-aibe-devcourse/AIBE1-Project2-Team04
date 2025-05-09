@@ -1,4 +1,3 @@
-/*
 package com.reboot.survey.entity;
 
 import com.reboot.auth.entity.Member;
@@ -16,7 +15,9 @@ public class Survey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    // 회원 정보 관계
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Enumerated(EnumType.STRING)
@@ -36,5 +37,12 @@ public class Survey {
 
     @Enumerated(EnumType.STRING)
     private LecturePreference lecturePreference;
+
+    @Column(name = "created_at")
+    private java.time.LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = java.time.LocalDateTime.now();
+    }
 }
-*/

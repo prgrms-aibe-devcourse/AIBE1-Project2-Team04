@@ -9,7 +9,7 @@ public enum AvailableTime {
 
     private final String label;
 
-    AvailableTime(String label) {
+    private AvailableTime(String label) {  // private 생성자로 변경
         this.label = label;
     }
 
@@ -17,4 +17,3 @@ public enum AvailableTime {
         return label;
     }
 }
-

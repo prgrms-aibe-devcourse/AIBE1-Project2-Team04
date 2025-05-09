@@ -9,7 +9,7 @@ public enum LecturePreference {
 
     private final String label;
 
-    LecturePreference(String label) {
+    private LecturePreference(String label) {
         this.label = label;
     }
 

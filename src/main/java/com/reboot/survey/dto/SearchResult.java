@@ -1,4 +1,3 @@
-/*
 package com.reboot.survey.dto;
 
 import lombok.Data;
@@ -9,4 +8,4 @@ public class SearchResult {
     private Long id;
     private float score;
     private Map<String, Object> metadata;
-}*/
+}

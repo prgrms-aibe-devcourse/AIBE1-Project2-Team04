@@ -218,7 +218,7 @@ public class ReservationService {
         dto.setScheduleDate(reservation.getScheduleDate());
         dto.setCancelReason(reservation.getCancelReason());
 
-        // null 체크 추가
+        // null 체크 추가, 유미
         if (reservation.getLecture() != null &&
                 reservation.getLecture().getInfo() != null) {
             dto.setLectureTitle(reservation.getLecture().getInfo().getTitle());

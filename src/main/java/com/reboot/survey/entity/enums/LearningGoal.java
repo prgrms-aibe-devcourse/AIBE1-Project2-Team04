@@ -11,7 +11,7 @@ public enum LearningGoal {
 
     private final String label;
 
-    LearningGoal(String label) {
+    private LearningGoal(String label) {
         this.label = label;
     }
 

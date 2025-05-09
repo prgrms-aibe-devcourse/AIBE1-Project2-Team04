@@ -48,7 +48,7 @@
             <div class="survey-nav">
                 <button type="button" class="btn-secondary btn-prev" th:onclick="|window.location.href='@{/survey/game-selection}'|">이전</button>
                 <button type="submit" class="btn-primary btn-next" disabled>다음</button>
-                <a th:href="@{/survey/skip}" class="btn-skip">Skip</a>
+                <a th:href="@{/survey/skip(step='learning-goal')}" class="btn-skip">Skip</a>
             </div>
         </form>
     </div>

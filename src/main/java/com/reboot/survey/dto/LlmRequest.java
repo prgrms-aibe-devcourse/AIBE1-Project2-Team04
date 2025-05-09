@@ -1,4 +1,3 @@
-/*
 package com.reboot.survey.dto;
 
 import lombok.Data;
@@ -10,4 +9,4 @@ public class LlmRequest {
     private String responseFormat;
     private float temperature;
     private int maxTokens;
-}*/
+}

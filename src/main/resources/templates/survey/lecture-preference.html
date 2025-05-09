@@ -22,6 +22,10 @@
     <div class="preference-options">
         <form id="lecturePreferenceForm" th:action="@{/survey/complete}" method="post">
             <input type="hidden" id="selectedPreference" name="lecturePreference">
+            <!-- 필수 파라미터 추가 -->
+            <input type="hidden" name="memberId" th:value="${#authentication != null && #authentication.principal != null ? #authentication.principal.memberId : 1}">
+            <input type="hidden" name="gameTier" value="">
+            <input type="hidden" name="gamePosition" value="">
 
             <div class="preference-row">
                 <div class="preference-option" data-preference="ONE_ON_ONE">
@@ -50,7 +54,7 @@
             <div class="survey-nav">
                 <button type="button" class="btn-secondary btn-prev" th:onclick="|window.location.href='@{/survey/available-time}'|">이전</button>
                 <button type="submit" class="btn-primary btn-complete">완료</button>
-                <a th:href="@{/survey/skip}" class="btn-skip">Skip</a>
+                <a th:href="@{/survey/skip(step='recommendation')}" class="btn-skip">Skip</a>
             </div>
         </form>
     </div>

@@ -113,4 +113,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // 폼 제출 시 회원 ID와 게임 티어/포지션 정보 설정
+    const lecturePreferenceForm = document.getElementById('lecturePreferenceForm');
+    if (lecturePreferenceForm) {
+        // 현재 로그인된 회원 ID 가져오기 (없으면 기본값 1)
+        const memberId = document.querySelector('meta[name="memberId"]')?.content || '1';
+
+        // 티어와 포지션 입력 필드가 있는지 확인
+        if (!document.querySelector('input[name="memberId"]')) {
+            // 없으면 hidden 필드 생성
+            const memberIdInput = document.createElement('input');
+            memberIdInput.type = 'hidden';
+            memberIdInput.name = 'memberId';
+            memberIdInput.value = memberId;
+            lecturePreferenceForm.appendChild(memberIdInput);
+        }
+
+        if (!document.querySelector('input[name="gameTier"]')) {
+            const gameTierInput = document.createElement('input');
+            gameTierInput.type = 'hidden';
+            gameTierInput.name = 'gameTier';
+            gameTierInput.value = '';
+            lecturePreferenceForm.appendChild(gameTierInput);
+        }
+
+        if (!document.querySelector('input[name="gamePosition"]')) {
+            const gamePositionInput = document.createElement('input');
+            gamePositionInput.type = 'hidden';
+            gamePositionInput.name = 'gamePosition';
+            gamePositionInput.value = '';
+            lecturePreferenceForm.appendChild(gamePositionInput);
+        }
+    }
 });
