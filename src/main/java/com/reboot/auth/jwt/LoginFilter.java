@@ -56,19 +56,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtTokenProvider.generateToken(jwtTokenProvider.CATEGORY_REFRESH, username, role);
 
         // Refresh Token DB 저장
-        Instant now = Instant.now();
-        Date expiration = new Date(now.toEpochMilli() + jwtTokenProvider.GetExpirationMs(jwtTokenProvider.CATEGORY_REFRESH));
-        String refresh_Expiration = expiration.toString();
-        refreshTokenService.addRefreshEntity(username, refreshToken, refresh_Expiration);
+        refreshTokenService.addRefreshEntity(username, refreshToken);
 
-        response.setHeader(jwtTokenProvider.CATEGORY_ACCESS, accessToken);
-        response.addCookie(refreshTokenService.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
+        response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_ACCESS, accessToken));
+        response.addCookie(jwtTokenProvider.createCookie(jwtTokenProvider.CATEGORY_REFRESH, refreshToken));
+        response.sendRedirect("/");
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     // 로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        response.sendRedirect("/auth/login?error");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

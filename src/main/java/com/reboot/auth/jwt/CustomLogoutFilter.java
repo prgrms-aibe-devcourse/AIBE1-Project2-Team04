@@ -35,50 +35,50 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        String token = null;
+        String refreshToken = null;
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (jwtTokenProvider.CATEGORY_REFRESH.equals(cookie.getName())) {
-                token = cookie.getValue();
+                refreshToken = cookie.getValue();
                 break;
             }
         }
 
-        if (token == null) {
+        if (refreshToken == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         try {
-            jwtTokenProvider.validateToken(token);
+            jwtTokenProvider.validateToken(refreshToken);
         } catch (ExpiredJwtException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         // 토큰이 refresh인지 확인
-        String category = jwtTokenProvider.getCategory(token);
+        String category = jwtTokenProvider.getCategory(refreshToken);
         if (!category.equals(jwtTokenProvider.CATEGORY_REFRESH)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         //DB에 저장되어 있는지 확인
-        if (!refreshTokenRepository.existsByToken(token)) {
+        if (!refreshTokenRepository.existsByToken(refreshToken)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
-        refreshTokenRepository.deleteByToken(token);
+        refreshTokenRepository.deleteByToken(refreshToken);
 
-        //Refresh 토큰 Cookie 값 0
-        Cookie cookie = new Cookie(jwtTokenProvider.CATEGORY_REFRESH, null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
+        //토큰 Cookie 값 0
+        Cookie accessCookie = removeTokenCookie(jwtTokenProvider.CATEGORY_ACCESS);
+        Cookie refreshCookie = removeTokenCookie(jwtTokenProvider.CATEGORY_REFRESH);
 
-        response.addCookie(cookie);
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
@@ -87,5 +87,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String requestMethod = request.getMethod();
 
         return "/logout".equals(requestUri) && "POST".equals(requestMethod);
+    }
+
+    private Cookie removeTokenCookie(String category) {
+        Cookie cookie = new Cookie(category, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        return cookie;
     }
 }

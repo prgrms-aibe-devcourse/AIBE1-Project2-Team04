@@ -3,8 +3,10 @@ package com.reboot.auth.service;
 import com.reboot.auth.entity.RefreshToken;
 import com.reboot.auth.jwt.JwtTokenProvider;
 import com.reboot.auth.repository.RefreshTokenRepository;
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.Date;
 
 @Service
 public class RefreshTokenService {
@@ -17,11 +19,11 @@ public class RefreshTokenService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public void addRefreshEntity(String username, String token, String expiration){
+    public void addRefreshEntity(String username, String token){
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUsername(username);
         refreshToken.setToken(token);
-        refreshToken.setExpiration(expiration);
+        refreshToken.setExpiration(getExpiration());
 
         refreshTokenRepository.save(refreshToken);
     }
@@ -30,10 +32,9 @@ public class RefreshTokenService {
         refreshTokenRepository.deleteByToken(token);
     }
 
-    public Cookie createCookie(String key, String vaule) {
-        Cookie cookie = new Cookie(key, vaule);
-        cookie.setMaxAge((int)jwtTokenProvider.GetExpirationMs(jwtTokenProvider.CATEGORY_REFRESH)); // refreshToken과 동일하게
-        cookie.setHttpOnly(true);
-        return cookie;
+    private String getExpiration(){
+        Instant now = Instant.now();
+        Date expiration = new Date(now.toEpochMilli() + jwtTokenProvider.GetExpirationMs(jwtTokenProvider.CATEGORY_REFRESH));
+        return expiration.toString();
     }
 }

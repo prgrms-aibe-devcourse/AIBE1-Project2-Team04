@@ -6,6 +6,7 @@ import com.reboot.auth.jwt.JwtTokenProvider;
 import com.reboot.auth.jwt.LoginFilter;
 import com.reboot.auth.repository.RefreshTokenRepository;
 import com.reboot.auth.service.RefreshTokenService;
+import com.reboot.auth.service.ReissueService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,13 +29,15 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ReissueService reissueService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtTokenProvider jwtTokenProvider, RefreshTokenService refreshTokenService, RefreshTokenRepository refreshTokenRepository) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtTokenProvider jwtTokenProvider, RefreshTokenService refreshTokenService, RefreshTokenRepository refreshTokenRepository, ReissueService reissueService) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtTokenProvider = jwtTokenProvider;
         this.refreshTokenService = refreshTokenService;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.reissueService = reissueService;
     }
 
     @Bean
@@ -63,7 +66,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll());
 
         http
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), LoginFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, reissueService), LoginFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtTokenProvider, refreshTokenRepository), LogoutFilter.class);
 
         http
