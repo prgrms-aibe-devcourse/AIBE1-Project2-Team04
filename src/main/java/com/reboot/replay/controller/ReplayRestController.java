@@ -38,9 +38,9 @@ public class ReplayRestController {
      * 예약별 리플레이 목록 조회 API
      */
     @GetMapping("/reservation/{reservationId}")
-    public ResponseEntity<?> getReplaysByReservation(@PathVariable Long reservationId) {
+    public ResponseEntity<?> getReplaysByReservation(@PathVariable Long reservationDetailId) {
         try {
-            List<ReplayResponse> replays = replayService.getReplaysByReservationId(reservationId);
+            List<ReplayResponse> replays = replayService.getReplaysByReservationDetailId(reservationDetailId);
             return ResponseEntity.ok(replays);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
@@ -59,7 +59,7 @@ public class ReplayRestController {
             ReplayResponse currentReplay = replayService.getReplay(replayId);
             
             // request에 현재 예약 ID 설정 (요청에서 넘어온 값 무시)
-            request.setReservationId(currentReplay.getReservationId());
+            request.setReservationDetailId(currentReplay.getReservationDetailId());
             
             ReplayResponse response = replayService.updateReplay(replayId, request);
             return ResponseEntity.ok(response);
@@ -90,7 +90,7 @@ public class ReplayRestController {
             response.put("success", true);
             response.put("message", "리플레이가 성공적으로 삭제되었습니다.");
             response.put("deletedReplayId", replayId);
-            response.put("reservationId", replay.getReservationId());
+            response.put("reservationDetailId", replay.getReservationDetailId());
             
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {

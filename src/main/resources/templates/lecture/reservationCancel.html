@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>예약 취소</h1>
-<form th:action="@{/reservation/{id}/cancel(id=${reservationId})}" method="post">
+<form th:action="@{/reservationDetail/{id}/cancel(id=${reservationId})}" method="post">
     <label>취소 사유: <input type="text" name="cancelReason" /></label><br/>
     <button type="submit">취소하기</button>
 </form>

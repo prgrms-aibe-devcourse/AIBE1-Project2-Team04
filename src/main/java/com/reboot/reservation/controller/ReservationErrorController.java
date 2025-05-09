@@ -1,7 +1,7 @@
 package com.reboot.reservation.controller;
 
 import com.reboot.reservation.dto.ReservationResponseDto;
-import com.reboot.reservation.service.ReservationService;
+import com.reboot.reservation.service.ReservationDetailService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 public class ReservationErrorController {
 
-    private final ReservationService reservationService;
+    private final ReservationDetailService reservationDetailService;
 
     /**
      * 예약 정보 조회 API (디버깅용)
@@ -27,7 +27,7 @@ public class ReservationErrorController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getReservation(@PathVariable Long id) {
         try {
-            ReservationResponseDto reservation = reservationService.getReservation(id);
+            ReservationResponseDto reservation = reservationDetailService.getReservation(id);
             return ResponseEntity.ok(reservation);
         } catch (EntityNotFoundException e) {
             Map<String, String> error = new HashMap<>();

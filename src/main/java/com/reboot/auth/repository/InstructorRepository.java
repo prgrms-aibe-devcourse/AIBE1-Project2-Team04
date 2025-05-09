@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface InstructorRepository extends JpaRepository<Instructor, Long> {
     Optional<Instructor> findByMember(Member member);
-    Optional<Instructor> findByMemberId(Long memberId);
+    Optional<Instructor> findByMember_MemberId(Long memberId); //수정
     boolean existsByMember(Member member);
-    boolean existsByMemberId(Long memberId);
+    boolean existsByMember_MemberId(Long memberId); //수정
 }

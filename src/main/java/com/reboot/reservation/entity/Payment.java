@@ -18,7 +18,7 @@ public class Payment {
 
     @OneToOne
     @JoinColumn(name = "reservation_id", nullable = false)
-    private Reservation reservation;
+    private ReservationDetail reservationDetail;
 
     private Integer price;
 

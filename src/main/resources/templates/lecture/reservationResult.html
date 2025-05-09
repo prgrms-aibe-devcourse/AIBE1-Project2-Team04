@@ -6,12 +6,12 @@
 </head>
 <body>
 <h1>예약 결과</h1>
-<p>예약번호: <span th:text="${reservation.reservationId}"></span></p>
-<p>학생 ID: <span th:text="${reservation.student.studentId}"></span></p>
-<p>강사 ID: <span th:text="${reservation.instructor.instructorId}"></span></p>
-<p>강의 ID: <span th:text="${reservation.lecture.lectureId}"></span></p>
-<p>예약일시: <span th:text="${reservation.date}"></span></p>
-<p>상태: <span th:text="${reservation.status}"></span></p>
-<a href="/reservation/new">다시 예약하기</a>
+<p>예약번호: <span th:text="${reservationDetail.reservationId}"></span></p>
+<p>학생 ID: <span th:text="${reservationDetail.student.studentId}"></span></p>
+<p>강사 ID: <span th:text="${reservationDetail.instructor.instructorId}"></span></p>
+<p>강의 ID: <span th:text="${reservationDetail.lecture.lectureId}"></span></p>
+<p>예약일시: <span th:text="${reservationDetail.date}"></span></p>
+<p>상태: <span th:text="${reservationDetail.status}"></span></p>
+<a href="/reservationDetail/new">다시 예약하기</a>
 </body>
 </html>

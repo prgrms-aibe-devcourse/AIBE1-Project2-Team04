@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class ReservationResponseDto {
-    private Long reservationId;
+    private Long reservationDetailId;
     private Long memberId;
     private String memberName;
     private Long instructorId;

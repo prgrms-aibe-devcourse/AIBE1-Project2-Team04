@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.service;
 
 import com.reboot.auth.entity.RefreshToken;
@@ -37,4 +38,4 @@ public class RefreshTokenService {
         Date expiration = new Date(now.toEpochMilli() + jwtTokenProvider.GetExpirationMs(jwtTokenProvider.CATEGORY_REFRESH));
         return expiration.toString();
     }
-}
+}*/

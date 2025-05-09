@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.controller;
 
 import com.reboot.auth.dto.ProfileDTO;
@@ -195,4 +196,4 @@ public class MypageController {
             return "redirect:/mypage/reservations";
         }
     }
-}
+}*/

@@ -14,7 +14,7 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
 
-        .reservation-info {
+        .reservationDetail-info {
             background-color: #f0f7ff;
             padding: 15px;
             border-radius: 5px;
@@ -58,17 +58,17 @@
     <h2 class="mb-4 text-center">예약 리플레이 목록</h2>
 
     <!-- 예약 정보 표시 -->
-    <div th:if="${reservation}" class="reservation-info">
+    <div th:if="${reservationDetail}" class="reservationDetail-info">
         <h5>예약 정보</h5>
-        <p>예약 번호: <span th:text="${reservation.reservationId}"></span></p>
-        <p>수업 일시: <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
-        <p>상태: <span th:text="${reservation.status}"></span></p>
+        <p>예약 번호: <span th:text="${reservationDetail.reservationId}"></span></p>
+        <p>수업 일시: <span th:text="${#temporals.format(reservationDetail.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p>상태: <span th:text="${reservationDetail.status}"></span></p>
         <!-- 추가 예약 정보가 있다면 여기에 표시 -->
     </div>
 
     <!-- 새 리플레이 업로드 버튼 -->
     <div class="d-grid gap-2 upload-btn">
-        <a th:href="@{/replays/upload(reservationId=${reservation.reservationId})}" class="btn btn-primary">
+        <a th:href="@{/replays/upload(reservationId=${reservationDetail.reservationId})}" class="btn btn-primary">
             새 리플레이 업로드
         </a>
     </div>

@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.config;
 
 import com.reboot.auth.jwt.CustomLogoutFilter;
@@ -78,4 +79,5 @@ public class SecurityConfig {
 
         return http.build();
     }
-}
+}*/
+

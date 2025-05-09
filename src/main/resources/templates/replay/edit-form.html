@@ -39,7 +39,7 @@
             margin-bottom: 20px;
         }
 
-        .reservation-info {
+        .reservationDetail-info {
             background-color: #f0f7ff;
             padding: 15px;
             border-radius: 5px;
@@ -62,11 +62,11 @@
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
     <!-- 예약 정보가 있는 경우 표시 -->
-    <div th:if="${reservation}" class="reservation-info">
+    <div th:if="${reservationDetail}" class="reservationDetail-info">
         <h5>예약 정보</h5>
-        <p>예약 번호: <span th:text="${reservation.reservationId}"></span></p>
-        <p>수업 일시: <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
-        <p>상태: <span th:text="${reservation.status}"></span></p>
+        <p>예약 번호: <span th:text="${reservationDetail.reservationId}"></span></p>
+        <p>수업 일시: <span th:text="${#temporals.format(reservationDetail.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p>상태: <span th:text="${reservationDetail.status}"></span></p>
     </div>
 
     <!-- YouTube 링크 입력 가이드 -->
