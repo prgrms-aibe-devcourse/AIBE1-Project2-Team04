@@ -22,12 +22,17 @@ public class AuthController {
 
     @GetMapping("/select_signup_type")
     public String selectType() {
-        return "auth/select_signup_type";
+        return "auth/select-signup-type";
     }
 
     @GetMapping("/sign")
     public String signup(@RequestParam(value = "type", required = false) String type, Model model) {
         model.addAttribute("signupType", type);
         return "auth/signup";
+    }
+
+    @GetMapping("/sign_details")
+    public String signupDetails() {
+        return "auth/signup-instructor-details";
     }
 }

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>회원가입 - 게임 코칭 매칭 플랫폼</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {primary: '#4F46E5', secondary: '#10B981'},
+                    colors: { primary: '#4F46E5', secondary: '#10B981' },
                     borderRadius: {
                         none: '0px',
                         sm: '4px',
@@ -26,14 +26,14 @@
             },
         };
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
     <link
             href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
             rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
     <style>
         :where([class^='ri-'])::before {
             content: '\f3c2';
@@ -139,7 +139,8 @@
 
         <!-- 로고 및 타이틀 -->
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-900">회원가입</h2>
+            <h2 th:if="${signupType == 'user'}" class="text-2xl font-bold text-gray-900">회원가입</h2>
+            <h2 th:if="${signupType == 'instructor'}" class="text-2xl font-bold text-gray-900">강사 회원가입</h2>
             <p class="text-gray-600 mt-2">계정을 만들고 다양한 서비스를 이용하세요</p>
         </div>
 
@@ -322,7 +323,7 @@
                 </div>
             </form>
 
-            <div class="mt-6">
+            <div class="mt-6" hidden="hidden">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-300"></div>
