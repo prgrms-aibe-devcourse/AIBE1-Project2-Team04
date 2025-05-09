@@ -29,7 +29,7 @@ public class SignupService {
     @Value("${supabase.bucket.name}")
     private String bucketName;
 
-    // 기본 프로필 이미지 파일명 설정 (없을 경우 기본값 사용)
+    // 기본 프로필 이미지 파일명 설정
     @Value("${default.profile.image:default-profile.png}")
     private String defaultProfileImage;
 
