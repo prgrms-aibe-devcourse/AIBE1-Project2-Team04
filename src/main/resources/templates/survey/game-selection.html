@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gigs - 게임 선택</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="survey-container">
+        <div class="close-button">
+            <a th:href="@{/home}" class="btn-close">×</a>
+        </div>
+
+        <div class="survey-header">
+            <div class="step-indicator">
+                <span class="current-step">Step 1</span>
+            </div>
+            <h2>어떤 게임에 빠져 계신가요?</h2>
+            <h3>Gigs에서 전문가의 조언을 받아보세요!</h3>
+        </div>
+
+        <div class="game-options">
+            <form id="gameSelectionForm" th:action="@{/survey/game-selection}" method="post">
+                <input type="hidden" id="selectedGame" name="gameType">
+
+                <!-- 3개 게임만 표시 -->
+                <div class="game-option" data-game="LOL">
+                    <img th:src="@{/images/game-lol.png}" alt="리그오브레전드">
+                    <span>리그오브레전드</span>
+                </div>
+
+                <div class="game-option" data-game="VALORANT">
+                    <img th:src="@{/images/game-valorant.png}" alt="발로란트">
+                    <span>발로란트</span>
+                </div>
+
+                <div class="game-option" data-game="TFT">
+                    <img th:src="@{/images/game-tft.png}" alt="전략적팀전투">
+                    <span>전략적팀전투</span>
+                </div>
+
+                <div class="survey-nav">
+                    <button type="submit" class="btn-primary btn-next" disabled>다음</button>
+                    <a th:href="@{/survey/skip}" class="btn-skip">Skip</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="pagination">
+            <span class="page-dot active"></span>
+            <span class="page-dot"></span>
+            <span class="page-dot"></span>
+            <span class="page-dot"></span>
+            <span class="page-dot"></span>
+        </div>
+    </div>
+
+    <script th:src="@{/js/survey.js}"></script>
+</body>
+</html>

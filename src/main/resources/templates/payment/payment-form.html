@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Toss 결제 요청</title>
+</head>
+<body>
+<h2>Toss 결제 요청</h2>
+<form th:action="@{/payments/request}" method="post">
+    <input type="hidden" name="reservationId" th:value="${reservationId}" />
+    <button type="submit">결제 요청</button>
+</form>
+</body>
+</html>

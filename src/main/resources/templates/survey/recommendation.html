@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gigs - 추천 강의</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="recommendation-container">
+    <div class="recommendation-header">
+        <h2>관심사 기반의 추천 강의 👀</h2>
+        <div class="recommendation-actions">
+            <a th:href="@{/instructor/register}" class="btn-outline">관심사 재설정하기</a>
+        </div>
+    </div>
+
+    <div class="lecture-list">
+        <!-- 추천 강의 1 -->
+        <div class="lecture-card" th:each="lecture : ${recommendedLectures}">
+            <div class="lecture-image">
+                <img th:src="${lecture.imageUrl != null ? lecture.imageUrl : '/images/default-lecture.png'}" alt="강의 이미지">
+                <div class="lecture-badge" th:text="${lecture.gameType.displayName}">게임 종류</div>
+                <div class="lecture-price" th:text="${#numbers.formatCurrency(lecture.price)}">가격</div>
+            </div>
+
+            <div class="lecture-info">
+                <div class="lecture-title" th:text="${lecture.title}">강의 제목</div>
+                <div class="lecture-instructor" th:text="${lecture.instructorName}">강사 이름</div>
+
+                <div class="lecture-rating">
+                    <span class="star-rating" th:text="${lecture.averageRating}">평점</span>
+                    <span class="review-count" th:text="'(' + ${lecture.reviewCount} + ')'">리뷰 수</span>
+                    <span class="student-count" th:text="${lecture.totalMembers} + '명'">수강생 수</span>
+                </div>
+
+                <div class="lecture-tags">
+                    <span class="tag" th:if="${lecture.rank_ != null}" th:text="${lecture.rank_}">랭크</span>
+                    <span class="tag" th:if="${lecture.position != null}" th:text="${lecture.position}">포지션</span>
+                    <span class="tag" th:if="${lecture.duration != null}" th:text="${lecture.duration} + '분'">시간</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="recommendation-reason" th:each="reason, idx : ${recommendationReasons}">
+        <h3 th:text="${idx.count} + '. ' + ${reason.title}">추천 이유 제목</h3>
+        <p th:text="${reason.description}">추천 이유 설명</p>
+    </div>
+
+    <div class="recommendation-footer">
+        <a th:href="@{/lectures}" class="btn-primary">모든 강의 보기</a>
+    </div>
+</div>
+
+<script th:src="@{/js/recommendation.js}"></script>
+</body>
+</html>

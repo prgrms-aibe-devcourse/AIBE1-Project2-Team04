@@ -62,13 +62,15 @@ jwt:
 
 # Swagger
 # 여러 가지 설정 on-off 및 dev, prod 분기
+toss:
+  apikey: ${TOSS-APIKEY}
 springdoc:
   swagger-ui:
   # enabled: true # 개발 환경에선
-  enabled: false # 배포 환경에선
+    enabled: false # 배포 환경에선
   api-docs:
   # enabled: true # 개발 환경에선
-  enabled: false # 배포 환경에선
+    enabled: false # 배포 환경에선
 
 # 화면단 url
 #front-end:
