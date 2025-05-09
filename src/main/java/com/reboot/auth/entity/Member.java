@@ -1,12 +1,16 @@
 package com.reboot.auth.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 
 @Entity
 @Table(name = "member")
 @Data
+@Builder
+@AllArgsConstructor
 public class Member {
 
     @Id

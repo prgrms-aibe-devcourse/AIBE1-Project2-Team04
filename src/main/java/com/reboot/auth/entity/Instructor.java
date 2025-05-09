@@ -1,19 +1,24 @@
 package com.reboot.auth.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Table(name = "instructor")
 @Data
+@Builder
+@AllArgsConstructor
 public class Instructor {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "instructor_id")
     private Long instructorId;
 
     @OneToOne
-    @JoinColumn(name = "instructor_id") // 명시적으로 조인 컬럼 지정
+    @JoinColumn(name = "member_id") // 명시적으로 조인 컬럼 지정
     @MapsId
     private Member member;
 

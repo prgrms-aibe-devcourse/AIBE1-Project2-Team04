@@ -1,13 +1,14 @@
 package com.reboot.payment.repository;
 
+import com.reboot.auth.entity.Instructor;
+import com.reboot.auth.repository.InstructorRepository;
+import com.reboot.lecture.entity.Lecture;
+import com.reboot.lecture.entity.LectureInfo;
+import com.reboot.lecture.repository.LectureRepository;
 import com.reboot.payment.entity.Payment;
-import com.reboot.reservation.entity.Instructor;
-import com.reboot.reservation.entity.Lecture;
-import com.reboot.reservation.entity.Member;
+import com.reboot.auth.entity.Member;
 import com.reboot.reservation.entity.Reservation;
-import com.reboot.reservation.repository.InstructorRepository;
-import com.reboot.reservation.repository.LectureRepository;
-import com.reboot.reservation.repository.MemberRepository;
+import com.reboot.auth.repository.MemberRepository;
 import com.reboot.reservation.repository.ReservationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -49,7 +51,6 @@ class PaymentRepositoryTest {
                 .profileImage(null)
                 .phone("010-1234-5678")
                 .role("STUDENT")
-                .customService("basic")
                 .build();
     }
 
@@ -65,10 +66,14 @@ class PaymentRepositoryTest {
 
     private Lecture createSampleLecture() {
         return Lecture.builder()
-                .title("기초 자바")
-                .description("자바 기초 강의입니다")
-                .price(10000)
-                .gameType("lol")
+                .info(LectureInfo.builder()
+                        .title("기초 자바")
+                        .description("자바 기초 강의입니다")
+                        .price(BigDecimal.valueOf(1000.1))
+                        .gameType("lol")
+                        .build())
+                .metadata(null) // 필요시 값 채우기
+                .instructor(null) // 필요시 값 채우기
                 .build();
     }
 
