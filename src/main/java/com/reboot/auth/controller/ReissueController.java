@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 public class ReissueController {
 
-
     private final JwtTokenProvider jwtTokenProvider;
     private final ReissueService reissueService;
     private final RefreshTokenService refreshTokenService;
