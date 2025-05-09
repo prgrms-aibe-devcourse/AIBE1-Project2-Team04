@@ -44,11 +44,34 @@ public class MypageService {
 
         // 프로필 이미지 처리
         if (profileImage != null && !profileImage.isEmpty()) {
+            // 이미지 유효성 검사
+            validateProfileImage(profileImage);
+
+            // Supabase에 이미지 업로드
             String imageUrl = fileUploadService.uploadImageToSupabase(profileImage);
-            member.setProfileImage(imageUrl);
+            if (imageUrl != null) {
+                member.setProfileImage(imageUrl);
+            }
         }
+
         // 저장
         memberRepository.save(member);
+    }
+
+    // 프로필 이미지 파일 유효성 검사
+    private void validateProfileImage(MultipartFile file) {
+        // 파일 크기 확인 (5MB 제한)
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("파일 크기는 5MB를 초과할 수 없습니다.");
+        }
+
+        // 파일 형식 확인
+        String contentType = file.getContentType();
+        if (contentType == null || !(contentType.equals("image/jpeg") ||
+                contentType.equals("image/png") ||
+                contentType.equals("image/gif"))) {
+            throw new IllegalArgumentException("JPG, PNG, GIF 형식의 이미지만 허용됩니다.");
+        }
     }
 
 
