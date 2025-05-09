@@ -47,7 +47,7 @@ public class PaymentService {
         // 2. Payment 엔티티 생성 및 저장
         Payment payment = Payment.builder()
                 .reservation(reservation)
-                .price(reservation.getLecture().getPrice()) // 예약 정보에 따른 가격 계산 메서드 필요
+                .price(reservation.getLecture().getInfo().getPrice()) // 예약 정보에 따른 가격 계산 메서드 필요
                 .paymentAt(LocalDateTime.now())
                 .status("PAY_STANDBY") // 초기 상태
                 .build();
@@ -131,7 +131,7 @@ public class PaymentService {
     // 상품 설명 생성 메서드
     private String getProductDescription(Reservation reservation) {
         // 예: "[강의명] 강사명 - 강의일정"
-        return "[" + reservation.getLecture().getTitle() + "] " +
+        return "[" + reservation.getLecture().getInfo().getTitle() + "] " +
                 reservation.getInstructor().getMember().getName() + " - " +
                 reservation.getScheduleDate();
     }

@@ -17,7 +17,7 @@ public class LectureInfo {
     private String title;
     private String description;
     private String gameType;
-    private BigDecimal price;
+    private Integer price;
     private String imageUrl;
     private Integer duration;
     private String rank_;

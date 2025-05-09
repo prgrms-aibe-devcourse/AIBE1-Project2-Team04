@@ -9,8 +9,6 @@ import lombok.Data;
 @Entity
 @Table(name = "member")
 @Data
-@Builder
-@AllArgsConstructor
 public class Member {
 
     @Id
