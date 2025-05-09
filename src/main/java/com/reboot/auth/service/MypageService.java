@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.service;
 
 import com.reboot.auth.dto.ProfileDTO;
@@ -68,4 +69,4 @@ public class MypageService {
 
         return true;
     }
-}
+}*/

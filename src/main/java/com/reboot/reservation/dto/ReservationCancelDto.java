@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReservationCancelDto {
-    private Long reservationId;
+    private Long reservationDetailId;
     private String cancelReason;
 }

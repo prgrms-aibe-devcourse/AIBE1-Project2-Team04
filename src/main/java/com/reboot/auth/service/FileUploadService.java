@@ -1,3 +1,4 @@
+/*
 package com.reboot.auth.service;
 
 import com.reboot.auth.entity.Member;
@@ -44,4 +45,4 @@ public class FileUploadService {
 
         return supabaseUrl + "/storage/v1/object/public/" + imgBucketName + "/" + filename;
     }
-}
+}*/

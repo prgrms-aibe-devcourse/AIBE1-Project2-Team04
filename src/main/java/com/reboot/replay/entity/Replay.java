@@ -1,6 +1,6 @@
 package com.reboot.replay.entity;
 
-import com.reboot.reservation.entity.Reservation;
+import com.reboot.reservation.entity.ReservationDetail;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,7 @@ public class Replay {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
-    private Reservation reservation;
+    private ReservationDetail reservationDetail;
 
     @Column(name = "file_url")
     private String fileUrl;  // YouTube URL을 저장할 필드

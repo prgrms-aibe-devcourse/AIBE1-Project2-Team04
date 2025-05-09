@@ -110,50 +110,50 @@
 
     <div class="info-row">
         <span class="info-label">예약번호:</span>
-        <span class="info-value" th:text="${reservation.reservationId}"></span>
+        <span class="info-value" th:text="${reservationDetail.reservationId}"></span>
     </div>
 
     <div class="info-row">
         <span class="info-label">회원명:</span>
-        <span class="info-value" th:text="${reservation.memberName}"></span>
+        <span class="info-value" th:text="${reservationDetail.memberName}"></span>
     </div>
 
     <div class="info-row">
         <span class="info-label">강사명:</span>
-        <span class="info-value" th:text="${reservation.instructorName}"></span>
+        <span class="info-value" th:text="${reservationDetail.instructorName}"></span>
     </div>
 
     <div class="info-row">
         <span class="info-label">강의명:</span>
-        <span class="info-value" th:text="${reservation.lectureTitle}"></span>
+        <span class="info-value" th:text="${reservationDetail.lectureTitle}"></span>
     </div>
 
     <div class="info-row">
         <span class="info-label">예약일시(생성일):</span>
-        <span class="info-value" th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span>
+        <span class="info-value" th:text="${#temporals.format(reservationDetail.date, 'yyyy-MM-dd HH:mm')}"></span>
     </div>
 
     <div class="info-row">
         <span class="info-label">상태:</span>
-        <span class="status" th:classappend="${reservation.status == '예약완료' ? 'status-complete' : (reservation.status == '취소' ? 'status-cancel' : '')}"
-              th:text="${reservation.status}"></span>
+        <span class="status" th:classappend="${reservationDetail.status == '예약완료' ? 'status-complete' : (reservationDetail.status == '취소' ? 'status-cancel' : '')}"
+              th:text="${reservationDetail.status}"></span>
     </div>
 
-    <div class="info-row" th:if="${reservation.status == '취소' && reservation.cancelReason != null}">
+    <div class="info-row" th:if="${reservationDetail.status == '취소' && reservationDetail.cancelReason != null}">
         <span class="info-label">취소 사유:</span>
-        <span class="info-value" th:text="${reservation.cancelReason}">-</span>
+        <span class="info-value" th:text="${reservationDetail.cancelReason}">-</span>
     </div>
 
     <hr>
 
     <div class="info-row">
         <div class="info-label">요청사항:</div>
-        <div class="info-value" th:text="${reservation.requestDetail ?: '-'}"></div>
+        <div class="info-value" th:text="${reservationDetail.requestDetail ?: '-'}"></div>
     </div>
 
     <div class="info-row">
         <div class="info-label">강의 일정(예약일):</div>
-        <div class="info-value" th:text="${reservation.scheduleDate ?: '-'}"></div>
+        <div class="info-value" th:text="${reservationDetail.scheduleDate ?: '-'}"></div>
     </div>
 
     <!-- 리플레이 섹션 (수정됨) -->
@@ -167,7 +167,7 @@
         <!-- 리플레이 목록 -->
         <div id="replay-list" class="replay-list">
             <!-- 리플레이 항목들 (있는 경우) -->
-            <div th:if="${reservation.replays != null && !reservation.replays.isEmpty()}" th:each="replay, replayStat : ${reservation.replays}" class="replay-item" th:data-id="${replay.replayId}">
+            <div th:if="${reservationDetail.replays != null && !reservationDetail.replays.isEmpty()}" th:each="replay, replayStat : ${reservationDetail.replays}" class="replay-item" th:data-id="${replay.replayId}">
                 <div class="replay-item-title" th:text="'리플레이 ' + (${replayStat.index} + 1)"></div>
                 <div th:if="${replay.date != null}" style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">
                     <span th:text="'업로드: ' + ${#temporals.format(replay.date, 'yyyy-MM-dd HH:mm')}"></span>
@@ -178,9 +178,9 @@
             </div>
 
             <!-- 리플레이가 없는 경우 -->
-            <div th:if="${reservation.replays == null || reservation.replays.isEmpty()}" class="no-replay">
+            <div th:if="${reservationDetail.replays == null || reservationDetail.replays.isEmpty()}" class="no-replay">
                 <p>아직 등록된 리플레이가 없습니다.</p>
-                <div th:if="${reservation.status != '취소'}">
+                <div th:if="${reservationDetail.status != '취소'}">
                     <p>예약 화면에서 리플레이를 추가할 수 있습니다.</p>
                 </div>
             </div>
@@ -192,8 +192,8 @@
 
     <!-- 리플레이 목록 버튼 삭제하고 필요한 버튼만 유지 -->
     <div class="actions">
-        <a id="reservation-again-btn" th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}" class="btn btn-primary">다시 예약하기</a>
-        <a id="reservation-cancel-btn" th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}" class="btn btn-danger">예약 취소하기</a>
+        <a id="reservationDetail-again-btn" th:href="@{/reservationDetail/new(lectureId=${reservationDetail.lectureId},memberId=${reservationDetail.memberId})}" class="btn btn-primary">다시 예약하기</a>
+        <a id="reservationDetail-cancel-btn" th:if="${reservationDetail.status != '취소'}" th:href="@{/reservationDetail/{id}/cancel(id=${reservationDetail.reservationId})}" class="btn btn-danger">예약 취소하기</a>
     </div>
 </div>
 
@@ -250,7 +250,7 @@
         }
 
         // 다시 예약하기 버튼 클릭 시 리플레이 URL 저장
-        $("#reservation-again-btn").click(function() {
+        $("#reservationDetail-again-btn").click(function() {
             showLoading();
             
             // 현재 리플레이 URL들 localStorage에 저장
@@ -266,7 +266,7 @@
         });
 
         // 예약 취소 버튼 클릭 시 캐시 초기화
-        $("#reservation-cancel-btn").click(function() {
+        $("#reservationDetail-cancel-btn").click(function() {
             localStorage.setItem('refreshAfterCancel', 'true');
         });
 

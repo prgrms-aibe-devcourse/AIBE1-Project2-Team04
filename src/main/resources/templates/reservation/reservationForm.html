@@ -98,7 +98,7 @@
     <!-- 예약 정보 섹션 -->
     <div class="section">
         <h2 class="section-title">예약 정보</h2>
-        <form id="reservationForm" th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post" enctype="multipart/form-data">
+        <form id="reservationForm" th:action="@{/reservationDetail}" th:object="${reservationRequestDto}" method="post" enctype="multipart/form-data">
             <input type="hidden" th:field="*{memberId}" />
             <input type="hidden" th:field="*{lectureId}" />
             <input type="hidden" th:field="*{instructorId}" />
@@ -163,7 +163,7 @@
 
     <!-- 예약 완료 버튼 (맨 아래로 이동) -->
     <div class="submit-container">
-        <button type="button" class="submit-btn" id="submit-reservation">예약완료</button>
+        <button type="button" class="submit-btn" id="submit-reservationDetail">예약완료</button>
     </div>
 </div>
 
@@ -437,7 +437,7 @@
             
             return false; // 이벤트 버블링 방지
         });
-        $("#submit-reservation").click(function(e) {
+        $("#submit-reservationDetail").click(function(e) {
             e.preventDefault(); // 기본 제출 동작 방지
 
             // 날짜 선택 검증

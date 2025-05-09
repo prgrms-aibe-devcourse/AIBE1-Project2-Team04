@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ReplayResponse {
     private Long replayId;
-    private Long reservationId;
+    private Long reservationDetailId;
     private String fileUrl;
     private LocalDateTime date;
 
