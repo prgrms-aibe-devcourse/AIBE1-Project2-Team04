@@ -7,6 +7,8 @@ import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.lecture.dto.LectureRequestDto;
 import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.entity.Lecture;
+import com.reboot.lecture.entity.LectureInfo;
+import com.reboot.lecture.entity.LectureMetaData;
 import com.reboot.lecture.exception.LectureNotFoundException;
 import com.reboot.lecture.exception.UnauthorizedLectureAccessException;
 import com.reboot.lecture.repository.LectureRepository;
@@ -14,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,12 +32,10 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
 
 
     // 특정 강사의 모든 강의 목록 조회
-    // 삭제되지 않은 모든 강의 포함 (활성/비활성 모두)
     @Override
     @Transactional(readOnly = true)
     public List<LectureResponseDto> getLecturesByInstructor(Long instructorId) {
-
-        List<Lecture> lectures = lectureRepository.findByInstructorInstructorIdAndDeletedAtIsNull(instructorId);
+        List<Lecture> lectures = lectureRepository.findByInstructorInstructorId(instructorId);
         return lectures.stream()
                 .map(LectureResponseDto::fromEntity)
                 .collect(Collectors.toList());
@@ -48,7 +47,10 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     @Override
     @Transactional(readOnly = true)
     public LectureResponseDto getLectureByIdAndInstructor(String lectureId, Long instructorId) {
-        Lecture lecture = lectureRepository.findById(lectureId)
+        // lectureId에서 프리픽스 제거 및 숫자 부분 추출
+        Long id = extractLectureId(lectureId);
+
+        Lecture lecture = lectureRepository.findById(id)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
         // 권한 검증: 본인 강의인지 확인
@@ -79,21 +81,29 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     @Override
     @Transactional
     public LectureResponseDto updateLecture(String lectureId, LectureRequestDto request, Long instructorId) {
-        Lecture lecture = lectureRepository.findById(lectureId)
+        // lectureId에서 프리픽스 제거 및 숫자 부분 추출
+        Long id = extractLectureId(lectureId);
+
+        Lecture lecture = lectureRepository.findById(id)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
         // 권한 검증: 본인 강의인지 확인
         validateLectureOwnership(lecture, instructorId);
 
         // 필드 업데이트
-        lecture.setTitle(request.getTitle());
-        lecture.setDescription(request.getDescription());
-        lecture.setGameType(request.getGameType());
-        lecture.setPrice(request.getPrice());
-        lecture.setImageUrl(request.getImageUrl());
-        lecture.setDuration(request.getDuration());
-        lecture.setLectureRank(request.getLectureRank());
-        lecture.setPosition(request.getPosition());
+        if (lecture.getInfo() == null) {
+            lecture.setInfo(new LectureInfo());
+        }
+
+        LectureInfo info = lecture.getInfo();
+        info.setTitle(request.getTitle());
+        info.setDescription(request.getDescription());
+        info.setGameType(request.getGameType());
+        info.setPrice(request.getPrice());
+        info.setImageUrl(request.getImageUrl());
+        info.setDuration(request.getDuration());
+        info.setLectureRank(request.getLectureRank());
+        info.setPosition(request.getPosition());
 
         // 저장
         Lecture updatedLecture = lectureRepository.save(lecture);
@@ -102,43 +112,42 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     }
 
 
-    // 강의 삭제 (특정 강사의 강의만) - 소프트 삭제 처리
-    // 권한 검증 후 삭제
+    // 강의 삭제 (특정 강사의 강의만)
+    // 소프트 삭제가 아닌 실제 삭제로 변경
     @Override
     @Transactional
     public void deleteLecture(String lectureId, Long instructorId) {
-        Lecture lecture = lectureRepository.findById(lectureId)
+        // lectureId에서 프리픽스 제거 및 숫자 부분 추출
+        Long id = extractLectureId(lectureId);
+
+        Lecture lecture = lectureRepository.findById(id)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
         // 권한 검증: 본인 강의인지 확인
         validateLectureOwnership(lecture, instructorId);
 
-        // 소프트 삭제 처리
-        lecture.setDeletedAt(LocalDateTime.now());
-        lecture.setIsActive(false);
-
-        lectureRepository.save(lecture);
+        // 실제 삭제 처리
+        lectureRepository.delete(lecture);
     }
 
 
-    // 강의 활성화/비활성화 토글 (특정 강사의 강의만)
-    // 권한 검증 후 토글
+    // 활성화/비활성화 토글 기능 삭제 또는 불필요해짐
+    // 필요한 경우 다른 방식으로 대체
     @Override
     @Transactional
     public LectureResponseDto toggleLectureActive(String lectureId, Long instructorId) {
-        Lecture lecture = lectureRepository.findById(lectureId)
+        // 소프트 삭제와 활성화 상태 기능이 제거되었으므로 이 메서드는 더 이상 필요하지 않습니다.
+        // 기존 인터페이스 호환성을 위해 남겨두었지만, 실제로는 아무 작업도 수행하지 않습니다.
+        // 향후 다른 기능(예: 강의 공개/비공개 설정)으로 대체될 수 있습니다.
+
+        Long id = extractLectureId(lectureId);
+        Lecture lecture = lectureRepository.findById(id)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
 
-        // 권한 검증: 본인 강의인지 확인
         validateLectureOwnership(lecture, instructorId);
 
-        // 활성화 상태 토글
-        lecture.setIsActive(!lecture.getIsActive());
-
-        // 저장
-        Lecture updatedLecture = lectureRepository.save(lecture);
-
-        return LectureResponseDto.fromEntity(updatedLecture);
+        // 아무 작업도 수행하지 않고 현재 상태 그대로 반환
+        return LectureResponseDto.fromEntity(lecture);
     }
 
 
@@ -150,7 +159,23 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
         }
     }
 
+    // lectureId에서 숫자 부분만 추출하는 메서드 - 개선 버전
+    private Long extractLectureId(String lectureId) {
+        if (lectureId == null || lectureId.isEmpty()) {
+            throw new IllegalArgumentException("강의 ID가 유효하지 않습니다.");
+        }
 
+        try {
+            // "LECTURE-" 프리픽스가 있으면 제거하고 숫자 부분만 추출
+            if (lectureId.startsWith("LECTURE-")) {
+                return Long.parseLong(lectureId.substring("LECTURE-".length()));
+            }
+            // 이미 숫자 형식인 경우
+            return Long.parseLong(lectureId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("강의 ID 형식이 유효하지 않습니다: " + lectureId);
+        }
+    }
 
 
     // 추가: 강사의 게임 정보 가져오기
@@ -225,11 +250,6 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
         if (requestDto.getPosition() == null || requestDto.getPosition().isEmpty()) {
             requestDto.setPosition(game.getGamePosition());
         }
-
-        // 게임 티어 정보도 활용 가능 (Lecture 엔티티에 해당 필드가 있다면)
-        // if (requestDto.getGameTier() == null || requestDto.getGameTier().isEmpty()) {
-        //     requestDto.setGameTier(game.getGameTier());
-        // }
 
         return requestDto;
     }

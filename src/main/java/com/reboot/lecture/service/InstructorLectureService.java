@@ -30,11 +30,11 @@ public interface InstructorLectureService {
 
 
     // 강의 삭제 (특정 강사의 강의만)
-    // 물리적 삭제가 아닌 소프트 삭제 처리
     void deleteLecture(String lectureId, Long instructorId);
 
 
     // 강의 활성화/비활성화 토글 (특정 강사의 강의만)
+    // 실제 구현에서는 기능을 변경하거나 제거할 수 있음
     LectureResponseDto toggleLectureActive(String lectureId, Long instructorId);
 
 
