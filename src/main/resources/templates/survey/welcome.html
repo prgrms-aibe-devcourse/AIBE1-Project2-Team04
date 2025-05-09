@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gigs - 게이밍 코칭 서비스</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="welcome-container">
+    <div class="welcome-logo">
+        <img th:src="@{/images/reboot-logo.png}" alt="Re:Boot 로고">
+    </div>
+    <div class="welcome-text">
+        <h2>안녕하세요.</h2>
+        <h3>Re:Boot에 오신 것을 환영합니다!</h3>
+        <p>처음 오신 분들에게 간단한 설문을 드릴게요.<br>설문은 2분 이내로 끝나요!</p>
+    </div>
+    <div class="welcome-button">
+        <a th:href="@{/survey/start}" class="btn-primary">설문 시작!</a>
+    </div>
+    <div class="welcome-skip">
+        <a th:href="@{/home}" class="text-muted">다음에 할게요.</a>
+    </div>
+</div>
+
+<script th:src="@{/js/survey.js}"></script>
+</body>
+</html>

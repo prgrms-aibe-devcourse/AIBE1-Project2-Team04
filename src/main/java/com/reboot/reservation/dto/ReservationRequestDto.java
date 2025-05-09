@@ -2,8 +2,7 @@ package com.reboot.reservation.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -11,12 +10,9 @@ public class ReservationRequestDto {
     private Long memberId;
     private Long instructorId;
     private Long lectureId;
-    private String requestDetail; // 요청사항
-    private String scheduleDate;  // 강의 일정 (yyyy-MM-dd)
+    private String requestDetail;
+    private String scheduleDate;
 
-    public ReservationRequestDto(Long memberId, Long instructorId, Long lectureId) {
-        this.memberId = memberId;
-        this.instructorId = instructorId;
-        this.lectureId = lectureId;
-    }
+    // 리플레이 정보 추가
+    private String youtubeUrl;
 }
