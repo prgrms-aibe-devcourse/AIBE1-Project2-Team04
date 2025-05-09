@@ -9,6 +9,7 @@ import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.auth.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,17 @@ public class SignupService {
     private final GameRepository gameRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public SignupService(MemberRepository memberRepository, InstructorRepository instructorRepository, GameRepository gameRepository, PasswordEncoder passwordEncoder) {
+    @Value("${supabase.url}")
+    private String supabaseUrl;
+
+    @Value("${supabase.bucket.name}")
+    private String bucketName;
+
+    // 기본 프로필 이미지 파일명 설정 (없을 경우 기본값 사용)
+    @Value("${default.profile.image:default-profile.png}")
+    private String defaultProfileImage;
+
+    public SignupService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.instructorRepository = instructorRepository;
         this.gameRepository = gameRepository;
@@ -72,9 +83,14 @@ public class SignupService {
         member.setName(dto.name());
         member.setEmail(dto.email());
         member.setNickname(dto.nickname());
-        member.setProfileImage(dto.profile_image());
         member.setPhone(dto.phone());
-        member.setRole(dto.role());
+
+        member.setRole("USER");
+
+        // 기본 프로필 이미지 설정
+        String defaultImageUrl = supabaseUrl + "/storage/v1/object/public/" + bucketName + "/profiles/" + defaultProfileImage;
+        member.setProfileImage(defaultImageUrl);
+
         return member;
     }
 

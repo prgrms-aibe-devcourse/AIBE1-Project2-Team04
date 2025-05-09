@@ -45,6 +45,10 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    //임시 supabase
+    implementation 'io.github.jan-tennert.supabase:storage-kt:1.4.7'
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 }
 
 tasks.named('test') {
