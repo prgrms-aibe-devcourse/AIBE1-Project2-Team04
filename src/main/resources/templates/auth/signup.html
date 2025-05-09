@@ -1,21 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>회원가입 - 게임 코칭 매칭 플랫폼</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {primary: '#4F46E5', secondary: '#10B981'},
+                    borderRadius: {
+                        none: '0px',
+                        sm: '4px',
+                        DEFAULT: '8px',
+                        md: '12px',
+                        lg: '16px',
+                        xl: '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        full: '9999px',
+                        button: '8px',
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^='ri-'])::before {
+            content: '\f3c2';
+        }
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
         }
+
         .custom-checkbox {
             position: relative;
             display: inline-block;
@@ -26,10 +53,12 @@
             background-color: white;
             transition: all 0.2s;
         }
+
         .custom-checkbox.checked {
-            border-color: #4F46E5;
-            background-color: #4F46E5;
+            border-color: #4f46e5;
+            background-color: #4f46e5;
         }
+
         .custom-checkbox.checked::after {
             content: '';
             position: absolute;
@@ -41,12 +70,15 @@
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
+
         .social-login-btn {
             transition: all 0.2s;
         }
+
         .social-login-btn:hover {
             transform: translateY(-2px);
         }
+
         .password-strength {
             height: 4px;
             transition: all 0.3s;
@@ -68,13 +100,25 @@
         </div>
         <div class="flex items-center space-x-4">
             <div class="relative hidden md:block">
-                <input type="text" placeholder="게임, 코치, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                <input
+                        type="text"
+                        placeholder="게임, 코치, 강의 검색"
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64"
+                />
                 <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
                     <i class="ri-search-line"></i>
                 </div>
             </div>
-            <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
-            <a th:href="@{/auth/sign}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
+            <a
+                    th:href="@{/auth/login}"
+                    class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap"
+            >로그인</a
+            >
+            <a
+                    th:href="@{/auth/select-type}"
+                    class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap"
+            >회원가입</a
+            >
             <button class="md:hidden w-10 h-10 flex items-center justify-center">
                 <i class="ri-menu-line text-xl"></i>
             </button>
@@ -87,7 +131,7 @@
     <div class="w-full max-w-md">
         <!-- 뒤로가기 버튼 -->
         <div class="mb-6">
-            <a href="/" class="inline-flex items-center text-gray-600 hover:text-primary">
+            <a th:href="@{/auth/select_signup_type}" class="inline-flex items-center text-gray-600 hover:text-primary">
                 <i class="ri-arrow-left-s-line mr-1"></i>
                 <span>뒤로가기</span>
             </a>
@@ -95,7 +139,6 @@
 
         <!-- 로고 및 타이틀 -->
         <div class="text-center mb-8">
-            <a href="/" class="text-3xl font-['Pacifico'] text-primary inline-block mb-2">logo</a>
             <h2 class="text-2xl font-bold text-gray-900">회원가입</h2>
             <p class="text-gray-600 mt-2">계정을 만들고 다양한 서비스를 이용하세요</p>
         </div>
@@ -114,9 +157,14 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <i class="ri-user-line"></i>
                         </div>
-                        <input id="username" name="username" type="text" required
-                               class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="아이디를 입력하세요">
+                        <input
+                                id="username"
+                                name="username"
+                                type="text"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="아이디를 입력하세요"
+                        />
                     </div>
                 </div>
 
@@ -126,16 +174,29 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <i class="ri-lock-line"></i>
                         </div>
-                        <input id="password" name="password" type="password" required
-                               class="pl-10 pr-10 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="비밀번호를 입력하세요">
-                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                        <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                class="pl-10 pr-10 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="비밀번호를 입력하세요"
+                        />
+                        <button
+                                type="button"
+                                id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                        >
                             <i class="ri-eye-off-line"></i>
                         </button>
                     </div>
                     <div class="mt-1">
                         <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
-                            <div id="passwordStrength" class="password-strength bg-gray-400 rounded-full h-1" style="width: 0%"></div>
+                            <div
+                                    id="passwordStrength"
+                                    class="password-strength bg-gray-400 rounded-full h-1"
+                                    style="width: 0%"
+                            ></div>
                         </div>
                         <p id="passwordHint" class="text-xs text-gray-500 mt-1">8자 이상, 대소문자, 숫자, 특수문자 포함</p>
                     </div>
@@ -147,10 +208,18 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <i class="ri-lock-line"></i>
                         </div>
-                        <input id="passwordConfirm" type="password" required
-                               class="pl-10 pr-10 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="비밀번호를 다시 입력하세요">
-                        <button type="button" id="togglePasswordConfirm" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                        <input
+                                id="passwordConfirm"
+                                type="password"
+                                required
+                                class="pl-10 pr-10 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="비밀번호를 다시 입력하세요"
+                        />
+                        <button
+                                type="button"
+                                id="togglePasswordConfirm"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                        >
                             <i class="ri-eye-off-line"></i>
                         </button>
                     </div>
@@ -163,9 +232,14 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <i class="ri-user-line"></i>
                         </div>
-                        <input id="name" name="name" type="text" required
-                               class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="이름을 입력하세요">
+                        <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="이름을 입력하세요"
+                        />
                     </div>
                 </div>
 
@@ -175,9 +249,14 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <i class="ri-mail-line"></i>
                         </div>
-                        <input id="email" name="email" type="email" required
-                               class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="이메일을 입력하세요">
+                        <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="이메일을 입력하세요"
+                        />
                     </div>
                 </div>
 
@@ -187,9 +266,14 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <i class="ri-user-line"></i>
                         </div>
-                        <input id="nickname" name="nickname" type="text" required
-                               class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="닉네임을 입력하세요">
+                        <input
+                                id="nickname"
+                                name="nickname"
+                                type="text"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="닉네임을 입력하세요"
+                        />
                     </div>
                 </div>
 
@@ -228,8 +312,11 @@
                 </div>
 
                 <div>
-                    <button type="submit" id="registerButton"
-                            class="w-full flex justify-center py-3 px-4 border border-transparent !rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary whitespace-nowrap">
+                    <button
+                            type="submit"
+                            id="registerButton"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent !rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary whitespace-nowrap"
+                    >
                         회원가입
                     </button>
                 </div>
@@ -246,19 +333,28 @@
                 </div>
 
                 <div class="mt-6 grid grid-cols-1 gap-3">
-                    <button type="button" class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-[#FEE500] text-sm font-medium text-gray-800 hover:bg-[#FEE500]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FEE500] whitespace-nowrap">
+                    <button
+                            type="button"
+                            class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-[#FEE500] text-sm font-medium text-gray-800 hover:bg-[#FEE500]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FEE500] whitespace-nowrap"
+                    >
                         <div class="w-5 h-5 mr-2 flex items-center justify-center">
                             <i class="ri-kakao-talk-fill"></i>
                         </div>
                         카카오로 회원가입
                     </button>
-                    <button type="button" class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-[#03C75A] text-sm font-medium text-white hover:bg-[#03C75A]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#03C75A] whitespace-nowrap">
+                    <button
+                            type="button"
+                            class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-[#03C75A] text-sm font-medium text-white hover:bg-[#03C75A]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#03C75A] whitespace-nowrap"
+                    >
                         <div class="w-5 h-5 mr-2 flex items-center justify-center">
                             <i class="ri-naver-fill"></i>
                         </div>
                         네이버로 회원가입
                     </button>
-                    <button type="button" class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 whitespace-nowrap">
+                    <button
+                            type="button"
+                            class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 whitespace-nowrap"
+                    >
                         <div class="w-5 h-5 mr-2 flex items-center justify-center">
                             <i class="ri-google-fill"></i>
                         </div>
@@ -271,7 +367,8 @@
         <!-- 로그인 안내 -->
         <div class="text-center">
             <p class="text-sm text-gray-600">
-                이미 계정이 있으신가요? <a th:href="@{/auth/login}" class="font-medium text-primary hover:text-primary/80">로그인</a>
+                이미 계정이 있으신가요?
+                <a th:href="@{/auth/login}" class="font-medium text-primary hover:text-primary/80">로그인</a>
             </p>
         </div>
     </div>
@@ -285,11 +382,11 @@
 </footer>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // 비밀번호 표시/숨김 토글
         const togglePassword = document.getElementById('togglePassword');
         const password = document.getElementById('password');
-        togglePassword.addEventListener('click', function() {
+        togglePassword.addEventListener('click', function () {
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
             const icon = this.querySelector('i');
@@ -305,7 +402,7 @@
         // 비밀번호 확인 표시/숨김 토글
         const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
         const passwordConfirm = document.getElementById('passwordConfirm');
-        togglePasswordConfirm.addEventListener('click', function() {
+        togglePasswordConfirm.addEventListener('click', function () {
             const type = passwordConfirm.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordConfirm.setAttribute('type', type);
             const icon = this.querySelector('i');
@@ -322,7 +419,7 @@
         const passwordStrength = document.getElementById('passwordStrength');
         const passwordHint = document.getElementById('passwordHint');
 
-        password.addEventListener('input', function() {
+        password.addEventListener('input', function () {
             const value = password.value;
             let strength = 0;
 
@@ -380,7 +477,7 @@
         const registerButton = document.getElementById('registerButton');
 
         // 전체 동의 체크박스 클릭
-        agreeAll.addEventListener('click', function() {
+        agreeAll.addEventListener('click', function () {
             const isChecked = this.classList.toggle('checked');
             if (isChecked) {
                 agreeTerms.classList.add('checked');
@@ -395,27 +492,29 @@
         });
 
         // 개별 체크박스 클릭
-        agreeTerms.addEventListener('click', function() {
+        agreeTerms.addEventListener('click', function () {
             this.classList.toggle('checked');
             updateAgreeAll();
             validateForm();
         });
 
-        agreePrivacy.addEventListener('click', function() {
+        agreePrivacy.addEventListener('click', function () {
             this.classList.toggle('checked');
             updateAgreeAll();
             validateForm();
         });
 
-        agreeMarketing.addEventListener('click', function() {
+        agreeMarketing.addEventListener('click', function () {
             this.classList.toggle('checked');
             updateAgreeAll();
         });
 
         function updateAgreeAll() {
-            if (agreeTerms.classList.contains('checked') &&
+            if (
+                agreeTerms.classList.contains('checked') &&
                 agreePrivacy.classList.contains('checked') &&
-                agreeMarketing.classList.contains('checked')) {
+                agreeMarketing.classList.contains('checked')
+            ) {
                 agreeAll.classList.add('checked');
             } else {
                 agreeAll.classList.remove('checked');
@@ -441,7 +540,7 @@
 
         // 회원가입 폼 제출
         const registerForm = document.querySelector('form');
-        registerForm.addEventListener('submit', function(e) {
+        registerForm.addEventListener('submit', function (e) {
             // 필수 약관 동의 확인
             if (!agreeTerms.classList.contains('checked') || !agreePrivacy.classList.contains('checked')) {
                 e.preventDefault();

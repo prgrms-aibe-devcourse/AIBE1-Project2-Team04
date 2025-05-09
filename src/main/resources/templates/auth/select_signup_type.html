@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>회원가입 유형 선택 - 게임 코칭 매칭 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {primary: '#4F46E5', secondary: '#10B981'},
+                    borderRadius: {
+                        none: '0px',
+                        sm: '4px',
+                        DEFAULT: '8px',
+                        md: '12px',
+                        lg: '16px',
+                        xl: '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        full: '9999px',
+                        button: '8px',
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<!-- 네비게이션 바 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">logo</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">코치찾기</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">커뮤니티</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="relative hidden md:block">
+                <input
+                        type="text"
+                        placeholder="게임, 코치, 강의 검색"
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64"
+                />
+                <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
+                    <i class="ri-search-line"></i>
+                </div>
+            </div>
+            <a
+                    th:href="@{/auth/login}"
+                    class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap"
+            >로그인</a
+            >
+            <a
+                    th:href="@{/auth/select-type}"
+                    class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap"
+            >회원가입</a
+            >
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 콘텐츠 -->
+<div class="flex-grow flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md">
+        <!-- 뒤로가기 버튼 -->
+        <div class="mb-6">
+            <a th:href="@{/auth/login}" class="inline-flex items-center text-gray-600 hover:text-primary">
+                <i class="ri-arrow-left-s-line mr-1"></i>
+                <span>뒤로가기</span>
+            </a>
+        </div>
+
+        <!-- 로고 및 타이틀 -->
+        <div class="text-center mb-8">
+            <a href="/" class="text-3xl font-['Pacifico'] text-primary inline-block mb-2">logo</a>
+            <h2 class="text-2xl font-bold text-gray-900">회원가입 유형 선택</h2>
+            <p class="text-gray-600 mt-2">어떤 유형으로 가입하시겠어요?</p>
+        </div>
+
+        <!-- 유형 선택 버튼 -->
+        <div class="bg-white shadow-sm rounded-lg p-8 space-y-6">
+            <a
+                    th:href="@{/auth/sign(type='user')}"
+                    class="w-full flex flex-col items-center justify-center py-6 px-4 border border-primary !rounded-lg shadow-sm text-lg font-medium text-primary bg-white hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-150 ease-in-out"
+            >
+                <i class="ri-user-line text-4xl mb-3"></i>
+                <span>일반 사용자 회원가입</span>
+                <span class="text-sm text-gray-500 mt-1">게임 코칭을 받고 싶은 분</span>
+            </a>
+            <a
+                    th:href="@{/auth/sign(type='coach')}"
+                    class="w-full flex flex-col items-center justify-center py-6 px-4 border border-secondary !rounded-lg shadow-sm text-lg font-medium text-secondary bg-white hover:bg-secondary/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-all duration-150 ease-in-out"
+            >
+                <i class="ri-graduation-cap-line text-4xl mb-3"></i>
+                <span>코치 회원가입</span>
+                <span class="text-sm text-gray-500 mt-1">전문 코치로 활동하고 싶은 분</span>
+            </a>
+        </div>
+        <!-- 로그인 안내 -->
+        <div class="text-center mt-8">
+            <p class="text-sm text-gray-600">
+                이미 계정이 있으신가요?
+                <a th:href="@{/auth/login}" class="font-medium text-primary hover:text-primary/80">로그인</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- 간소화된 푸터 -->
+<footer class="bg-gray-900 text-white pt-10 pb-6">
+    <div class="container mx-auto px-4 text-center">
+        <p class="text-gray-400">© 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // No specific JavaScript needed for this page at the moment.
+</script>
+</body>
+</html>
