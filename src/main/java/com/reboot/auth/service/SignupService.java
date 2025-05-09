@@ -39,7 +39,7 @@ public class SignupService {
         member.setName(dto.name());
         member.setEmail(dto.email());
         member.setNickname(dto.nickname());
-        member.setRole("ADMIN");
+        member.setRole("USER");
         return member;
     }
 }
