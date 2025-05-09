@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 
 // 강의 정보 조회 리포지토리 인터페이스
@@ -149,4 +150,10 @@ public interface LectureRepository extends JpaRepository<Lecture, String> {
     // 특정 강사의 특정 강의를 조회하기 위한 메서드
     @Query("SELECT l FROM Lecture l WHERE l.id = :lectureId AND l.instructor.instructorId = :instructorId AND l.deletedAt IS NULL")
     Lecture findByIdAndInstructorId(@Param("lectureId") Long lectureId, @Param("instructorId") Long instructorId);
+
+
+
+
+    // 추가: 강사 ID로 첫 번째 강의 조회
+    Optional<Lecture> findFirstByInstructorInstructorId(Long instructorId);
 }

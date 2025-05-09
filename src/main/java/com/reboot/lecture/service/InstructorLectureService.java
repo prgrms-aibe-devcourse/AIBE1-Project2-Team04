@@ -1,5 +1,6 @@
 package com.reboot.lecture.service;
 
+import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.lecture.dto.LectureRequestDto;
 import com.reboot.lecture.dto.LectureResponseDto;
@@ -35,4 +36,12 @@ public interface InstructorLectureService {
 
     // 강의 활성화/비활성화 토글 (특정 강사의 강의만)
     LectureResponseDto toggleLectureActive(String lectureId, Long instructorId);
+
+
+
+    // 추가: 강사의 게임 정보 관련 메서드
+    Game getInstructorGame(Long instructorId);
+    String getInstructorGameType(Long instructorId);
+    String getInstructorGamePosition(Long instructorId);
+    String getInstructorGameTier(Long instructorId);
 }
