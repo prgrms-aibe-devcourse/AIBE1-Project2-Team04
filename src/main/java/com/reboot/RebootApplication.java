@@ -1,4 +1,4 @@
-package com.reboot;
+/*package com.reboot; Survey 테스트용 코드
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,6 +35,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 		"com.reboot.auth.repository",
 		"com.reboot.survey.repository"
 })
+public class RebootApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(RebootApplication.class, args);
+	}
+}*/
+package com.reboot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class RebootApplication {
 
 	public static void main(String[] args) {
