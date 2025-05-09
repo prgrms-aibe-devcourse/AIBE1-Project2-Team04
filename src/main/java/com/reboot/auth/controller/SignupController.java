@@ -4,8 +4,10 @@ import com.reboot.auth.dto.SignupDTO;
 import com.reboot.auth.service.SignupService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/auth")
 public class SignupController {
 
     private final SignupService signupService;
@@ -17,8 +19,8 @@ public class SignupController {
     @PostMapping("/sign")
     public String signupProcess(SignupDTO signupDTO) {
         if (signupService.signupProcess(signupDTO)) {
-            return "auth/login";
+            return "/auth/login";
         }
-        return "redirect:/sign";
+        return "redirect:/auth/sign";
     }
 }
