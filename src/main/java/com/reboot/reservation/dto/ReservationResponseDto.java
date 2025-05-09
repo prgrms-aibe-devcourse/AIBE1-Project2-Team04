@@ -29,6 +29,7 @@ public class ReservationResponseDto {
     private String replayUrl;
 
     // 리플레이 목록 추가 (필드 위치 이동)
+    @Builder.Default
     private List<ReplayResponse> replays = new ArrayList<>();
 
     // replayId가 존재하는지 확인하는 헬퍼 메소드

@@ -7,7 +7,7 @@ public enum GameType {
 
     private final String displayName;
 
-    GameType(String displayName) {
+    private GameType(String displayName) {
         this.displayName = displayName;
     }
 

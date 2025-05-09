@@ -1,5 +1,4 @@
-/* reservation + replay 테스트용
-package com.reboot;
+/*package com.reboot; Survey 테스트용 코드
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,46 +9,44 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @ComponentScan(
-		basePackages = {"com.reboot.reservation", "com.reboot.replay", "com.reboot.lecture", "com.reboot.auth"},
+		basePackages = {"com.reboot.lecture", "com.reboot.auth",
+				"com.reboot.survey"},
 		includeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = {
-				"com.reboot.reservation.*",
-				"com.reboot.replay.*",
 				"com.reboot.lecture.*",
-				"com.reboot.auth.*"
+				"com.reboot.auth.*",
+				"com.reboot.survey.*"
 		}),
 		excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = {
+				"com.reboot.replay.*",
+				"com.reboot.reservation.*",
 				"com.reboot.common.*",
 				"com.reboot.config.*",
 				"com.reboot.review.*",
-				"com.reboot.survey.*"
+				"com.reboot.survey.entity.enums.*"
 		})
 )
 @EntityScan(basePackages = {
-		"com.reboot.reservation.entity",
-		"com.reboot.replay.entity",
 		"com.reboot.auth.entity",
-		"com.reboot.lecture.entity"
+		"com.reboot.lecture.entity",
+		"com.reboot.survey.entity"
 })
 @EnableJpaRepositories(basePackages = {
-		"com.reboot.reservation.repository",
-		"com.reboot.replay.repository",
 		"com.reboot.lecture.repository",
-		"com.reboot.auth.repository"
+		"com.reboot.auth.repository",
+		"com.reboot.survey.repository"
 })
 public class RebootApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(RebootApplication.class, args);
 	}
-}
-*/
+}*/
 package com.reboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-
 public class RebootApplication {
 
 	public static void main(String[] args) {

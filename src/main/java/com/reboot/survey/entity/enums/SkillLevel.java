@@ -7,7 +7,7 @@ public enum SkillLevel {
 
     private final String label;
 
-    SkillLevel(String label) {
+    private SkillLevel(String label) {
         this.label = label;
     }
 

@@ -1,0 +1,30 @@
+-- Game 데이터 삽입 (LOL과 VALORANT 포지션 영어로 표기)
+INSERT INTO game (member_id, game_type, game_tier, game_position)
+VALUES
+-- LOL 포지션 (TOP, JUNGLE, MID, ADC, SUPPORT)
+(1, 'LOL', 'BRONZE', 'TOP'),
+(2, 'LOL', 'SILVER', 'JUNGLE'),
+(3, 'LOL', 'GOLD', 'MID'),
+(4, 'LOL', 'PLATINUM', 'ADC'),
+(5, 'LOL', 'DIAMOND', 'SUPPORT'),
+(16, 'LOL', 'IRON', 'TOP'),
+(17, 'LOL', 'BRONZE', 'JUNGLE'),
+(18, 'LOL', 'SILVER', 'MID'),
+(19, 'LOL', 'GOLD', 'ADC'),
+(20, 'LOL', 'PLATINUM', 'SUPPORT'),
+(21, 'LOL', 'DIAMOND', 'TOP'),
+(22, 'LOL', 'GRANDMASTER', 'JUNGLE'),
+(23, 'LOL', 'CHALLENGER', 'MID'),
+(24, 'LOL', 'MASTER', 'ADC'),
+(25, 'LOL', 'DIAMOND', 'SUPPORT'),
+
+-- VALORANT 포지션 (DUELIST, SENTINEL, INITIATOR, CONTROLLER)
+(6, 'VALORANT', 'BRONZE', 'DUELIST'),
+(7, 'VALORANT', 'SILVER', 'SENTINEL'),
+(8, 'VALORANT', 'GOLD', 'INITIATOR'),
+(9, 'VALORANT', 'PLATINUM', 'CONTROLLER'),
+(26, 'VALORANT', 'IRON', 'DUELIST'),
+(27, 'VALORANT', 'BRONZE', 'SENTINEL'),
+(28, 'VALORANT', 'SILVER', 'INITIATOR'),
+(29, 'VALORANT', 'GOLD', 'CONTROLLER'),
+(30, 'VALORANT', 'PLATINUM', 'DUELIST');

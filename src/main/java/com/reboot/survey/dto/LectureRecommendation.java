@@ -1,4 +1,3 @@
-/*
 package com.reboot.survey.dto;
 
 import lombok.Data;
@@ -13,5 +12,5 @@ public class LectureRecommendation {
     private String recommendationReason;
     private String expectedEffect;
     private String imageUrl;
-    private BigDecimal price;
-}*/
+    private Integer price;
+}

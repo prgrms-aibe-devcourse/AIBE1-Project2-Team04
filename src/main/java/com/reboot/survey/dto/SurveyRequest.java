@@ -1,4 +1,3 @@
-/*
 package com.reboot.survey.dto;
 
 import com.reboot.survey.entity.enums.*;
@@ -14,4 +13,4 @@ public class SurveyRequest {
     private LearningGoal learningGoal;
     private AvailableTime availableTime;
     private LecturePreference lecturePreference;
-}*/
+}
