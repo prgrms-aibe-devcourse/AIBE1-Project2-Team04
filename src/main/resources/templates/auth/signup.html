@@ -619,6 +619,7 @@
             else{
                 errorDiv.style.display = 'block';
                 errorMsg.textContent = result.message;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
     });

@@ -51,6 +51,4 @@ public class SignupService {
         member.setRole(dto.role());
         return member;
     }
-
-
 }
