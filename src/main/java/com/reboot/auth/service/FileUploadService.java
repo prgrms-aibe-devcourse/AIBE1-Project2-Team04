@@ -30,12 +30,6 @@ public class FileUploadService {
     @Value("${supabase.bucket.name}")
     private String bucketName;
 
-    /**
-     * Supabase Storage에 이미지를 업로드합니다.
-     * @param file 업로드할 이미지 파일
-     * @return 업로드된 이미지의 공개 URL
-     * @throws IOException 업로드 중 오류가 발생한 경우
-     */
     public String uploadImageToSupabase(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             logger.warn("업로드할 파일이 없습니다.");
@@ -98,7 +92,7 @@ public class FileUploadService {
         }
     }
 
-    // 테스트용 Supabase 연결 정보 반환 메서드
+    // 테스트용 Supabase 연결 정보 반환
     public String getSupabaseInfo() {
         return "URL: " + supabaseUrl + ", Bucket: " + bucketName;
     }
