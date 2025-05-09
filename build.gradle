@@ -44,9 +44,6 @@ dependencies {
     // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
-    //임시 supabase
-    implementation 'io.github.jan-tennert.supabase:storage-kt:1.4.7'
-
 }
 
 tasks.named('test') {
