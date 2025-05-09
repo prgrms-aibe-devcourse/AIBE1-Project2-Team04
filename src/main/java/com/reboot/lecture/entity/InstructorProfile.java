@@ -1,4 +1,4 @@
-package com.reboot.course.entity;
+package com.reboot.lecture.entity;
 
 public class InstructorProfile {
 }
