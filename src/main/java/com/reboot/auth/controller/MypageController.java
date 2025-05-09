@@ -48,7 +48,7 @@ public class MypageController {
 
         // 인증 확인
         if (principal == null) {
-            return "redirect:/login";  // 로그인 페이지로 리다이렉트
+            return "redirect:/auth/login";  // 로그인 페이지로 리다이렉트
         }
 
         // 로그인 사용자 정보 조회
