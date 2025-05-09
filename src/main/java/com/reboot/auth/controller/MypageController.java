@@ -34,9 +34,9 @@ public class MypageController {
     private final MypageService mypageService;
 
     public MypageController(MemberRepository memberRepository,
-                            GameRepository gameRepository,
-                            ReservationRepository reservationRepository,
-                            MypageService mypageService) {
+                             GameRepository gameRepository,
+                             ReservationRepository reservationRepository,
+                             MypageService mypageService) {
         this.memberRepository = memberRepository;
         this.gameRepository = gameRepository;
         this.reservationRepository = reservationRepository;

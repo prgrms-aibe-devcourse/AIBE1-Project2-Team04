@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 수정 - 게임 코칭 매칭 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .image-preview {
+            width: 128px;
+            height: 128px;
+            background-color: #f3f4f6;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-preview-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #4F46E5;
+            color: white;
+            font-size: 3rem;
+        }
+        .readonly-field {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<!-- 네비게이션 바 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">logo</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">코치찾기</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">커뮤니티</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="relative hidden md:block">
+                <input type="text" placeholder="게임, 코치, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
+                    <i class="ri-search-line"></i>
+                </div>
+            </div>
+            <div class="relative">
+                <button id="userMenuButton" class="flex items-center space-x-2">
+                    <span class="text-sm font-medium" th:text="${member != null ? member.username : '사용자'}">사용자명</span>
+                    <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+                        <img th:if="${member != null && member.profileImage != null}" th:src="${member.profileImage}" alt="프로필 이미지" class="w-full h-full object-cover">
+                        <div th:unless="${member != null && member.profileImage != null}" class="w-full h-full flex items-center justify-center bg-primary text-white">
+                            <span th:text="${member != null ? #strings.substring(member.name, 0, 1) : 'U'}">U</span>
+                        </div>
+                    </div>
+                </button>
+                <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden">
+                    <div class="py-1">
+                        <a href="/mypage" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">마이페이지</a>
+                        <a href="/mypage/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">프로필 수정</a>
+                        <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">로그아웃</a>
+                    </div>
+                </div>
+            </div>
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 콘텐츠 -->
+<div class="container mx-auto px-4 py-8">
+    <!-- 알림 메시지 -->
+    <div th:if="${message}" class="mb-6 p-4 bg-green-100 border border-green-300 text-green-700 rounded">
+        <p th:text="${message}">성공 메시지</p>
+    </div>
+    <div th:if="${error}" class="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded">
+        <p th:text="${error}">오류 메시지</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6">
+        <!-- 사이드바 -->
+        <div class="w-full md:w-64 shrink-0">
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
+                        <img th:if="${member != null && member.profileImage != null}" th:src="${member.profileImage}" alt="프로필 이미지" class="w-full h-full object-cover">
+                        <div th:unless="${member != null && member.profileImage != null}" class="w-full h-full flex items-center justify-center bg-primary text-white text-2xl">
+                            <span th:text="${member != null ? #strings.substring(member.name, 0, 1) : 'U'}">U</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold" th:text="${member != null ? member.name : '사용자 이름'}">사용자 이름</h2>
+                        <p class="text-gray-500 text-sm" th:text="${member != null ? member.email : 'user@example.com'}">user@example.com</p>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <a href="/mypage" class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded-md">마이페이지 홈</a>
+                    <a href="/mypage/profile" class="block py-2 px-3 bg-primary text-white rounded-md font-medium">프로필 수정</a>
+                    <a href="/mypage/password" class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded-md">비밀번호 변경</a>
+                    <a href="/mypage/games" class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded-md">게임 정보</a>
+                    <a href="/mypage/reservations" class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded-md">수강 신청 내역</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <div class="flex-1">
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h3 class="text-lg font-bold mb-6">프로필 수정</h3>
+
+                <form th:action="@{/mypage/profile}" method="post" enctype="multipart/form-data" class="space-y-6" id="profileForm">
+                    <!-- 프로필 이미지 -->
+                    <div class="flex flex-col items-center sm:items-start sm:flex-row gap-6">
+                        <div class="image-preview">
+                            <img th:if="${member != null && member.profileImage != null}" th:src="${member.profileImage}" alt="프로필 이미지" id="profilePreview">
+                            <div th:unless="${member != null && member.profileImage != null}" class="image-preview-placeholder" id="profilePlaceholder">
+                                <span th:text="${member != null ? #strings.substring(member.name, 0, 1) : 'U'}">U</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col justify-center">
+                            <label for="profileImage" class="mb-2 block text-sm font-medium text-gray-700">프로필 이미지</label>
+                            <input type="file" id="profileImage" name="profileImage" accept="image/jpeg,image/png,image/gif" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none">
+                            <p class="mt-1 text-xs text-gray-500">PNG, JPG, GIF 파일 (최대 5MB)</p>
+                        </div>
+                    </div>
+
+                    <!-- 히든 필드로 변경 불가능한 정보 전달 -->
+                    <input type="hidden" name="username" th:value="${profileDTO.username}">
+                    <input type="hidden" name="name" th:value="${profileDTO.name}">
+                    <input type="hidden" name="email" th:value="${profileDTO.email}">
+
+                    <!-- 읽기 전용 필드 (변경 불가) -->
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">사용자명 (변경 불가)</label>
+                        <input type="text" id="username" th:value="${profileDTO.username}" readonly
+                               class="px-3 py-2 w-full readonly-field border border-gray-300 rounded focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">이름 (변경 불가)</label>
+                        <input type="text" id="name" th:value="${profileDTO.name}" readonly
+                               class="px-3 py-2 w-full readonly-field border border-gray-300 rounded focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">이메일 (변경 불가)</label>
+                        <input type="email" id="email" th:value="${profileDTO.email}" readonly
+                               class="px-3 py-2 w-full readonly-field border border-gray-300 rounded focus:outline-none">
+                    </div>
+
+                    <!-- 변경 가능한 필드 -->
+                    <div>
+                        <label for="nickname" class="block text-sm font-medium text-gray-700 mb-1">닉네임</label>
+                        <input type="text" id="nickname" name="nickname" th:value="${profileDTO.nickname}" required
+                               class="px-3 py-2 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <p class="mt-1 text-xs text-gray-500" id="nicknameError"></p>
+                    </div>
+
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
+                        <input type="tel" id="phone" name="phone" th:value="${profileDTO.phone}"
+                               placeholder="예: 010-1234-5678"
+                               class="px-3 py-2 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <p class="mt-1 text-xs text-gray-500" id="phoneError"></p>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            저장하기
+                        </button>
+                    </div>
+                </form>
+
+                <!-- 비밀번호 변경 링크 -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <h3 class="text-lg font-medium mb-4">계정 보안</h3>
+                    <a href="/mypage/password" class="inline-block bg-gray-200 text-gray-700 px-4 py-2 rounded-button hover:bg-gray-300 transition">비밀번호 변경</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 간소화된 푸터 -->
+<footer class="bg-gray-900 text-white mt-auto pt-10 pb-6">
+    <div class="container mx-auto px-4 text-center">
+        <p class="text-gray-400">© 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 사용자 메뉴 토글
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userMenu = document.getElementById('userMenu');
+
+        if (userMenuButton && userMenu) {
+            userMenuButton.addEventListener('click', function() {
+                userMenu.classList.toggle('hidden');
+            });
+
+            // 메뉴 외부 클릭 시 닫기
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // 이미지 미리보기
+        const profileImage = document.getElementById('profileImage');
+        const profilePreview = document.getElementById('profilePreview');
+        const profilePlaceholder = document.getElementById('profilePlaceholder');
+
+        if (profileImage) {
+            profileImage.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    // 파일 크기 검증 (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('파일 크기는 5MB 이하여야 합니다.');
+                        this.value = '';
+                        return;
+                    }
+
+                    // 파일 형식 검증
+                    if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
+                        alert('허용된 파일 형식은 JPEG, PNG, GIF입니다.');
+                        this.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (profilePreview) {
+                            profilePreview.src = e.target.result;
+                            profilePreview.style.display = 'block';
+                            if (profilePlaceholder) {
+                                profilePlaceholder.style.display = 'none';
+                            }
+                        } else {
+                            // 미리보기 이미지가 없는 경우, 새로 생성
+                            const newPreview = document.createElement('img');
+                            newPreview.id = 'profilePreview';
+                            newPreview.src = e.target.result;
+                            newPreview.alt = '프로필 이미지';
+                            newPreview.className = 'w-full h-full object-cover';
+
+                            const previewContainer = document.querySelector('.image-preview');
+                            if (previewContainer) {
+                                if (profilePlaceholder) {
+                                    profilePlaceholder.style.display = 'none';
+                                }
+                                previewContainer.appendChild(newPreview);
+                            }
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // 폼 유효성 검사
+        const profileForm = document.getElementById('profileForm');
+        const nickname = document.getElementById('nickname');
+        const phone = document.getElementById('phone');
+        const nicknameError = document.getElementById('nicknameError');
+        const phoneError = document.getElementById('phoneError');
+
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                let isValid = true;
+
+                // 닉네임 검증
+                if (nickname.value.trim() === '') {
+                    nicknameError.textContent = '닉네임은 필수 입력 항목입니다.';
+                    nicknameError.classList.add('text-red-500');
+                    isValid = false;
+                } else {
+                    nicknameError.textContent = '';
+                }
+
+                // 전화번호 검증 (입력된 경우만)
+                if (phone.value.trim() !== '' && !phone.value.match(/^\d{3}-\d{3,4}-\d{4}$/)) {
+                    phoneError.textContent = '전화번호 형식이 올바르지 않습니다 (예: 010-1234-5678)';
+                    phoneError.classList.add('text-red-500');
+                    isValid = false;
+                } else {
+                    phoneError.textContent = '';
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

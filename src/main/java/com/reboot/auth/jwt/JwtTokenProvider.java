@@ -136,7 +136,7 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(user, null, authorities);
     }
 
-
+    
     // 공통 Claims Parser
     private Claims parseClaims(String token) {
         return Jwts.parser()
