@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>결제 성공</title>
+</head>
+<body>
+<h2>결제가 성공적으로 완료되었습니다!</h2>
+<a href="/">메인으로 돌아가기</a><br>
+<a th:href="@{/refunds/form(paymentId=${paymentId})}">결제 취소하기</a>
+</body>
+</html>

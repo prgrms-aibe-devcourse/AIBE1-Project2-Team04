@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>환불 결과</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>환불 결과</h1>
+    <p>환불이 완료되었습니다.</p>
+
+    <div th:if="${message}" class="alert alert-success">
+        <p th:text="${message}"></p>
+        <p th:if="${refundNo}"><strong>환불 번호:</strong> <span th:text="${refundNo}"></span></p>
+        <p th:if="${status}"><strong>환불 상태:</strong> <span th:text="${status}"></span></p>
+
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div class="buttons">
+        <a th:href="@{/}" class="btn btn-primary">홈으로</a>
+        <a th:if="${refundNo}" th:href="@{/refunds/history/refund/{refundNo}(refundNo=${refundNo})}" class="btn btn-info">환불 상세 내역</a>
+    </div>
+</div>
+</body>
+</html>

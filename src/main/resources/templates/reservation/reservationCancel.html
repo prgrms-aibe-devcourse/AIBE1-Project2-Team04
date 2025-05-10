@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 취소</title>
+</head>
+<body>
+<h2>예약 취소</h2>
+<form th:action="@{/reservation/{id}/cancel(id=${reservationId})}" method="post">
+    <p>정말로 예약을 취소하시겠습니까?</p>
+    <button type="submit">취소하기</button>
+    <a th:href="@{/reservation/{id}(id=${reservationId})}">돌아가기</a>
+</form>
+</body>
+</html>

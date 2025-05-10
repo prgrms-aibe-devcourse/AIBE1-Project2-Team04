@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>결제 환불</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>결제 환불</h1>
+    <div class="payment-info">
+        <p><strong>결제 ID:</strong> <span th:text="${payment.paymentId}"></span></p>
+        <p><strong>결제 금액:</strong> <span th:text="${payment.price}"></span>원</p>
+        <p><strong>결제 상태:</strong> <span th:text="${payment.status}"></span></p>
+        <p><strong>결제 일시:</strong> <span th:text="${payment.paymentAt}"></span></p>
+    </div>
+
+    <form th:action="@{/refunds/process}" method="post">
+        <input type="hidden" name="paymentId" th:value="${payment.paymentId}">
+        <!-- 전액 환불 기본값 -->
+        <input type="hidden" name="amount" th:value="${payment.price}">
+        <div class="form-group">
+            <label for="reason">환불 사유</label>
+            <textarea id="reason" name="reason" rows="3" placeholder="환불 사유를 입력하세요"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">환불 요청</button>
+        <a th:href="@{/}" class="btn btn-secondary">취소</a>
+    </form>
+</div>
+</body>
+</html>
