@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class ReservationResponseDto {
-    private Long reservationDetailId;
+    private Long reservationId;
     private Long memberId;
     private String memberName;
     private Long instructorId;
@@ -29,7 +29,6 @@ public class ReservationResponseDto {
     private String replayUrl;
 
     // 리플레이 목록 추가 (필드 위치 이동)
-    @Builder.Default
     private List<ReplayResponse> replays = new ArrayList<>();
 
     // replayId가 존재하는지 확인하는 헬퍼 메소드

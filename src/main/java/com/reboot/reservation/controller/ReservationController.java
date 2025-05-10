@@ -10,7 +10,7 @@ import com.reboot.auth.entity.Member;
 import com.reboot.lecture.entity.Lecture;
 import com.reboot.lecture.service.LectureService;
 import com.reboot.auth.service.MemberService;
-import com.reboot.reservation.service.ReservationDetailService;
+import com.reboot.reservation.service.ReservationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +28,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/reservation")
 @Slf4j
-public class ReservationDetailController {
-    private final ReservationDetailService reservationDetailService;
+public class ReservationController {
+    private final ReservationService reservationService;
     private final LectureService lectureService;
     private final MemberService memberService;
     private final ReplayService replayService;
@@ -53,10 +53,10 @@ public class ReservationDetailController {
 
         // 기존 예약이 있는 경우 해당 예약의 리플레이 목록도 조회
         try {
-            List<ReservationResponseDto> existingReservations = reservationDetailService.getReservationsByMemberAndLecture(memberId, lectureId);
+            List<ReservationResponseDto> existingReservations = reservationService.getReservationsByMemberAndLecture(memberId, lectureId);
             if (!existingReservations.isEmpty()) {
                 ReservationResponseDto existingReservation = existingReservations.get(0);
-                List<ReplayResponse> existingReplays = replayService.getReplaysByReservationDetailId(existingReservation.getReservationDetailId());
+                List<ReplayResponse> existingReplays = replayService.getReplaysByReservationId(existingReservation.getReservationId());
                 model.addAttribute("existingReplays", existingReplays);
                 model.addAttribute("existingReservation", existingReservation);
             }
@@ -88,8 +88,8 @@ public class ReservationDetailController {
             }
 
             // 예약 생성
-            ReservationResponseDto responseDto = reservationDetailService.createReservation(requestDto);
-            log.info("예약 생성 완료: 예약 ID = {}", responseDto.getReservationDetailId());
+            ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
+            log.info("예약 생성 완료: 예약 ID = {}", responseDto.getReservationId());
 
             // 리플레이 URLs가 있으면 처리
             if (replayUrls != null && !replayUrls.isEmpty()) {
@@ -97,7 +97,7 @@ public class ReservationDetailController {
                 for (String url : replayUrls) {
                     if (url != null && !url.trim().isEmpty()) {
                         ReplayRequest replayRequest = new ReplayRequest();
-                        replayRequest.setReservationDetailId(responseDto.getReservationDetailId());
+                        replayRequest.setReservationId(responseDto.getReservationId());
                         replayRequest.setFileUrl(url);
                         replayService.saveReplay(replayRequest);
                     }
@@ -108,13 +108,13 @@ public class ReservationDetailController {
             redirectAttributes.addFlashAttribute("refresh", true);
 
             // 예약 ID가 null인지 확인
-            if (responseDto.getReservationDetailId() == null) {
+            if (responseDto.getReservationId() == null) {
                 log.error("생성된 예약의 ID가 null입니다");
                 return "redirect:/error";
             }
 
             // 리다이렉트 시 예약 ID 전달
-            return "redirect:/reservation/" + responseDto.getReservationDetailId();
+            return "redirect:/reservation/" + responseDto.getReservationId();
         } catch (Exception e) {
             // 오류 로깅
             log.error("예약 생성 중 오류 발생: {}", e.getMessage(), e);
@@ -145,11 +145,11 @@ public class ReservationDetailController {
     public String viewReservation(@PathVariable Long id, Model model) {
         try {
             // 예약 정보 로드
-            ReservationResponseDto reservation = reservationDetailService.getReservation(id);
+            ReservationResponseDto reservation = reservationService.getReservation(id);
             model.addAttribute("reservation", reservation);
 
             // 예약에 연결된 리플레이 로드 (중요!)
-            List<ReplayResponse> replays = replayService.getReplaysByReservationDetailId(id);
+            List<ReplayResponse> replays = replayService.getReplaysByReservationId(id);
             if (!replays.isEmpty()) {
                 model.addAttribute("replay", replays.get(0)); // 첫 번째 리플레이 표시
                 model.addAttribute("allReplays", replays); // 모든 리플레이 목록도 추가
@@ -168,13 +168,13 @@ public class ReservationDetailController {
     @PostMapping("/{id}/cancel")
     public String cancelReservation(@ModelAttribute ReservationCancelDto cancelDto, RedirectAttributes redirectAttributes) {
         try {
-            ReservationResponseDto reservation = reservationDetailService.cancelReservation(cancelDto);
+            ReservationResponseDto reservation = reservationService.cancelReservation(cancelDto);
             redirectAttributes.addFlashAttribute("message", "예약이 성공적으로 취소되었습니다.");
             redirectAttributes.addFlashAttribute("refresh", true); // 캐시 갱신 플래그
-            return "redirect:/reservation/" + reservation.getReservationDetailId();
+            return "redirect:/reservation/" + reservation.getReservationId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/reservation/" + cancelDto.getReservationDetailId();
+            return "redirect:/reservation/" + cancelDto.getReservationId();
         }
     }
 
@@ -185,11 +185,11 @@ public class ReservationDetailController {
     public String getReservation(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             // 예약 정보 조회
-            ReservationResponseDto reservation = reservationDetailService.getReservation(id);
+            ReservationResponseDto reservation = reservationService.getReservation(id);
 
             // 예약에 연결된 모든 리플레이 조회하여 reservation 객체에 설정
             if (reservation.getReplays() == null || reservation.getReplays().isEmpty()) {
-                List<ReplayResponse> replays = replayService.getReplaysByReservationDetailId(id);
+                List<ReplayResponse> replays = replayService.getReplaysByReservationId(id);
                 reservation.setReplays(replays);
 
                 // 기존 호환성을 위해 첫 번째 리플레이 정보도 설정
@@ -220,7 +220,7 @@ public class ReservationDetailController {
      */
     @GetMapping("/member/{memberId}")
     public String getReservationsByMember(@PathVariable Long memberId, Model model) {
-        model.addAttribute("reservations", reservationDetailService.getReservationsByMember(memberId));
+        model.addAttribute("reservations", reservationService.getReservationsByMember(memberId));
         return "reservation/reservationList";
     }
 
@@ -233,13 +233,13 @@ public class ReservationDetailController {
                                                   @RequestParam(required = false) List<String> replayUrls) {
         try {
             // 예약 생성
-            ReservationResponseDto responseDto = reservationDetailService.createReservation(requestDto);
+            ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
 
             // 리플레이 URLs가 있으면 처리
             if (replayUrls != null && !replayUrls.isEmpty()) {
                 for (String url : replayUrls) {
                     ReplayRequest replayRequest = new ReplayRequest();
-                    replayRequest.setReservationDetailId(responseDto.getReservationDetailId());
+                    replayRequest.setReservationId(responseDto.getReservationId());
                     replayRequest.setFileUrl(url);
                     replayService.saveReplay(replayRequest);
                 }
@@ -249,8 +249,8 @@ public class ReservationDetailController {
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "예약이 성공적으로 생성되었습니다.");
-            response.put("reservationId", responseDto.getReservationDetailId());
-            response.put("redirectUrl", "/reservation/" + responseDto.getReservationDetailId());
+            response.put("reservationId", responseDto.getReservationId());
+            response.put("redirectUrl", "/reservation/" + responseDto.getReservationId());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {

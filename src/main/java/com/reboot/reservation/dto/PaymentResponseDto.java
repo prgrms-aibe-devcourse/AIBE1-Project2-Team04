@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PaymentResponseDto {
     private Long paymentId;
-    private Long reservationDetailId;
+    private Long reservationId;
     private Integer price;
     private LocalDateTime date;
     private String method;

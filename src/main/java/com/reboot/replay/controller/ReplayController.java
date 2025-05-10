@@ -4,7 +4,7 @@ import com.reboot.replay.dto.ReplayRequest;
 import com.reboot.replay.dto.ReplayResponse;
 import com.reboot.replay.service.ReplayService;
 import com.reboot.reservation.dto.ReservationResponseDto;
-import com.reboot.reservation.service.ReservationDetailService;
+import com.reboot.reservation.service.ReservationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,21 +20,21 @@ import java.util.List;
 public class ReplayController {
 
     private final ReplayService replayService;
-    private final ReservationDetailService reservationDetailService;
+    private final ReservationService reservationService;
 
     // 리플레이 업로드 폼 페이지
     @GetMapping("/upload")
-    public String showUploadForm(@RequestParam(required = false) Long reservationDetailId, Model model) {
+    public String showUploadForm(@RequestParam(required = false) Long reservationId, Model model) {
         ReplayRequest request = new ReplayRequest();
-        if (reservationDetailId != null) {
-            request.setReservationDetailId(reservationDetailId);
+        if (reservationId != null) {
+            request.setReservationId(reservationId);
         }
         model.addAttribute("replayRequest", request);
 
         // 예약 정보가 있으면 해당 정보도 모델에 추가
-        if (reservationDetailId != null) {
+        if (reservationId != null) {
             try {
-                model.addAttribute("reservation", reservationDetailService.getReservation(reservationDetailId));
+                model.addAttribute("reservation", reservationService.getReservation(reservationId));
             } catch (EntityNotFoundException e) {
                 // 예약이 존재하지 않는 경우의 처리
                 return "redirect:/error";
@@ -49,11 +49,11 @@ public class ReplayController {
     public String showAddReplayForm(@PathVariable Long reservationId, Model model) {
         try {
             // 예약 정보 조회
-            ReservationResponseDto reservation = reservationDetailService.getReservation(reservationId);
+            ReservationResponseDto reservation = reservationService.getReservation(reservationId);
             model.addAttribute("reservation", reservation);
 
             // 이미 리플레이가 있는지 확인
-            List<ReplayResponse> existingReplays = replayService.getReplaysByReservationDetailId(reservationId);
+            List<ReplayResponse> existingReplays = replayService.getReplaysByReservationId(reservationId);
             if (!existingReplays.isEmpty()) {
                 // 리플레이가 이미 있는 경우, 템플릿에서 처리하기 위해 모델에 추가
                 model.addAttribute("existingReplays", existingReplays);
@@ -61,7 +61,7 @@ public class ReplayController {
 
             // 새 리플레이 요청 객체 생성
             ReplayRequest replayRequest = new ReplayRequest();
-            replayRequest.setReservationDetailId(reservationId);
+            replayRequest.setReservationId(reservationId);
             model.addAttribute("replayRequest", replayRequest);
 
             return "replay/upload-form";
@@ -87,7 +87,7 @@ public class ReplayController {
             return "redirect:/replays/" + response.getReplayId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/replays/upload?reservationId=" + request.getReservationDetailId();
+            return "redirect:/replays/upload?reservationId=" + request.getReservationId();
         }
     }
 
@@ -106,11 +106,11 @@ public class ReplayController {
     // 예약별 리플레이 목록 조회
     @GetMapping("/reservation/{reservationId}")
     public String listReplaysByReservation(@PathVariable Long reservationId, Model model) {
-        List<ReplayResponse> replays = replayService.getReplaysByReservationDetailId(reservationId);
+        List<ReplayResponse> replays = replayService.getReplaysByReservationId(reservationId);
         model.addAttribute("replays", replays);
 
         try {
-            model.addAttribute("reservation", reservationDetailService.getReservation(reservationId));
+            model.addAttribute("reservation", reservationService.getReservation(reservationId));
         } catch (EntityNotFoundException e) {
             return "redirect:/error";
         }
@@ -126,7 +126,7 @@ public class ReplayController {
 
             // ReplayResponse를 ReplayRequest로 변환하여 폼에 사용
             ReplayRequest request = ReplayRequest.builder()
-                    .reservationDetailId(replay.getReservationDetailId())
+                    .reservationId(replay.getReservationId())
                     .fileUrl(replay.getFileUrl())
                     .build();
 
@@ -135,7 +135,7 @@ public class ReplayController {
 
             // 예약 정보도 모델에 추가
             try {
-                model.addAttribute("reservation", reservationDetailService.getReservation(replay.getReservationDetailId()));
+                model.addAttribute("reservation", reservationService.getReservation(replay.getReservationId()));
             } catch (EntityNotFoundException e) {
                 // 예약 정보가 없는 경우 무시
             }
@@ -156,7 +156,7 @@ public class ReplayController {
             ReplayResponse currentReplay = replayService.getReplay(replayId);
 
             // request에 현재 예약 ID 설정 (폼에서 넘어온 값 무시)
-            request.setReservationDetailId(currentReplay.getReservationDetailId());
+            request.setReservationId(currentReplay.getReservationId());
 
             // 업데이트 수행
             ReplayResponse response = replayService.updateReplay(replayId, request);

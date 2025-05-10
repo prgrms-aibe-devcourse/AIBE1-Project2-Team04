@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ReplayRepository extends JpaRepository<Replay, Long> {
-    List<Replay> findByReservationDetail_ReservationDetailId(Long reservationDetailId);
+    List<Replay> findByReservationReservationId(Long reservationId);
 }

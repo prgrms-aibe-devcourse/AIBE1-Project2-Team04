@@ -110,7 +110,7 @@
 
     <div class="info-row">
         <span class="info-label">예약번호:</span>
-        <span class="info-value" th:text="${reservation.reservationDetailId}"></span>
+        <span class="info-value" th:text="${reservation.reservationId}"></span>
     </div>
 
     <div class="info-row">
@@ -193,7 +193,7 @@
     <!-- 리플레이 목록 버튼 삭제하고 필요한 버튼만 유지 -->
     <div class="actions">
         <a id="reservation-again-btn" th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}" class="btn btn-primary">다시 예약하기</a>
-        <a id="reservation-cancel-btn" th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationDetailId})}" class="btn btn-danger">예약 취소하기</a>
+        <a id="reservation-cancel-btn" th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}" class="btn btn-danger">예약 취소하기</a>
     </div>
 </div>
 

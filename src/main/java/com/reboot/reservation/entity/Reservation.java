@@ -16,11 +16,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReservationDetail {
+public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reservationDetailId;
+    private Long reservationId;
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
@@ -44,10 +44,10 @@ public class ReservationDetail {
 
     private String cancelReason;  // 예약 취소 사유
 
-    @OneToOne(mappedBy = "reservationDetail", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL)
     private Payment payment;
 
-    @OneToMany(mappedBy = "reservationDetail", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     @Builder.Default  // 이 어노테이션 추가
     private List<Replay> replays = new ArrayList<>();
 
