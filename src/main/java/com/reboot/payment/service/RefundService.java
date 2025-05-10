@@ -43,7 +43,7 @@ public class RefundService {
                 .orElseThrow(() -> new RuntimeException("결제 정보를 찾을 수 없습니다"));
     }
 
-     // 환불 처리와 동시에 환불 내역 저장
+    // 환불 처리와 동시에 환불 내역 저장
     @Transactional // DB 트랜잭션 처리 보장
     public RefundHistory processRefundWithHistory(Long paymentId, Integer amount, String reason) throws Exception {
         // 결제 정보 조회
