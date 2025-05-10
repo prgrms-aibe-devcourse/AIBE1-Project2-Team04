@@ -43,7 +43,9 @@ jwt:
 
 # Swagger - 운영 환경에서는 비활성화
 springdoc:
-  swagger-ui:
-    enabled: false
   api-docs:
-    enabled: false
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  packages-to-scan: com.reboot
