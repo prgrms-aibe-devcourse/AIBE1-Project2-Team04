@@ -3,10 +3,9 @@ DROP TABLE IF EXISTS replay;
 DROP TABLE IF EXISTS refund_history;
 DROP TABLE IF EXISTS toss_transaction;
 DROP TABLE IF EXISTS payment;
-DROP TABLE IF EXISTS reservation_detail; -- 이름 변경: reservation -> reservation_detail
+DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS survey;
 DROP TABLE IF EXISTS lecture_ibfk_1;
-DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS lecture;
 DROP TABLE IF EXISTS instructor;
 DROP TABLE IF EXISTS game;
@@ -88,9 +87,9 @@ CREATE TABLE survey (
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 ) ENGINE=InnoDB;
 
--- Create ReservationDetail table (테이블명 변경 및 PK 컬럼명 변경)
-CREATE TABLE reservation_detail (
-    reservation_detail_id BIGINT AUTO_INCREMENT PRIMARY KEY, -- 컬럼명 변경: reservation_id -> reservation_detail_id
+-- Create Reservation table based on Reservation entity
+CREATE TABLE reservation (
+    reservation_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id BIGINT NOT NULL,
     instructor_id BIGINT NOT NULL,
     lecture_id BIGINT NOT NULL,
@@ -105,24 +104,24 @@ CREATE TABLE reservation_detail (
     FOREIGN KEY (lecture_id) REFERENCES lecture(lecture_id)
 ) ENGINE=InnoDB;
 
--- Create Payment table (외래키 참조 테이블명 및 컬럼명 변경)
+-- Create Payment table
 CREATE TABLE payment (
     payment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    reservation_detail_id BIGINT UNIQUE NOT NULL,  -- 컬럼명 변경: reservation_id -> reservation_detail_id
+    reservation_id BIGINT UNIQUE NOT NULL,
     amount DECIMAL(10, 2),
     payment_date DATETIME,
     payment_status VARCHAR(50),
     payment_method VARCHAR(50),
 
-    FOREIGN KEY (reservation_detail_id) REFERENCES reservation_detail(reservation_detail_id)
+    FOREIGN KEY (reservation_id) REFERENCES reservation(reservation_id)
 ) ENGINE=InnoDB;
 
--- Create Replay table (외래키 참조 테이블명 및 컬럼명 변경)
+-- Create Replay table
 CREATE TABLE replay (
     replay_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    reservation_id BIGINT NOT NULL, -- 이 컬럼명은 그대로 유지 (entity에서 @JoinColumn(name = "reservation_id")로 명시됨)
+    reservation_id BIGINT NOT NULL,
     file_url VARCHAR(500),
     date DATETIME,
 
-    FOREIGN KEY (reservation_id) REFERENCES reservation_detail(reservation_detail_id) -- 참조 테이블과 컬럼 변경
+    FOREIGN KEY (reservation_id) REFERENCES reservation(reservation_id)
 ) ENGINE=InnoDB;

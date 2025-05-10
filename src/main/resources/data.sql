@@ -131,4 +131,19 @@ VALUES
 (6, '발로란트 에이밍 마스터', '정확한 조준 능력 향상 훈련법', 'VALORANT', 25000, NULL, 120, 'GOLD,PLATINUM', 'DUELIST', 4.8, 35, 18, NOW(), NOW()),
 (6, '발로란트 초보자 가이드', '기본기부터 시작하는 입문 과정', 'VALORANT', 18000, NULL, 80, 'IRON,BRONZE', 'ALL', 4.7, 50, 25, NOW(), NOW()),
 (7, '센티널 역할 완벽 가이드', '사이트 홀딩과 팀 지원 전략', 'VALORANT', 22000, NULL, 95, 'SILVER,GOLD', 'SENTINEL', 4.6, 30, 15, NOW(), NOW()),
-(8, '이니시에이터 유틸리티 활용법', '정보 수집과 진입 지원 최적화', 'VALORANT', 23000, NULL, 100, 'GOLD,PLATINUM', 'INITIATOR',
+(8, '이니시에이터 유틸리티 활용법', '정보 수집과 진입 지원 최적화', 'VALORANT', 23000, NULL, 100, 'GOLD,PLATINUM', 'INITIATOR', 4.7, 25, 12, NOW(), NOW()),
+(9, '컨트롤러 연막 활용 마스터', '효과적인 맵 통제와 팀 플레이', 'VALORANT', 24000, NULL, 110, 'PLATINUM,DIAMOND', 'CONTROLLER', 4.8, 20, 10, NOW(), NOW()),
+
+-- TFT Lectures
+(10, 'TFT 기초부터 고급 전략까지', '롤체스 전반적인 메커니즘 이해', 'TFT', 20000, NULL, 90, 'IRON,BRONZE,SILVER', 'ALL', 4.5, 40, 20, NOW(), NOW()),
+(10, 'TFT 후반 운영과 포지셔닝', '결승권에서 1등을 따내는 법', 'TFT', 25000, NULL, 120, 'GOLD,PLATINUM', 'ALL', 4.7, 30, 15, NOW(), NOW()),
+(11, 'TFT 아이템 활용 최적화', '상황별 최적의 아이템 조합', 'TFT', 22000, NULL, 95, 'SILVER,GOLD', 'ALL', 4.6, 35, 17, NOW(), NOW()),
+(12, 'TFT 초반 운영 마스터', '좋은 출발을 위한 전략', 'TFT', 21000, NULL, 85, 'BRONZE,SILVER', 'ALL', 4.5, 38, 19, NOW(), NOW()),
+(13, 'TFT 메타 분석과 대응법', '현재 메타 이해와 카운터 전략', 'TFT', 23000, NULL, 100, 'GOLD,PLATINUM,DIAMOND', 'ALL', 4.8, 25, 12, NOW(), NOW()),
+
+-- Additional Lectures
+(14, 'LOL 커뮤니케이션 스킬', '팀원과의 효과적인 소통 방법', 'LOL', 19000, NULL, 75, 'ALL', 'ALL', 4.4, 45, 22, NOW(), NOW()),
+(15, '게임 심리학과 멘탈 관리', '틸트 극복과 집중력 유지 전략', 'ALL', 18000, NULL, 70, 'ALL', 'ALL', 4.5, 50, 25, NOW(), NOW()),
+(16, '프로 선수처럼 연습하기', '효율적인 솔로 랭크 연습법', 'ALL', 24000, NULL, 110, 'PLATINUM,DIAMOND,MASTER', 'ALL', 4.9, 15, 7, NOW(), NOW()),
+(17, '초보자를 위한 게임 용어 해설', '자주 쓰이는 용어와 개념 설명', 'ALL', 15000, NULL, 60, 'IRON,BRONZE', 'ALL', 4.6, 60, 30, NOW(), NOW()),
+(18, '전략적 팀 구성과 밴픽', '팀 경기를 위한 준비와 전략', 'LOL', 26000, NULL, 130, 'DIAMOND,MASTER,GRANDMASTER', 'ALL', 4.8, 10, 5, NOW(), NOW());

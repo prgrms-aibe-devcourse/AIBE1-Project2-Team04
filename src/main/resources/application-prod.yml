@@ -18,7 +18,10 @@ spring:
         format_sql: false  # 운영 환경에서는 false로 설정
   sql:
     init:
-      mode: never  # 운영 환경에서는 never로 설정하여 초기화 스크립트 실행 방지
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
   supabase:
     url: ${SUPABASE_URL}
     access-key: ${SUPABASE_ACCESS_KEY}
