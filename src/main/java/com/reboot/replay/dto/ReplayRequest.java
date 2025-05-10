@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReplayRequest {
-    private Long reservationDetailId;
+    private Long reservationId;
     private String fileUrl;
 }

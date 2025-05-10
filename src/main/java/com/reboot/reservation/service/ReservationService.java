@@ -2,6 +2,7 @@ package com.reboot.reservation.service;
 
 import com.reboot.replay.entity.Replay;
 import com.reboot.replay.repository.ReplayRepository;
+import com.reboot.reservation.dto.ReplayResponseDto;
 import com.reboot.reservation.dto.ReservationCancelDto;
 import com.reboot.reservation.dto.ReservationRequestDto;
 import com.reboot.reservation.dto.ReservationResponseDto;
@@ -11,11 +12,11 @@ import com.reboot.replay.service.ReplayService;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.lecture.entity.Lecture;
 import com.reboot.auth.entity.Member;
+import com.reboot.reservation.entity.Reservation;
 import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.lecture.repository.LectureRepository;
 import com.reboot.auth.repository.MemberRepository;
-import com.reboot.reservation.entity.ReservationDetail;
-import com.reboot.reservation.repository.ReservationDetailRepository;
+import com.reboot.reservation.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ReservationDetailService {
-    private final ReservationDetailRepository reservationDetailRepository;
+public class ReservationService {
+    private final ReservationRepository reservationRepository;
     private final ReplayRepository replayRepository;
     private final MemberRepository memberRepository;
     private final InstructorRepository instructorRepository;
@@ -59,7 +60,7 @@ public class ReservationDetailService {
                 .orElseThrow(() -> new RuntimeException("강의를 찾을 수 없습니다."));
 
         // 예약 엔티티 생성 및 저장
-        ReservationDetail reservationDetail = com.reboot.reservation.entity.ReservationDetail.builder()
+        Reservation reservation = Reservation.builder()
                 .member(member)
                 .instructor(instructor)
                 .lecture(lecture)
@@ -69,15 +70,15 @@ public class ReservationDetailService {
                 .status("예약완료")
                 .build();
 
-        ReservationDetail savedReservationDetail = reservationDetailRepository.save(reservationDetail);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
         // 리플레이 URL이 있으면 리플레이 생성
-        ReservationResponseDto responseDto = convertToDto(savedReservationDetail);
+        ReservationResponseDto responseDto = convertToDto(savedReservation);
 
         if (dto.getYoutubeUrl() != null && !dto.getYoutubeUrl().trim().isEmpty()) {
             try {
                 ReplayRequest replayRequest = new ReplayRequest();
-                replayRequest.setReservationDetailId(savedReservationDetail.getReservationDetailId());
+                replayRequest.setReservationId(savedReservation.getReservationId());
                 replayRequest.setFileUrl(dto.getYoutubeUrl());
 
                 ReplayResponse replayResponse = replayService.saveReplay(replayRequest);
@@ -101,29 +102,29 @@ public class ReservationDetailService {
      */
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> getReservationsByMemberAndLecture(Long memberId, Long lectureId) {
-        List<ReservationDetail> reservationDetails = reservationDetailRepository.findByMember_MemberIdAndLectureId(memberId, lectureId);
+        List<Reservation> reservations = reservationRepository.findByMember_MemberIdAndLectureId(memberId, lectureId);
 
-        return reservationDetails.stream()
+        return reservations.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public ReservationResponseDto getReservation(Long reservationDetailId) {
-        ReservationDetail reservationDetail = reservationDetailRepository.findByReservationDetailId(reservationDetailId)
+    public ReservationResponseDto getReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findByReservationId(reservationId)
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 
-        ReservationResponseDto dto = convertToDto(reservationDetail);
+        ReservationResponseDto dto = convertToDto(reservation);
 
         // 리플레이 정보 조회
         try {
-            List<Replay> replays = replayRepository.findByReservationDetail_ReservationDetailId(reservationDetailId);
+            List<Replay> replays = replayRepository.findByReservationReservationId(reservationId);
             if (!replays.isEmpty()) {
                 // 리플레이 목록을 ReplayResponse로 변환하여 DTO에 설정
                 List<ReplayResponse> replayResponses = replays.stream()
                         .map(replay -> new ReplayResponse(
                                 replay.getReplayId(),
-                                replay.getReservationDetail().getReservationDetailId(),
+                                replay.getReservation().getReservationId(),
                                 replay.getFileUrl(),
                                 replay.getDate()
                         ))
@@ -151,9 +152,9 @@ public class ReservationDetailService {
      */
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> getReservationsByMember(Long memberId) {
-        List<ReservationDetail> reservationDetails = reservationDetailRepository.findByMember_MemberId(memberId);
+        List<Reservation> reservations = reservationRepository.findByMember_MemberId(memberId);
 
-        return reservationDetails.stream()
+        return reservations.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -165,20 +166,20 @@ public class ReservationDetailService {
      */
     @Transactional
     public ReservationResponseDto cancelReservation(ReservationCancelDto cancelDto) {
-        ReservationDetail reservationDetail = reservationDetailRepository.findById(cancelDto.getReservationDetailId())
+        Reservation reservation = reservationRepository.findById(cancelDto.getReservationId())
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 
-        reservationDetail.setStatus("취소");
-        reservationDetail.setCancelReason(cancelDto.getCancelReason());
-        ReservationDetail savedReservationDetail = reservationDetailRepository.save(reservationDetail);
+        reservation.setStatus("취소");
+        reservation.setCancelReason(cancelDto.getCancelReason());
+        Reservation savedReservation = reservationRepository.save(reservation);
 
         // 연관된 모든 리플레이 삭제
-        List<Replay> replays = replayRepository.findByReservationDetail_ReservationDetailId(reservationDetail.getReservationDetailId());
+        List<Replay> replays = replayRepository.findByReservationReservationId(reservation.getReservationId());
         for (Replay replay : replays) {
             replayService.deleteReplay(replay.getReplayId());
         }
 
-        return convertToDto(savedReservationDetail);
+        return convertToDto(savedReservation);
     }
 
     /**
@@ -188,47 +189,47 @@ public class ReservationDetailService {
     @Transactional
     @Deprecated
     public ReservationResponseDto cancelReservation(Long reservationId) {
-        ReservationDetail reservationDetail = reservationDetailRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다."));
 
-        reservationDetail.setStatus("취소");
-        ReservationDetail savedReservationDetail = reservationDetailRepository.save(reservationDetail);
+        reservation.setStatus("취소");
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        return convertToDto(savedReservationDetail);
+        return convertToDto(savedReservation);
     }
 
     /**
      * Reservation 엔티티를 ReservationResponseDto로 변환
      */
-    private ReservationResponseDto convertToDto(ReservationDetail reservationDetail) {
+    private ReservationResponseDto convertToDto(Reservation reservation) {
         // 새 DTO 객체 생성
         ReservationResponseDto dto = new ReservationResponseDto();
 
         // 기본 필드 설정
-        dto.setReservationDetailId(reservationDetail.getReservationDetailId());
-        dto.setMemberId(reservationDetail.getMember().getMemberId());
-        dto.setMemberName(reservationDetail.getMember().getName());
-        dto.setInstructorId(reservationDetail.getInstructor().getInstructorId());
-        dto.setInstructorName(reservationDetail.getInstructor().getMember().getName());
-        dto.setLectureId(reservationDetail.getLecture().getId());
-        dto.setDate(reservationDetail.getDate());
-        dto.setStatus(reservationDetail.getStatus());
-        dto.setRequestDetail(reservationDetail.getRequestDetail());
-        dto.setScheduleDate(reservationDetail.getScheduleDate());
-        dto.setCancelReason(reservationDetail.getCancelReason());
+        dto.setReservationId(reservation.getReservationId());
+        dto.setMemberId(reservation.getMember().getMemberId());
+        dto.setMemberName(reservation.getMember().getName());
+        dto.setInstructorId(reservation.getInstructor().getInstructorId());
+        dto.setInstructorName(reservation.getInstructor().getMember().getName());
+        dto.setLectureId(reservation.getLecture().getId());
+        dto.setDate(reservation.getDate());
+        dto.setStatus(reservation.getStatus());
+        dto.setRequestDetail(reservation.getRequestDetail());
+        dto.setScheduleDate(reservation.getScheduleDate());
+        dto.setCancelReason(reservation.getCancelReason());
 
-        // null 체크 추가, 유미
-        if (reservationDetail.getLecture() != null &&
-                reservationDetail.getLecture().getInfo() != null) {
-            dto.setLectureTitle(reservationDetail.getLecture().getInfo().getTitle());
+        // null 체크 추가
+        if (reservation.getLecture() != null &&
+                reservation.getLecture().getInfo() != null) {
+            dto.setLectureTitle(reservation.getLecture().getInfo().getTitle());
         } else {
             dto.setLectureTitle(""); // 정보가 없을 경우 빈 문자열로 설정
         }
 
         // 리플레이 정보 추가 (엔티티 관계를 통해 직접 조회)
-        if (reservationDetail.getReplay() != null) {
-            dto.setReplayId(reservationDetail.getReplay().getReplayId());
-            dto.setReplayUrl(reservationDetail.getReplay().getFileUrl());
+        if (reservation.getReplay() != null) {
+            dto.setReplayId(reservation.getReplay().getReplayId());
+            dto.setReplayUrl(reservation.getReplay().getFileUrl());
         }
 
         return dto;

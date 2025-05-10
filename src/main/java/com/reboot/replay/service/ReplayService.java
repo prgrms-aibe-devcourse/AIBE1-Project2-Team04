@@ -4,8 +4,8 @@ import com.reboot.replay.dto.ReplayRequest;
 import com.reboot.replay.dto.ReplayResponse;
 import com.reboot.replay.entity.Replay;
 import com.reboot.replay.repository.ReplayRepository;
-import com.reboot.reservation.entity.ReservationDetail;
-import com.reboot.reservation.repository.ReservationDetailRepository;
+import com.reboot.reservation.entity.Reservation;
+import com.reboot.reservation.repository.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class ReplayService {
 
     private final ReplayRepository replayRepository;
-    private final ReservationDetailRepository reservationDetailRepository;
+    private final ReservationRepository reservationRepository;
 
     // 리플레이 저장
     public ReplayResponse saveReplay(ReplayRequest request) {
@@ -27,11 +27,11 @@ public class ReplayService {
         validateYoutubeUrl(request.getFileUrl());
 
         // 예약 존재 여부 확인
-        ReservationDetail reservationDetail = reservationDetailRepository.findById(request.getReservationDetailId())
-                .orElseThrow(() -> new EntityNotFoundException("해당 예약이 존재하지 않습니다: " + request.getReservationDetailId()));
+        Reservation reservation = reservationRepository.findById(request.getReservationId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 예약이 존재하지 않습니다: " + request.getReservationId()));
 
         Replay replay = Replay.builder()
-                .reservationDetail(reservationDetail)
+                .reservation(reservation)
                 .fileUrl(request.getFileUrl())
                 .date(LocalDateTime.now())
                 .build();
@@ -89,8 +89,8 @@ public class ReplayService {
     }
 
     // 예약 ID로 리플레이 목록 조회
-    public List<ReplayResponse> getReplaysByReservationDetailId(Long reservationDetailId) {
-        List<Replay> replays = replayRepository.findByReservationDetail_ReservationDetailId(reservationDetailId);
+    public List<ReplayResponse> getReplaysByReservationId(Long reservationId) {
+        List<Replay> replays = replayRepository.findByReservationReservationId(reservationId);
 
         return replays.stream()
                 .map(this::convertToResponseDto)
@@ -108,7 +108,7 @@ public class ReplayService {
     private ReplayResponse convertToResponseDto(Replay replay) {
         return ReplayResponse.builder()
                 .replayId(replay.getReplayId())
-                .reservationDetailId(replay.getReservationDetail().getReservationDetailId())
+                .reservationId(replay.getReservation().getReservationId())
                 .fileUrl(replay.getFileUrl())
                 .date(replay.getDate())
                 .build();

@@ -38,9 +38,9 @@ public class ReplayRestController {
      * 예약별 리플레이 목록 조회 API
      */
     @GetMapping("/reservation/{reservationId}")
-    public ResponseEntity<?> getReplaysByReservation(@PathVariable Long reservationDetailId) {
+    public ResponseEntity<?> getReplaysByReservation(@PathVariable Long reservationId) {
         try {
-            List<ReplayResponse> replays = replayService.getReplaysByReservationDetailId(reservationDetailId);
+            List<ReplayResponse> replays = replayService.getReplaysByReservationId(reservationId);
             return ResponseEntity.ok(replays);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
@@ -57,10 +57,10 @@ public class ReplayRestController {
         try {
             // 현재 replay의 reservation_id를 유지하기 위해 먼저 조회
             ReplayResponse currentReplay = replayService.getReplay(replayId);
-            
+
             // request에 현재 예약 ID 설정 (요청에서 넘어온 값 무시)
-            request.setReservationDetailId(currentReplay.getReservationDetailId());
-            
+            request.setReservationId(currentReplay.getReservationId());
+
             ReplayResponse response = replayService.updateReplay(replayId, request);
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {
@@ -82,16 +82,16 @@ public class ReplayRestController {
         try {
             // 삭제 전에 리플레이 정보 가져오기 (예약 ID 확인용)
             ReplayResponse replay = replayService.getReplay(replayId);
-            
+
             // 리플레이 삭제
             replayService.deleteReplay(replayId);
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "리플레이가 성공적으로 삭제되었습니다.");
             response.put("deletedReplayId", replayId);
-            response.put("reservationDetailId", replay.getReservationDetailId());
-            
+            response.put("reservationId", replay.getReservationId());
+
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

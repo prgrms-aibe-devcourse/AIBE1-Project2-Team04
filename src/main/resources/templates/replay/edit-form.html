@@ -64,7 +64,7 @@
     <!-- 예약 정보가 있는 경우 표시 -->
     <div th:if="${reservation}" class="reservation-info">
         <h5>예약 정보</h5>
-        <p>예약 번호: <span th:text="${reservation.reservationDetailId}"></span></p>
+        <p>예약 번호: <span th:text="${reservation.reservationId}"></span></p>
         <p>수업 일시: <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
         <p>상태: <span th:text="${reservation.status}"></span></p>
     </div>
@@ -80,7 +80,7 @@
 
     <!-- 수정 폼 -->
     <form th:action="@{/replays/{id}/update(id=${replayId})}" th:object="${replayRequest}" method="post" id="replayForm">
-        <input type="hidden" th:field="*{reservationDetailId}" />
+        <input type="hidden" th:field="*{reservationId}" />
 
         <div class="mb-3">
             <label for="fileUrl" class="form-label">YouTube 링크</label>
@@ -125,7 +125,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <form th:action="@{/replays/{id}/delete(id=${replayId})}" method="post">
-                        <input type="hidden" name="reservationDetailId" th:value="${replayRequest.reservationDetailId}">
+                        <input type="hidden" name="reservationId" th:value="${replayRequest.reservationId}">
                         <button type="submit" class="btn btn-danger">삭제</button>
                     </form>
                 </div>

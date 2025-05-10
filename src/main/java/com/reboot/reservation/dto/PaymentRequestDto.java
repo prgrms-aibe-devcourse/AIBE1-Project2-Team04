@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class PaymentRequestDto {
-    private Long reservationDetailId;
+    private Long reservationId;
     private String method;
 }
