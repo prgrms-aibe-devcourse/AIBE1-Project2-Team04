@@ -1,13 +1,13 @@
 package com.reboot.auth.repository;
 
-import com.reboot.auth.entity.Reservation;
+import com.reboot.auth.entity.ReservationMy;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    List<Reservation> findByMemberId(Long memberId);
-    List<Reservation> findByInstructorId(Long instructorId);
-    List<Reservation> findByLectureId(Long lectureId);
-    List<Reservation> findByStatus(String status);
+public interface ReservationRepository extends JpaRepository<ReservationMy, Long> {
+    List<ReservationMy> findByMemberId(Long memberId);
+    List<ReservationMy> findByInstructorId(Long instructorId);
+    List<ReservationMy> findByLectureId(Long lectureId);
+    List<ReservationMy> findByStatus(String status);
 }
