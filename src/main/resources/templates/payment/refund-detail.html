@@ -20,8 +20,8 @@
             </div>
             <div class="card-body">
                 <p><strong>환불 ID:</strong> <span th:text="${refundHistory.refundId}"></span></p>
-                <p><strong>환불 번호:</strong> <span th:text="${refundHistory.refundNo}"></span></p>
-                <p><strong>결제 ID:</strong> <span th:text="${refundHistory.payment.paymentId}"></span></p>
+<!--                <p><strong>환불 번호:</strong> <span th:text="${refundHistory.refundNo}"></span></p>-->
+<!--                <p><strong>결제 ID:</strong> <span th:text="${refundHistory.payment.paymentId}"></span></p>-->
                 <p><strong>환불 금액:</strong> <span th:text="${refundHistory.refundAmount}"></span>원</p>
                 <p><strong>환불 사유:</strong> <span th:text="${refundHistory.refundReason}"></span></p>
                 <p><strong>요청 일시:</strong> <span th:text="${refundHistory.requestedAt}"></span></p>
@@ -30,15 +30,15 @@
             </div>
         </div>
 
-        <div class="card mt-4">
-            <div class="card-header">
-                <h2>응답 정보</h2>
-            </div>
-            <div class="card-body">
-                <p><strong>응답 코드:</strong> <span th:text="${refundHistory.responseCode}"></span></p>
-                <p><strong>응답 메시지:</strong> <span th:text="${refundHistory.responseMessage}"></span></p>
-            </div>
-        </div>
+<!--        <div class="card mt-4">-->
+<!--            <div class="card-header">-->
+<!--                <h2>응답 정보</h2>-->
+<!--            </div>-->
+<!--            <div class="card-body">-->
+<!--                <p><strong>응답 코드:</strong> <span th:text="${refundHistory.responseCode}"></span></p>-->
+<!--                <p><strong>응답 메시지:</strong> <span th:text="${refundHistory.responseMessage}"></span></p>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 
     <div class="buttons mt-4">
