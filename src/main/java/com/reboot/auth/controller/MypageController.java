@@ -6,7 +6,7 @@ import com.reboot.auth.entity.Member;
 import com.reboot.auth.entity.ReservationMy;
 import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
-import com.reboot.auth.repository.ReservationRepository;
+import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,13 +25,13 @@ public class MypageController {
 
     private final MemberRepository memberRepository;
     // 매칭
-    private final ReservationRepository reservationRepository;
+    private final ReservationMyRepository reservationRepository;
     private final GameRepository gameRepository;
     private final MypageService mypageService;
 
     public MypageController(MemberRepository memberRepository,
                              GameRepository gameRepository,
-                             ReservationRepository reservationRepository,
+                             ReservationMyRepository reservationRepository,
                              MypageService mypageService) {
         this.memberRepository = memberRepository;
         this.gameRepository = gameRepository;
