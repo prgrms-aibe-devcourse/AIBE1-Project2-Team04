@@ -1,6 +1,7 @@
 package com.reboot.lecture.service;
 
 import com.reboot.lecture.dto.LectureResponseDto;
+import com.reboot.lecture.entity.Lecture;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -43,4 +44,6 @@ public interface LectureService {
     // 강의 상세 페이지에서 특정 강의의 모든 정보를 조회할 때 사용
     // 강사 정보를 함께 로딩하여 N+1 문제를 방지
     LectureResponseDto getLectureById(Long id);
+
+    Lecture getLecture(Long id);
 }

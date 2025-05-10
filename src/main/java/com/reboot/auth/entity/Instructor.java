@@ -39,9 +39,11 @@ public class Instructor {
     @Column(length = 2000)
     private String description;
 
+    @Builder.Default
     @Column(name = "review_num")
     private int reviewNum = 0;
 
+    @Builder.Default
     @Column(name = "average_rating") // rating -> average_rating 수정
     private double averageRating = 0.0;
 

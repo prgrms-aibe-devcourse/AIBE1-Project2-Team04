@@ -100,4 +100,10 @@ public class LectureServiceImpl implements LectureService {
                 .map(LectureResponseDto::fromEntity)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + id));
     }
+
+    @Override
+    public Lecture getLecture(Long id) {
+        return lectureRepository.findByIdWithInstructor(id)
+                .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + id));
+    }
 }

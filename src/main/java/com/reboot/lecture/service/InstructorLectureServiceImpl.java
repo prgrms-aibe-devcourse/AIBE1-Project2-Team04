@@ -186,9 +186,10 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
         Instructor instructor = getInstructor(instructorId);
         Long memberId = instructor.getMemberId();
 
-        // 멤버 ID로 게임 정보 조회
-        return gameRepository.findByMemberMemberId(memberId)
-                .orElse(null); // 게임 정보가 없는 경우 null 반환
+        // 멤버 ID로 게임 정보 조회 - List를 처리
+        List<Game> games = gameRepository.findByMember_MemberId(memberId);
+        // 게임 정보가 없는 경우 null 반환, 있으면 첫 번째 요소 반환
+        return games.isEmpty() ? null : games.get(0);
     }
 
     // 추가: 강사의 게임 타입 조회
