@@ -3,7 +3,7 @@ package com.reboot.auth.service;
 import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.MemberRepository;
-import com.reboot.auth.repository.ReservationRepository;
+import com.reboot.auth.repository.ReservationMyRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ import java.io.IOException;
 public class MypageService {
 
     private final MemberRepository memberRepository;
-    private final ReservationRepository reservationRepository;
+    private final ReservationMyRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileUploadService fileUploadService;
 
     public MypageService(MemberRepository memberRepository,
-                         ReservationRepository reservationRepository,
+                         ReservationMyRepository reservationRepository,
                          PasswordEncoder passwordEncoder,
                          FileUploadService fileUploadService) {
         this.memberRepository = memberRepository;
