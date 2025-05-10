@@ -1,6 +1,7 @@
-package com.reboot.auth.service;
+package com.reboot.lecture.service;
 
-import com.reboot.auth.dto.InstructorResponseDto;
+import com.reboot.lecture.dto.InstructorResponseDto;
+import com.reboot.lecture.dto.InstructorResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

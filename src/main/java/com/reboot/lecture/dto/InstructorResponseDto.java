@@ -1,4 +1,4 @@
-package com.reboot.auth.dto;
+package com.reboot.lecture.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

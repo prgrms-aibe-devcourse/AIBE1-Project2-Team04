@@ -1,9 +1,10 @@
-package com.reboot.auth.service;
+package com.reboot.lecture.service;
 
-import com.reboot.auth.dto.InstructorResponseDto;
+import com.reboot.lecture.dto.InstructorResponseDto;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.exception.InstructorNotFoundException;
 import com.reboot.auth.repository.InstructorRepository;
+import com.reboot.lecture.dto.InstructorResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class InstructorServiceImpl implements com.reboot.auth.service.InstructorService {
+public class InstructorServiceImpl implements com.reboot.lecture.service.InstructorService {
 
     private final InstructorRepository instructorRepository;
 
