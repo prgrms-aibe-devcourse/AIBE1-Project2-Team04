@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리플레이 수정</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .youtube-guide {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .preview-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+
+        .reservation-info {
+            background-color: #f0f7ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mb-4 text-center">리플레이 수정</h2>
+
+    <!-- 성공/에러 메시지 표시 -->
+    <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <!-- 예약 정보가 있는 경우 표시 -->
+    <div th:if="${reservation}" class="reservation-info">
+        <h5>예약 정보</h5>
+        <p>예약 번호: <span th:text="${reservation.reservationId}"></span></p>
+        <p>수업 일시: <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p>상태: <span th:text="${reservation.status}"></span></p>
+    </div>
+
+    <!-- YouTube 링크 입력 가이드 -->
+    <div class="youtube-guide">
+        <h5>YouTube 영상 링크 입력 방법</h5>
+        <p>1. YouTube에서 공유하고자 하는 영상을 찾습니다.</p>
+        <p>2. 영상 아래의 '공유' 버튼을 클릭합니다.</p>
+        <p>3. 표시된 링크를 복사합니다 (예: https://www.youtube.com/watch?v=ABCDEFG).</p>
+        <p>4. 아래 폼의 'YouTube 링크' 란에 붙여넣습니다.</p>
+    </div>
+
+    <!-- 수정 폼 -->
+    <form th:action="@{/replays/{id}/update(id=${replayId})}" th:object="${replayRequest}" method="post" id="replayForm">
+        <input type="hidden" th:field="*{reservationId}" />
+
+        <div class="mb-3">
+            <label for="fileUrl" class="form-label">YouTube 링크</label>
+            <input type="text" class="form-control" id="fileUrl" th:field="*{fileUrl}"
+                   placeholder="https://www.youtube.com/watch?v=..." required>
+            <div class="form-text">YouTube 영상의 전체 URL을 입력해주세요.</div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="button" class="btn btn-secondary" id="previewBtn">미리보기</button>
+            <button type="submit" class="btn btn-primary">수정 완료</button>
+        </div>
+
+        <!-- 미리보기 영역 -->
+        <div class="preview-container mt-4" id="previewContainer">
+            <h5 class="mb-3">미리보기</h5>
+            <div id="videoPreview"></div>
+        </div>
+
+        <!-- 취소 및 삭제 버튼 -->
+        <div class="btn-group">
+            <a th:href="@{/replays/{id}(id=${replayId})}" class="btn btn-outline-secondary flex-fill">취소</a>
+
+            <!-- 삭제 버튼 (form 내에 있지만 별도의 액션으로 작동) -->
+            <button type="button" class="btn btn-outline-danger flex-fill" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                삭제
+            </button>
+        </div>
+    </form>
+
+    <!-- 삭제 확인 모달 -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">리플레이 삭제 확인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    이 리플레이를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <form th:action="@{/replays/{id}/delete(id=${replayId})}" method="post">
+                        <input type="hidden" name="reservationId" th:value="${replayRequest.reservationId}">
+                        <button type="submit" class="btn btn-danger">삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileUrlInput = document.getElementById('fileUrl');
+        const previewBtn = document.getElementById('previewBtn');
+        const previewContainer = document.getElementById('previewContainer');
+        const videoPreview = document.getElementById('videoPreview');
+
+        // 페이지 로드 시 기존 URL이 있으면 미리보기 표시
+        if (fileUrlInput.value) {
+            showPreview(fileUrlInput.value);
+        }
+
+        previewBtn.addEventListener('click', function() {
+            const youtubeUrl = fileUrlInput.value.trim();
+
+            if (!youtubeUrl) {
+                alert('YouTube 링크를 입력해주세요.');
+                return;
+            }
+
+            showPreview(youtubeUrl);
+        });
+
+        function showPreview(url) {
+            const embedUrl = getYouTubeEmbedUrl(url);
+
+            if (embedUrl) {
+                videoPreview.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+                previewContainer.style.display = 'block';
+            } else {
+                alert('유효한 YouTube 링크가 아닙니다. 다시 확인해주세요.');
+            }
+        }
+
+        function getYouTubeEmbedUrl(url) {
+            let videoId = null;
+
+            // 일반 YouTube URL (watch?v=VIDEO_ID)
+            if (url.includes('youtube.com/watch?v=')) {
+                const urlParams = new URLSearchParams(url.split('?')[1]);
+                videoId = urlParams.get('v');
+            }
+            // 단축 URL (youtu.be/VIDEO_ID)
+            else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1];
+                if (videoId.includes('?')) {
+                    videoId = videoId.substring(0, videoId.indexOf('?'));
+                }
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            return null;
+        }
+    });
+</script>
+</body>
+</html>

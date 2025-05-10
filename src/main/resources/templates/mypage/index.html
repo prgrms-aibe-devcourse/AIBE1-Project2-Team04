@@ -67,10 +67,10 @@
                         <p class="text-gray-500 text-sm">전화번호</p>
                         <p class="font-medium" th:text="${member.phone}">010-1234-5678</p>
                     </div>
-<!--                    <div>-->
-<!--                        <p class="text-gray-500 text-sm">회원 가입일</p>-->
-<!--                        <p class="font-medium" th:text="${#temporals.format(member.createdAt, 'yyyy년 MM월 dd일')}">2023년 5월 1일</p>-->
-<!--                    </div>-->
+                    <!--                    <div>-->
+                    <!--                        <p class="text-gray-500 text-sm">회원 가입일</p>-->
+                    <!--                        <p class="font-medium" th:text="${#temporals.format(member.createdAt, 'yyyy년 MM월 dd일')}">2023년 5월 1일</p>-->
+                    <!--                    </div>-->
                 </div>
 
                 <div class="mt-6 flex flex-wrap gap-3">
@@ -112,15 +112,15 @@
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold">수강 내역</h3>
-            <a href="/mypage/reservations" class="text-primary text-sm hover:underline">전체 내역 보기</a>
+            <a href="/mypage/reservationMIES" class="text-primary text-sm hover:underline">전체 내역 보기</a>
         </div>
 
-        <div th:if="${#lists.isEmpty(reservations)}" class="text-center py-8">
+        <div th:if="${#lists.isEmpty(reservationMIES)}" class="text-center py-8">
             <p class="text-gray-500">예약 내역이 없습니다.</p>
             <a href="/lectures" class="inline-block mt-4 bg-secondary text-white px-4 py-2 rounded-button text-sm hover:bg-green-700 transition">강의 찾아보기</a>
         </div>
 
-        <div th:unless="${#lists.isEmpty(reservations)}" class="overflow-x-auto">
+        <div th:unless="${#lists.isEmpty(reservationMIES)}" class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                 <tr>
@@ -132,7 +132,7 @@
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                <tr th:each="reservation : ${reservations}">
+                <tr th:each="reservation : ${reservationMIES}">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900" th:text="${reservation.lectureName}">게임 실력 향상 코칭</div>
                     </td>
@@ -148,7 +148,7 @@
                         <span th:if="${reservation.status == 'CANCELED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">취소</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <a th:href="@{/mypage/reservations/{id}(id=${reservation.id})}" class="text-primary hover:underline">상세보기</a>
+                        <a th:href="@{/mypage/reservationMIES/{id}(id=${reservation.id})}" class="text-primary hover:underline">상세보기</a>
                     </td>
                 </tr>
                 </tbody>

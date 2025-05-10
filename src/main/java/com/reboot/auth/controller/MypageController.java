@@ -3,20 +3,17 @@ package com.reboot.auth.controller;
 import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Member;
-import com.reboot.auth.entity.Reservation;
+import com.reboot.auth.entity.ReservationMy;
 import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
-import com.reboot.auth.repository.ReservationRepository;
+import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.reboot.auth.repository.ReservationRepository;
 // import com.reboot.auth.entity.Reservation;
-import org.springframework.validation.annotation.Validated;
 
 import java.security.Principal;
 import java.util.List;
@@ -28,13 +25,13 @@ public class MypageController {
 
     private final MemberRepository memberRepository;
     // 매칭
-    private final ReservationRepository reservationRepository;
+    private final ReservationMyRepository reservationRepository;
     private final GameRepository gameRepository;
     private final MypageService mypageService;
 
     public MypageController(MemberRepository memberRepository,
                              GameRepository gameRepository,
-                             ReservationRepository reservationRepository,
+                             ReservationMyRepository reservationRepository,
                              MypageService mypageService) {
         this.memberRepository = memberRepository;
         this.gameRepository = gameRepository;
@@ -53,12 +50,12 @@ public class MypageController {
 
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> games = gameRepository.findByMemberId(member.getMemberId());
-        List<Reservation> reservations = reservationRepository.findByMemberId(member.getMemberId());
+        List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());//수정
+        List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
         model.addAttribute("games", games);
-        model.addAttribute("reservations",reservations);
+        model.addAttribute("reservations", reservationMIES);
 
         return "mypage/index";
     }
@@ -160,7 +157,7 @@ public class MypageController {
     @GetMapping("/game")
     public String myGames(Principal principal, Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> game = gameRepository.findByMemberId(member.getMemberId());
+        List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());
 
         model.addAttribute("member", member);
         model.addAttribute("game", game);
@@ -171,10 +168,10 @@ public class MypageController {
     @GetMapping("/reservations")
     public String myReservations(Principal principal, Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<Reservation> reservations = reservationRepository.findByMemberId(member.getMemberId());
+        List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
-        model.addAttribute("reservations", reservations);
+        model.addAttribute("reservations", reservationMIES);
 
         return "mypage/reservations";
     }
@@ -185,7 +182,7 @@ public class MypageController {
                                     Principal principal,
                                     Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
-        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        Optional<ReservationMy> reservation = reservationRepository.findById(reservationId);
 
         if (reservation.isPresent() && reservation.get().getMemberId().equals(member.getMemberId())) {
             model.addAttribute("member", member);

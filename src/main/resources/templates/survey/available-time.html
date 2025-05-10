@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gigs - 가능 시간</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="survey-container">
+    <div class="close-button">
+        <a th:href="@{/home}" class="btn-close">×</a>
+    </div>
+
+    <div class="survey-header">
+        <div class="step-indicator">
+            <span class="current-step">Step 4</span>
+        </div>
+        <h2>한 주 동안 게임 강의에 얼마나</h2>
+        <h3>많은 시간을 할애할 수 있나요?</h3>
+    </div>
+
+    <div class="time-options">
+        <form id="availableTimeForm" th:action="@{/survey/available-time}" method="post">
+            <input type="hidden" id="selectedTime" name="availableTime">
+
+            <div class="time-row">
+                <div class="time-option" data-time="ONE_HOUR_PLUS">
+                    <span>주 1시간 이상</span>
+                </div>
+
+                <div class="time-option" data-time="FIVE_HOUR_PLUS">
+                    <span>주 5시간 이상</span>
+                </div>
+
+                <div class="time-option" data-time="WEEKDAY">
+                    <span>평일 내내</span>
+                </div>
+
+                <div class="time-option" data-time="WEEKEND">
+                    <span>주말 내내</span>
+                </div>
+            </div>
+
+            <div class="time-row">
+                <div class="time-option" data-time="WHOLE_WEEK">
+                    <span>일주일 내내</span>
+                </div>
+            </div>
+
+            <div class="survey-nav">
+                <button type="button" class="btn-secondary btn-prev" th:onclick="|window.location.href='@{/survey/learning-goal}'|">이전</button>
+                <button type="submit" class="btn-primary btn-next" disabled>다음</button>
+                <a th:href="@{/survey/skip(step='lecture-preference')}" class="btn-skip">Skip</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="pagination">
+        <span class="page-dot"></span>
+        <span class="page-dot"></span>
+        <span class="page-dot"></span>
+        <span class="page-dot active"></span>
+        <span class="page-dot"></span>
+    </div>
+</div>
+
+<script th:src="@{/js/survey.js}"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!-- templates/survey/error.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>설문 오류</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>설문 처리 중 오류가 발생했습니다</h1>
+
+    <div class="error-message" th:if="${error}">
+        <p th:text="${error}">오류 메시지</p>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/survey/start" class="btn btn-primary">설문 다시 시작하기</a>
+        <a href="/" class="btn btn-secondary">홈으로 돌아가기</a>
+    </div>
+</div>
+</body>
+</html>
