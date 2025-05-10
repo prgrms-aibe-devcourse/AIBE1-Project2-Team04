@@ -1,4 +1,3 @@
-// Lecture.java
 package com.reboot.lecture.entity;
 
 import com.reboot.auth.entity.Instructor;

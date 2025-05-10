@@ -1,4 +1,3 @@
-// LectureMetaData.java
 package com.reboot.lecture.entity;
 
 import jakarta.persistence.Column;
