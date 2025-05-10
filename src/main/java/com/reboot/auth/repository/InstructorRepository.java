@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface InstructorRepository extends JpaRepository<Instructor, Long> {
 
     // 사용자 ID로 강사 정보 조회
-    Optional<Instructor> findByMemberId(Long MemberId);
+    Optional<Instructor> findByMember_MemberId(Long MemberId);
 
     // 닉네임으로 강사 정보 조회
     Optional<Instructor> findByMember_Nickname(String nickname);
