@@ -13,13 +13,6 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    // 결제 요청 폼 (reservationId를 쿼리로 받음)
-    @GetMapping("/form")
-    public String paymentForm(@RequestParam Long reservationId, Model model) {
-        model.addAttribute("reservationId", reservationId);
-        return "payment/payment-form";
-    }
-
     // 결제 요청 처리 (checkoutPage로 바로 리다이렉트)
     @PostMapping("/request")
     public String requestPayment(@RequestParam Long reservationId) {

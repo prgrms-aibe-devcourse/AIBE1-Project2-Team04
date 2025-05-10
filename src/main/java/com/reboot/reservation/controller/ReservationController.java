@@ -201,6 +201,7 @@ public class ReservationController {
             }
 
             model.addAttribute("reservation", reservation);
+            model.addAttribute("reservationId", reservation.getReservationId());
 
             return "reservation/reservationResult";
         } catch (EntityNotFoundException e) {

@@ -50,22 +50,22 @@
         .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
         .no-replay { background: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center; color: #666; }
         /* 로딩 스피너 */
-        .loading-spinner { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.5); 
-            z-index: 9999; 
-            justify-content: center; 
-            align-items: center; 
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
         }
-        .spinner-border { 
-            width: 3rem; 
-            height: 3rem; 
-            color: white; 
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: white;
         }
         /* 알림 메시지 */
         .alert {
@@ -193,8 +193,17 @@
     <!-- 리플레이 목록 버튼 삭제하고 필요한 버튼만 유지 -->
     <div class="actions">
         <a id="reservation-again-btn" th:href="@{/reservation/new(lectureId=${reservation.lectureId},memberId=${reservation.memberId})}" class="btn btn-primary">다시 예약하기</a>
+
+        <span th:if="${reservation.status!='취소'}">
+                <form th:action="@{/payments/request}" method="post">
+                    <input type="hidden" name="reservationId" th:value="${reservationId}" />
+                    <button class="btn btn-primary" type="submit">결제하기</button>
+                </form>
+        </span>
+
         <a id="reservation-cancel-btn" th:if="${reservation.status != '취소'}" th:href="@{/reservation/{id}/cancel(id=${reservation.reservationId})}" class="btn btn-danger">예약 취소하기</a>
     </div>
+
 </div>
 
 <script>
@@ -283,9 +292,9 @@
             console.log("URL 값:", url);
 
             const previewContainer = $("#preview-container");
-            
+
             console.log("눈알 클릭됨, URL:", url);
-            
+
             // 이미 같은 영상이 표시 중이면 토글(닫기)
             if (previewContainer.is(":visible") && previewContainer.data("current-url") === url) {
                 previewContainer.hide();
@@ -297,10 +306,10 @@
             $(".view-replay").removeClass("active");
             // 현재 눈 아이콘 활성화
             $this.addClass("active");
-            
+
             const embedUrl = getYouTubeEmbedUrl(url);
             console.log("임베드 URL:", embedUrl);
-            
+
             if (embedUrl) {
                 // 미리보기 생성 및 표시
                 previewContainer.html(`<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
@@ -309,14 +318,14 @@
             } else {
                 alert("유효한 YouTube URL이 아닙니다.");
             }
-            
+
             return false; // 이벤트 중단
         });
 
         // YouTube URL을 임베드 URL로 변환하는 함수
         function getYouTubeEmbedUrl(url) {
             if (!url) return null;
-            
+
             let videoId = null;
 
             // URL 디버깅
@@ -343,7 +352,7 @@
             }
 
             console.log("추출된 Video ID:", videoId);
-            
+
             if (videoId) {
                 return `https://www.youtube.com/embed/${videoId}`;
             }
