@@ -21,7 +21,7 @@ public class LectureDto {
     private String title; // 강의 제목
     private String description; // 강의 상세 설명
     private String gameType; // 게임 타입(장르)
-    private BigDecimal price; // 강의 가격
+    private Integer price; // 강의 가격
     private String imageUrl; // 강의 이미지 URL
     private Integer duration; // 강의 기간(일)
     private String lectureRank; // 랭크(티어) 필터
@@ -35,20 +35,24 @@ public class LectureDto {
     public static LectureDto fromEntity(Lecture lecture) {
         return LectureDto.builder()
                 .id(lecture.getId()) // 강의 ID
-                .instructorId(lecture.getId()) // 강사 ID
+                .instructorId(lecture.getInstructor().getInstructorId()) // 강사 ID
                 .instructorName(lecture.getInstructor().getNickname()) // 강사 이름
-                .title(lecture.getTitle()) // 강의 제목
-                .description(lecture.getDescription()) // 강의 설명
-                .gameType(lecture.getGameType()) // 게임 타입(장르)
-                .price(lecture.getPrice()) // 가격
-                .imageUrl(lecture.getImageUrl()) // 이미지 URL
-                .duration(lecture.getDuration()) // 기간
-                .lectureRank(lecture.getLectureRank()) // 랭크
-                .position(lecture.getPosition()) // 포지션
-                .averageRating(lecture.getAverageRating()) // 평균 별점
-                .totalMembers(lecture.getTotalMembers()) // 총 수강생 수
-                .reviewCount(lecture.getReviewCount()) // 총 리뷰 개수
-                .createdAt(lecture.getCreatedAt()) // 생성 시간
+
+                // getInfo
+                .title(lecture.getInfo().getTitle()) // 강의 제목
+                .description(lecture.getInfo().getDescription()) // 강의 설명
+                .gameType(lecture.getInfo().getGameType()) // 게임 타입(장르)
+                .price(lecture.getInfo().getPrice()) // 가격
+                .imageUrl(lecture.getInfo().getImageUrl()) // 이미지 URL
+                .duration(lecture.getInfo().getDuration()) // 기간
+                .lectureRank(lecture.getInfo().getLectureRank()) // 랭크
+                .position(lecture.getInfo().getPosition()) // 포지션
+
+                // getMetadata
+                .averageRating(lecture.getMetadata().getAverageRating()) // 평균 별점
+                .totalMembers(lecture.getMetadata().getTotalMembers()) // 총 수강생 수
+                .reviewCount(lecture.getMetadata().getReviewCount()) // 총 리뷰 개수
+                .createdAt(lecture.getMetadata().getCreatedAt()) // 생성 시간
                 .build();
     }
 }
