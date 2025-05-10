@@ -108,7 +108,8 @@
     </div>
 
     <form id="surveyForm" th:action="@{/test/submit-survey}" method="post">
-        <input type="hidden" name="memberId" th:value="${memberId}">
+        <!-- 고정된 memberId 값 사용 -->
+        <input type="hidden" name="memberId" th:value="${memberId}" value="1">
 
         <div class="form-group">
             <label for="gameType">게임 선택</label>
@@ -122,20 +123,12 @@
             <label for="gameTier">게임 티어</label>
             <select id="gameTier" name="gameTier">
                 <option value="">티어를 선택하세요 (선택사항)</option>
-                <option value="IRON">아이언</option>
-                <option value="BRONZE">브론즈</option>
-                <option value="SILVER">실버</option>
-                <option value="GOLD">골드</option>
-                <option value="PLATINUM">플래티넘</option>
-                <option value="DIAMOND">다이아몬드</option>
-                <option value="MASTER">마스터</option>
-                <option value="GRANDMASTER">그랜드마스터</option>
-                <option value="CHALLENGER">챌린저</option>
+                <!-- 티어 옵션은 자바스크립트로 동적 변경됩니다 -->
             </select>
         </div>
 
         <div class="form-group position-container" id="lolPositionContainer">
-            <label for="gamePosition">LOL 포지션</label>
+            <label for="lolPosition">LOL 포지션</label>
             <select id="lolPosition" name="gamePosition">
                 <option value="">포지션을 선택하세요 (선택사항)</option>
                 <option value="TOP">탑</option>
@@ -147,7 +140,7 @@
         </div>
 
         <div class="form-group position-container" id="valorantPositionContainer">
-            <label for="gamePosition">발로란트 포지션</label>
+            <label for="valorantPosition">발로란트 포지션</label>
             <select id="valorantPosition" name="gamePosition">
                 <option value="">포지션을 선택하세요 (선택사항)</option>
                 <option value="DUELIST">듀얼리스트</option>
@@ -155,6 +148,11 @@
                 <option value="INITIATOR">이니시에이터</option>
                 <option value="CONTROLLER">컨트롤러</option>
             </select>
+        </div>
+
+        <div class="form-group position-container" id="tftPositionContainer">
+            <p><strong>TFT 포지션:</strong> 포지션 없음</p>
+            <input type="hidden" id="tftPosition" name="gamePosition" value="ALL">
         </div>
 
         <div class="form-group">
@@ -202,6 +200,29 @@
 </div>
 
 <script>
+    // 게임별 티어 정보
+    const gameTiers = {
+        'LOL': ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER'],
+        'VALORANT': ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'ASCENDANT', 'IMMORTAL', 'RADIANT'],
+        'TFT': ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER']
+    };
+
+    // 티어 표시 텍스트
+    const tierDisplayNames = {
+        'IRON': '아이언',
+        'BRONZE': '브론즈',
+        'SILVER': '실버',
+        'GOLD': '골드',
+        'PLATINUM': '플래티넘',
+        'DIAMOND': '다이아몬드',
+        'MASTER': '마스터',
+        'GRANDMASTER': '그랜드마스터',
+        'CHALLENGER': '챌린저',
+        'ASCENDANT': '어센던트',
+        'IMMORTAL': '이모탈',
+        'RADIANT': '레디언트'
+    };
+
     function selectOption(fieldName, element) {
         // 같은 필드의 다른 옵션들의 선택 상태를 해제
         document.querySelectorAll(`#${fieldName}Container .option-item`).forEach(item => {
@@ -220,6 +241,10 @@
         const tierContainer = document.getElementById('tierContainer');
         const lolPositionContainer = document.getElementById('lolPositionContainer');
         const valorantPositionContainer = document.getElementById('valorantPositionContainer');
+        const tftPositionContainer = document.getElementById('tftPositionContainer');
+
+        // 티어 선택 업데이트
+        updateTierOptions(gameType);
 
         // 티어 선택 보이기
         if (gameType) {
@@ -232,30 +257,89 @@
         if (gameType === 'LOL') {
             lolPositionContainer.classList.add('show');
             valorantPositionContainer.classList.remove('show');
-            valorantPositionContainer.querySelector('select').value = '';
+            tftPositionContainer.classList.remove('show');
+            // 다른 게임 포지션 값 초기화
+            document.getElementById('valorantPosition').value = '';
+            document.getElementById('tftPosition').value = '';
         } else if (gameType === 'VALORANT') {
             lolPositionContainer.classList.remove('show');
             valorantPositionContainer.classList.add('show');
-            lolPositionContainer.querySelector('select').value = '';
+            tftPositionContainer.classList.remove('show');
+            // 다른 게임 포지션 값 초기화
+            document.getElementById('lolPosition').value = '';
+            document.getElementById('tftPosition').value = '';
+        } else if (gameType === 'TFT') {
+            lolPositionContainer.classList.remove('show');
+            valorantPositionContainer.classList.remove('show');
+            tftPositionContainer.classList.add('show');
+            // 다른 게임 포지션 값 초기화
+            document.getElementById('lolPosition').value = '';
+            document.getElementById('valorantPosition').value = '';
+            document.getElementById('tftPosition').value = 'ALL';
         } else {
             lolPositionContainer.classList.remove('show');
             valorantPositionContainer.classList.remove('show');
-            lolPositionContainer.querySelector('select').value = '';
-            valorantPositionContainer.querySelector('select').value = '';
+            tftPositionContainer.classList.remove('show');
+            // 모든 포지션 값 초기화
+            document.getElementById('lolPosition').value = '';
+            document.getElementById('valorantPosition').value = '';
+            document.getElementById('tftPosition').value = '';
         }
     }
 
-    // 폼 제출 전 유효성 검사
+    function updateTierOptions(gameType) {
+        const tierSelect = document.getElementById('gameTier');
+        tierSelect.innerHTML = '<option value="">티어를 선택하세요 (선택사항)</option>';
+
+        if (gameType && gameTiers[gameType]) {
+            gameTiers[gameType].forEach(tier => {
+                const option = document.createElement('option');
+                option.value = tier;
+                option.textContent = tierDisplayNames[tier] || tier;
+                tierSelect.appendChild(option);
+            });
+        }
+    }
+
+// 폼 제출 전 유효성 검사
     document.getElementById('surveyForm').addEventListener('submit', function(event) {
         const gameType = document.getElementById('gameType').value;
         const skillLevel = document.getElementById('skillLevel').value;
         const learningGoal = document.getElementById('learningGoal').value;
         const availableTime = document.getElementById('availableTime').value;
         const lecturePreference = document.getElementById('lecturePreference').value;
+        const memberId = document.querySelector('input[name="memberId"]').value;
+
+        // 디버깅 정보 출력
+        console.log('폼 제출 데이터:', {
+            memberId, gameType, skillLevel, learningGoal, availableTime, lecturePreference
+        });
 
         if (!gameType || !skillLevel || !learningGoal || !availableTime || !lecturePreference) {
             event.preventDefault();
             alert('모든 필수 항목을 선택해주세요.');
+        }
+    });
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        // memberId 값 확인 및 로깅
+        const memberIdField = document.querySelector('input[name="memberId"]');
+        console.log('로드 시 memberId 값:', memberIdField ? memberIdField.value : '필드 없음');
+
+        // memberId가 없거나 빈 값이면 기본값 설정
+        if (!memberIdField || !memberIdField.value) {
+            if (memberIdField) {
+                memberIdField.value = '1'; // 기본값 설정
+                console.log('memberId 기본값 설정: 1');
+            } else {
+                console.error('memberId 필드를 찾을 수 없습니다!');
+            }
+        }
+
+        const gameTypeSelect = document.getElementById('gameType');
+        if (gameTypeSelect.value) {
+            handleGameTypeChange();
         }
     });
 </script>
