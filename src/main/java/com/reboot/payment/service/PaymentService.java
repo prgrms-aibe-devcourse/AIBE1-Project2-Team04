@@ -49,7 +49,7 @@ public class PaymentService {
                 .reservation(reservation)
                 .price(reservation.getLecture().getInfo().getPrice()) // 예약 정보에 따른 가격 계산 메서드 필요
                 .paymentAt(LocalDateTime.now())
-                .status("PAY_STANDBY") // 초기 상태
+                .status("결제 대기") // 초기 상태
                 .build();
 
         payment = paymentRepository.save(payment);
@@ -155,7 +155,7 @@ public class PaymentService {
             System.out.println("Payment 조회 성공: " + payment.getPaymentId());
 
             // 3. Payment 상태 업데이트
-            payment.setStatus("PAY_COMPLETE");
+            payment.setStatus("결제완료");
             payment.setMethod("TOSS");
             paymentRepository.save(payment);
             System.out.println("Payment 상태 업데이트 완료");

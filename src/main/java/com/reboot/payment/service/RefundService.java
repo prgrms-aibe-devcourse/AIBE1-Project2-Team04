@@ -8,7 +8,6 @@ import com.reboot.payment.entity.TossTransaction;
 import com.reboot.payment.repository.PaymentRepository;
 import com.reboot.payment.repository.RefundRepository;
 import com.reboot.payment.repository.TossRepository;
-import com.reboot.reservation.entity.Reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -70,7 +69,7 @@ public class RefundService {
                 .refundAmount(amount != null ? amount : payment.getPrice()) // null이면 전체 금액 환불
                 .refundReason(reason)
                 .requestedAt(LocalDateTime.now())
-                .status(isSuccess ? "REFUND_COMPLETED" : "REFUND_FAILED") // 상태 저장
+                .status(isSuccess ? "환불 완료" : "환불 실패") // 상태 저장
                 .responseCode(String.valueOf(response.get("code")))
                 .responseMessage((String) response.getOrDefault("msg", "")) // 메시지가 없을 경우 빈 문자열
                 .completedAt(isSuccess ? LocalDateTime.now() : null) // 성공 시 환불 완료 시간 저장
