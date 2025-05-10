@@ -1,18 +1,15 @@
-// LectureInfo.java
 package com.reboot.lecture.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Embeddable
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PUBLIC) // - Embeddable 클래스라서 기본 생성자 필수
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class LectureInfo {
     @Column(nullable = false)
     private String title; // 강의 제목 -> 홈 화면 강의 목록에 표시
@@ -24,7 +21,7 @@ public class LectureInfo {
     private String gameType; // 게임 장르
 
     @Column(nullable = false)
-    private Integer price; // 강의 가격 수정!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private Integer price; // 강의 가격
 
     @Column(name = "image_url")
     private String imageUrl; // 강의 이미지 URL -> 홈 화면 강의 목록에 표시
