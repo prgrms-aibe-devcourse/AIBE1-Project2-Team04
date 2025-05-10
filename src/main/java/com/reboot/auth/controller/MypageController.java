@@ -53,7 +53,7 @@ public class MypageController {
 
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> games = gameRepository.findByMemberId(member.getMemberId());
+        List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());//수정
         List<Reservation> reservations = reservationRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
@@ -160,7 +160,7 @@ public class MypageController {
     @GetMapping("/game")
     public String myGames(Principal principal, Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> game = gameRepository.findByMemberId(member.getMemberId());
+        List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());
 
         model.addAttribute("member", member);
         model.addAttribute("game", game);

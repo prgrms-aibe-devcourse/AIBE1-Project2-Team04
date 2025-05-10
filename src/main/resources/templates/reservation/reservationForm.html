@@ -98,7 +98,7 @@
     <!-- 예약 정보 섹션 -->
     <div class="section">
         <h2 class="section-title">예약 정보</h2>
-        <form id="reservationForm" th:action="@{/reservationDetail}" th:object="${reservationRequestDto}" method="post" enctype="multipart/form-data">
+        <form id="reservationForm" th:action="@{/reservation}" th:object="${reservationRequestDto}" method="post" enctype="multipart/form-data">
             <input type="hidden" th:field="*{memberId}" />
             <input type="hidden" th:field="*{lectureId}" />
             <input type="hidden" th:field="*{instructorId}" />
@@ -163,7 +163,7 @@
 
     <!-- 예약 완료 버튼 (맨 아래로 이동) -->
     <div class="submit-container">
-        <button type="button" class="submit-btn" id="submit-reservationDetail">예약완료</button>
+        <button type="button" class="submit-btn" id="submit-reservation">예약완료</button>
     </div>
 </div>
 
@@ -179,16 +179,16 @@
         function showLoading() {
             $("#loading-spinner").css("display", "flex");
         }
-        
+
         function hideLoading() {
             $("#loading-spinner").hide();
         }
-        
+
         // 알림 메시지 표시 함수
         function showSuccessAlert(message) {
             $("#alert-success").text(message).show().delay(3000).fadeOut();
         }
-        
+
         function showErrorAlert(message) {
             $("#alert-danger").text(message).show().delay(3000).fadeOut();
         }
@@ -200,11 +200,11 @@
                 try {
                     const replayUrls = JSON.parse(savedReplayUrls);
                     console.log("저장된 리플레이 URLs 불러옴:", replayUrls);
-                    
+
                     replayUrls.forEach(url => {
                         if (url) {
                             const replayId = Date.now() + Math.floor(Math.random() * 1000); // 임시 ID 생성
-                            
+
                             // 새 리플레이 항목 추가
                             const replayItem = `
                                 <div class="replay-item" data-id="${replayId}">
@@ -216,14 +216,14 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             $("#replay-list").append(replayItem);
-                            
+
                             // hidden input 추가
                             $("#replayUrlsContainer").append(`<input type="hidden" name="replayUrls" value="${url}" />`);
                         }
                     });
-                    
+
                     // 사용 후 삭제
                     localStorage.removeItem('pendingReplayUrls');
                 } catch (e) {
@@ -239,13 +239,13 @@
         $("#add-replay-btn").click(function() {
             // 미리보기 영역 초기화
             $("#preview-container").hide();
-            
+
             // 편집 모드 초기화
             $("#save-replay-btn").removeData("edit-id");
-            
+
             // 입력 필드 초기화
             $("#youtube-url").val("");
-            
+
             // 폼 표시
             $("#new-replay-form").show();
         });
@@ -266,7 +266,7 @@
 
             const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
             console.log("임베드 URL:", embedUrl);
-            
+
             if (embedUrl) {
                 console.log("미리보기 표시");
                 $("#preview-container").html(`<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
@@ -299,7 +299,7 @@
 
                 // 편집 모드 해제
                 $(this).removeData("edit-id");
-                
+
                 showSuccessAlert("리플레이가 수정되었습니다.");
             } else {
                 // 새 항목 추가 모드
@@ -308,7 +308,7 @@
                 // 새 리플레이 항목 추가
                 // 현재 존재하는 리플레이 아이템 개수 파악
                 const currentCount = $(".replay-item").length + 1;
-                
+
                 const replayItem = `
                     <div class="replay-item" data-id="${replayId}">
                         <div class="replay-item-title">리플레이 ${currentCount}</div>
@@ -324,7 +324,7 @@
 
                 // hidden input 추가 - 컨트롤러 파라미터에 맞게 수정
                 $("#replayUrlsContainer").append(`<input type="hidden" name="replayUrls" value="${youtubeUrl}" />`);
-                
+
                 showSuccessAlert("리플레이가 추가되었습니다.");
             }
 
@@ -412,7 +412,7 @@
         $(document).on("click", ".delete-replay", function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             if (confirm("이 리플레이를 삭제하시겠습니까?")) {
                 const id = $(this).data("id");
                 const item = $(this).closest(".replay-item");
@@ -423,21 +423,21 @@
 
                 // hidden input 제거
                 $(`input[name="replayUrls"][value="${url}"]`).remove();
-                
+
                 // 미리보기가 현재 이 영상을 보여주고 있다면 닫기
                 if ($("#preview-container").data("current-url") === url) {
                     $("#preview-container").hide();
                 }
-                
+
                 // 수정 폼도 닫기
                 $("#new-replay-form").hide();
-                
+
                 showSuccessAlert("리플레이가 삭제되었습니다.");
             }
-            
+
             return false; // 이벤트 버블링 방지
         });
-        $("#submit-reservationDetail").click(function(e) {
+        $("#submit-reservation").click(function(e) {
             e.preventDefault(); // 기본 제출 동작 방지
 
             // 날짜 선택 검증

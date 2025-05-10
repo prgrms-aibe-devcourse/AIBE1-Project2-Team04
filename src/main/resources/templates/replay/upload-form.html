@@ -30,7 +30,7 @@
             font-weight: 600;
         }
 
-        .reservationDetail-info {
+        .reservation-info {
             background-color: #f0f7ff;
             padding: 20px;
             border-radius: 8px;
@@ -38,13 +38,13 @@
             border-left: 4px solid #2e7dff;
         }
 
-        .reservationDetail-info h5 {
+        .reservation-info h5 {
             margin-top: 0;
             color: #2e7dff;
             font-weight: 600;
         }
 
-        .reservationDetail-info p {
+        .reservation-info p {
             margin-bottom: 8px;
             color: #444;
         }
@@ -184,7 +184,7 @@
     <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-    <!-- 기존 리플레이가 있는 경우 경고 표시 (reservationDetail/add/{id} 경로에서만 표시) -->
+    <!-- 기존 리플레이가 있는 경우 경고 표시 (reservation/add/{id} 경로에서만 표시) -->
     <div th:if="${existingReplays != null && !existingReplays.isEmpty()}" class="existing-replay-alert">
         <h5><i class="fas fa-exclamation-triangle"></i> 기존 리플레이 발견</h5>
         <p>이 예약에는 이미 등록된 리플레이가 있습니다. 기존 리플레이를 보거나 수정하시겠습니까?</p>
@@ -199,13 +199,13 @@
     </div>
 
     <!-- 예약 정보가 있는 경우 표시 -->
-    <div th:if="${reservationDetail}" class="reservationDetail-info">
+    <div th:if="${reservation}" class="reservation-info">
         <h5>예약 정보</h5>
-        <p><strong>예약 번호:</strong> <span th:text="${reservationDetail.reservationId}"></span></p>
-        <p><strong>강의명:</strong> <span th:text="${reservationDetail.lectureTitle}"></span></p>
-        <p><strong>예약 일시:</strong> <span th:text="${#temporals.format(reservationDetail.date, 'yyyy-MM-dd HH:mm')}"></span></p>
-        <p><strong>강의 일정:</strong> <span th:text="${reservationDetail.scheduleDate}"></span></p>
-        <p><strong>상태:</strong> <span th:text="${reservationDetail.status}"></span></p>
+        <p><strong>예약 번호:</strong> <span th:text="${reservation.reservationDetailId}"></span></p>
+        <p><strong>강의명:</strong> <span th:text="${reservation.lectureTitle}"></span></p>
+        <p><strong>예약 일시:</strong> <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p><strong>강의 일정:</strong> <span th:text="${reservation.scheduleDate}"></span></p>
+        <p><strong>상태:</strong> <span th:text="${reservation.status}"></span></p>
     </div>
 
     <!-- YouTube 링크 입력 가이드 -->
@@ -220,7 +220,7 @@
     <!-- 업로드 폼 (기존 리플레이가 없는 경우에만 표시) -->
     <form th:unless="${existingReplays != null && !existingReplays.isEmpty()}"
           th:action="@{/replays}" th:object="${replayRequest}" method="post" id="replayForm">
-        <input type="hidden" th:field="*{reservationId}" />
+        <input type="hidden" th:field="*{reservationDetailId}" />
 
         <div class="mb-4">
             <label for="fileUrl" class="form-label">YouTube 링크</label>
@@ -246,10 +246,10 @@
 
     <!-- 뒤로 가기 버튼 -->
     <div class="button-group">
-        <a th:href="@{/reservationDetail/{id}(id=${reservationDetail.reservationId})}" class="btn btn-secondary">
+        <a th:href="@{/reservation/{id}(id=${reservation.reservationDetailId})}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> 예약으로 돌아가기
         </a>
-        <a th:href="@{/replays/reservationDetail/{id}(id=${reservationDetail.reservationId})}" class="btn btn-secondary">
+        <a th:href="@{/replays/reservation/{id}(id=${reservation.reservationDetailId})}" class="btn btn-secondary">
             <i class="fas fa-list"></i> 리플레이 목록
         </a>
     </div>
