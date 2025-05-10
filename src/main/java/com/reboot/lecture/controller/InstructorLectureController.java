@@ -1,7 +1,7 @@
 package com.reboot.lecture.controller;
 
 import com.reboot.auth.entity.Instructor;
-import com.reboot.auth.service.AuthService;
+import com.reboot.auth.service.InstructorAuthService;
 import com.reboot.lecture.dto.LectureRequestDto;
 import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.service.InstructorLectureService;
@@ -28,39 +28,35 @@ import java.util.List;
 public class InstructorLectureController {
 
     private final InstructorLectureService instructorLectureService;
-    private final AuthService authService;
-
+    private final InstructorAuthService instructorAuthService;
 
     // 현재 로그인한 강사의 모든 강의 목록 조회
     @GetMapping
     @Operation(summary = "강사 강의 목록 조회", description = "지정한 강사의 모든 강의 조회")
     public ResponseEntity<List<LectureResponseDto>> getMyLectures() {
-        Instructor instructor = authService.getCurrentInstructor();
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
         List<LectureResponseDto> lectures = instructorLectureService.getLecturesByInstructor(instructor.getInstructorId());
         return ResponseEntity.ok(lectures);
     }
-
 
     // 강의 상세 정보 조회 (본인 강의만)
     @GetMapping("/{lectureId}")
     @Operation(summary = "강의 상세 조회", description = "강사 ID와 강의 ID로 강의 상세 정보 조회")
     public ResponseEntity<LectureResponseDto> getLecture(@PathVariable String lectureId) {
-        Instructor instructor = authService.getCurrentInstructor();
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
         LectureResponseDto lecture = instructorLectureService.getLectureByIdAndInstructor(
                 lectureId, instructor.getInstructorId());
         return ResponseEntity.ok(lecture);
     }
 
-
     // 새 강의 생성
     @PostMapping
     @Operation(summary = "새 강의 생성", description = "지정한 강사로 새 강의 생성")
     public ResponseEntity<LectureResponseDto> createLecture(@RequestBody LectureRequestDto request) {
-        Instructor instructor = authService.getCurrentInstructor();
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
         LectureResponseDto createdLecture = instructorLectureService.createLecture(request, instructor);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLecture);
     }
-
 
     // 기존 강의 수정 (본인 강의만)
     @PutMapping("/{lectureId}")
@@ -69,28 +65,26 @@ public class InstructorLectureController {
             @PathVariable String lectureId,
             @RequestBody LectureRequestDto request) {
 
-        Instructor instructor = authService.getCurrentInstructor();
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
         LectureResponseDto updatedLecture = instructorLectureService.updateLecture(
                 lectureId, request, instructor.getInstructorId());
         return ResponseEntity.ok(updatedLecture);
     }
 
-
     // 강의 삭제 (본인 강의만) - 소프트 삭제 처리
     @DeleteMapping("/{lectureId}")
-    @Operation(summary = "테스트: 강의 삭제", description = "강의 소프트 삭제 (본인 강의만)")
+    @Operation(summary = "강의 삭제", description = "강의 소프트 삭제 (본인 강의만)")
     public ResponseEntity<Void> deleteLecture(@PathVariable String lectureId) {
-        Instructor instructor = authService.getCurrentInstructor();
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
         instructorLectureService.deleteLecture(lectureId, instructor.getInstructorId());
         return ResponseEntity.noContent().build();
     }
-
 
     // 강의 활성화/비활성화 토글 (본인 강의만)
     @PatchMapping("/{lectureId}/toggle-active")
     @Operation(summary = "활성화/비활성화 토글", description = "강의 활성화 상태 토글 (본인 강의만)")
     public ResponseEntity<LectureResponseDto> toggleLectureActive(@PathVariable String lectureId) {
-        Instructor instructor = authService.getCurrentInstructor();
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
         LectureResponseDto lecture = instructorLectureService.toggleLectureActive(
                 lectureId, instructor.getInstructorId());
         return ResponseEntity.ok(lecture);
