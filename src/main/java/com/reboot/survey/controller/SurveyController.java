@@ -32,7 +32,7 @@ public class SurveyController {
 
     @GetMapping("/")
     public String showWelcomePage() {
-        return "redirect:/survey/welcome"; // templates/welcome.html
+        return "survey/welcome";
     }
 
     @GetMapping("/welcome")

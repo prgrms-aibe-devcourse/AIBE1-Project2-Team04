@@ -39,7 +39,7 @@
             margin-bottom: 20px;
         }
 
-        .reservationDetail-info {
+        .reservation-info {
             background-color: #f0f7ff;
             padding: 15px;
             border-radius: 5px;
@@ -62,11 +62,11 @@
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
     <!-- 예약 정보가 있는 경우 표시 -->
-    <div th:if="${reservationDetail}" class="reservationDetail-info">
+    <div th:if="${reservation}" class="reservation-info">
         <h5>예약 정보</h5>
-        <p>예약 번호: <span th:text="${reservationDetail.reservationId}"></span></p>
-        <p>수업 일시: <span th:text="${#temporals.format(reservationDetail.date, 'yyyy-MM-dd HH:mm')}"></span></p>
-        <p>상태: <span th:text="${reservationDetail.status}"></span></p>
+        <p>예약 번호: <span th:text="${reservation.reservationDetailId}"></span></p>
+        <p>수업 일시: <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p>상태: <span th:text="${reservation.status}"></span></p>
     </div>
 
     <!-- YouTube 링크 입력 가이드 -->
@@ -80,7 +80,7 @@
 
     <!-- 수정 폼 -->
     <form th:action="@{/replays/{id}/update(id=${replayId})}" th:object="${replayRequest}" method="post" id="replayForm">
-        <input type="hidden" th:field="*{reservationId}" />
+        <input type="hidden" th:field="*{reservationDetailId}" />
 
         <div class="mb-3">
             <label for="fileUrl" class="form-label">YouTube 링크</label>
@@ -125,7 +125,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <form th:action="@{/replays/{id}/delete(id=${replayId})}" method="post">
-                        <input type="hidden" name="reservationId" th:value="${replayRequest.reservationId}">
+                        <input type="hidden" name="reservationDetailId" th:value="${replayRequest.reservationDetailId}">
                         <button type="submit" class="btn btn-danger">삭제</button>
                     </form>
                 </div>

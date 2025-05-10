@@ -23,7 +23,7 @@
         <form id="lecturePreferenceForm" th:action="@{/survey/complete}" method="post">
             <input type="hidden" id="selectedPreference" name="lecturePreference">
             <!-- 필수 파라미터 추가 -->
-            <input type="hidden" name="memberId" th:value="${#authentication != null && #authentication.principal != null ? #authentication.principal.memberId : 1}">
+            <input type="hidden" name="memberId" value="1">
             <input type="hidden" name="gameTier" value="">
             <input type="hidden" name="gamePosition" value="">
 

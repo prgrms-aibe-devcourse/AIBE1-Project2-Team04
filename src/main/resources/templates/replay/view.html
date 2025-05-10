@@ -59,14 +59,14 @@
         <div class="replay-info">
             <h5>리플레이 정보</h5>
             <p>리플레이 ID: <span th:text="${replay.replayId}"></span></p>
-            <p>예약 ID: <span th:text="${replay.reservationId}"></span></p>
+            <p>예약 ID: <span th:text="${replay.reservationDetailId}"></span></p>
             <p>업로드 일시: <span th:text="${#temporals.format(replay.date, 'yyyy-MM-dd HH:mm')}"></span></p>
             <p>원본 URL: <a th:href="${replay.fileUrl}" target="_blank" th:text="${replay.fileUrl}"></a></p>
         </div>
 
         <!-- 네비게이션 버튼 -->
         <div class="d-grid gap-2">
-            <a th:href="@{/replays/reservationDetail/{id}(id=${replay.reservationId})}" class="btn btn-primary">
+            <a th:href="@{/replays/reservation/{id}(id=${replay.reservationDetailId})}" class="btn btn-primary">
                 예약의 모든 리플레이 보기
             </a>
             <a th:href="@{/replays/{id}/edit(id=${replay.replayId})}" class="btn btn-warning">
@@ -102,7 +102,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <form th:action="@{/replays/{replayId}/delete(replayId=${replay.replayId})}" method="post">
-                        <input type="hidden" name="reservationId" th:value="${replay.reservationId}">
+                        <input type="hidden" name="reservationDetailId" th:value="${replay.reservationDetailId}">
                         <button type="submit" class="btn btn-danger">삭제</button>
                     </form>
                 </div>
