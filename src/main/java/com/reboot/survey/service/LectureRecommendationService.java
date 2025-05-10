@@ -52,22 +52,8 @@ public class LectureRecommendationService {
      * 설문조사 결과를 바탕으로 게임 유형 및 티어로 필터링하여 강의를 추천합니다.
      * LLM 체이닝 방식으로 첫 번째 프롬프트에서 강의 설명을 요약하고, 두 번째 프롬프트에서 추천을 생성합니다.
      */
-    /**
-     * 설문조사 결과를 바탕으로 게임 유형 및 티어로 필터링하여 강의를 추천합니다.
-     * LLM 체이닝 방식으로 첫 번째 프롬프트에서 강의 설명을 요약하고, 두 번째 프롬프트에서 추천을 생성합니다.
-     */
     public RecommendationResponse getRecommendations(Member member, Survey survey) {
         log.info("강의 추천 시작 - 회원 ID: {}, 설문 ID: {}", member.getMemberId(), survey.getId());
-
-        // 설문 정보 로그
-        log.info("설문 정보 - 게임 타입: {}, 티어: {}, 포지션: {}, 실력 수준: {}, 학습 목표: {}, 가능 시간: {}, 강의 선호도: {}",
-                survey.getGameType(),
-                survey.getGameTier(),
-                survey.getGamePosition(),
-                survey.getSkillLevel(),
-                survey.getLearningGoal(),
-                survey.getAvailableTime(),
-                survey.getLecturePreference());
 
         // 회원 게임 정보 로그
         if (member.getGame() != null) {
@@ -91,15 +77,12 @@ public class LectureRecommendationService {
         }
 
         // 2. 첫 번째 LLM 호출: 각 강의 설명을 요약하기
-        log.info("첫 번째 LLM 체인 시작: 각 강의 설명 요약");
         List<String> summarizedLectures = summarizeLectureDescriptions(filteredLectures);
-        log.info("첫 번째 LLM 체인 완료: 요약된 강의 설명 수: {}", summarizedLectures.size());
+        log.info("요약된 강의 설명 수: {}", summarizedLectures.size());
 
         // 3. 두 번째 LLM 호출: 요약된 강의를 이용하여 추천 생성하기
-        log.info("두 번째 LLM 체인 시작: 강의 추천");
         String recommendationPrompt = buildRecommendationPrompt(member, survey, filteredLectures, summarizedLectures);
         String completion = callTogetherAIWithImprovedParams(recommendationPrompt);
-        log.info("두 번째 LLM 체인 완료: 추천 결과 생성됨");
 
         // 4. API 응답 파싱하여 추천 결과 생성 (개선된 정규식 패턴 적용)
         RecommendationResponse response = parseRecommendationsWithImprovedPattern(completion, survey.getId());
@@ -112,7 +95,6 @@ public class LectureRecommendationService {
         // 6. 응답 결과 정제 (새로 추가된 기능)
         response.setRecommendations(refineRecommendations(response.getRecommendations()));
 
-        log.info("강의 추천 프로세스 완료");
         return response;
     }
 
