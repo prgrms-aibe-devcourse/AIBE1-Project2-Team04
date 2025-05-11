@@ -33,7 +33,7 @@ public class RefundController {
         try {
             RefundHistory refundHistory = refundService.processRefundWithHistory(paymentId, amount, reason);
 
-            if ("REFUND_COMPLETED".equals(refundHistory.getStatus())) {
+            if ("환불 완료".equals(refundHistory.getStatus())) {
                 model.addAttribute("message", "환불이 성공적으로 처리되었습니다.");
             } else {
                 model.addAttribute("errorMessage", "환불 처리 중 오류가 발생했습니다: " + refundHistory.getResponseMessage());

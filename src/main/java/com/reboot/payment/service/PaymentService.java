@@ -193,4 +193,10 @@ public class PaymentService {
             tossrepository.save(transaction);
         }
     }
+
+    public Payment findPaymentDetail(Long paymentId) {
+        return paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("결제 정보를 찾을 수 없습니다: " + paymentId));
+    }
+
 }

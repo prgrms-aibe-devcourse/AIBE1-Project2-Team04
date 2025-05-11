@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Toss 결제 결과</title>
-</head>
-<body>
-<h2>Toss 결제 결과</h2>
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Toss 결제 결과</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h2>Toss 결제 결과</h2>-->
 <!--<p th:text="'code: ' + ${response.code}"></p>-->
 <!--<p th:text="'checkoutPage: ' + ${response.checkoutPage}"></p>-->
 <!--<p th:text="'payToken: ' + ${response.payToken}"></p>-->
@@ -12,7 +12,39 @@
 <!--<div th:if="${response.checkoutPage != null}">-->
 <!--    <a th:href="${response.checkoutPage}" target="_blank">결제창 바로가기</a>-->
 <!--</div>-->
-<p th:text="${response}"></p>
+<!--<p th:text="${response}"></p>-->
 
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Toss 결제 결과</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <style>
+        body { background: #f5f7fa; }
+        .result-card { max-width: 480px; margin: 60px auto; border-radius: 16px; box-shadow: 0 2px 12px #0002; }
+        .result-header { font-size: 1.5rem; font-weight: 600; color: #2e7dff; }
+        .result-row { margin-bottom: 12px; }
+        .result-label { color: #888; width: 120px; display: inline-block; }
+        .btn-custom { border-radius: 8px; }
+    </style>
+</head>
+<body>
+<div class="card result-card p-4">
+    <div class="result-header mb-3">Toss 결제 결과</div>
+    <div class="result-row"><span class="result-label">Code</span> <span th:text="${response.code}"></span></div>
+    <div class="result-row"><span class="result-label">CheckoutPage</span> <span th:text="${response.checkoutPage}"></span></div>
+    <div class="result-row"><span class="result-label">PayToken</span> <span th:text="${response.payToken}"></span></div>
+    <div class="result-row"><span class="result-label">Message</span> <span th:text="${response.message}"></span></div>
+    <div th:if="${response.checkoutPage != null}" class="my-3">
+        <a th:href="${response.checkoutPage}" target="_blank" class="btn btn-primary btn-custom w-100">결제창 바로가기</a>
+    </div>
+    <div class="mt-3 text-muted small" th:text="${response}"></div>
+</div>
 </body>
 </html>

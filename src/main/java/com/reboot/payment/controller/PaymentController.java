@@ -1,5 +1,6 @@
 package com.reboot.payment.controller;
 
+import com.reboot.payment.entity.Payment;
 import com.reboot.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -62,6 +63,7 @@ public class PaymentController {
                 paymentService.saveTossTransaction(orderNo, status, payMethod, cardCompany, bankCode);
 
                 model.addAttribute("message", "결제 정보가 정상 저장되었습니다.");
+
             } catch (Exception e) {
                 model.addAttribute("errorMessage", "DB 저장 중 오류: " + e.getMessage());
             }
@@ -91,4 +93,12 @@ public class PaymentController {
         // 실제 구현 시에는 callbackData를 파싱하여 처리
         return "OK";
     }
+
+    @GetMapping("/detail/{paymentId}")
+    public String paymentDetail(@PathVariable Long paymentId, Model model) {
+        Payment payment = paymentService.findPaymentDetail(paymentId);
+        model.addAttribute("payment", payment);
+        return "payment/payment-detail";
+    }
+
 }
