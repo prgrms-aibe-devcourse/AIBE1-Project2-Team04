@@ -34,7 +34,6 @@ public class LectureServiceImpl implements LectureService {
         return lecturePage.map(LectureResponseDto::fromEntity);
     }
 
-    // 게임 타입별 강의 목록 조회 (정렬 옵션)
     @Override
     public Page<LectureResponseDto> getLecturesByGameType(String gameType, String sortBy, Pageable pageable) {
         Page<Lecture> lecturePage;
@@ -44,18 +43,15 @@ public class LectureServiceImpl implements LectureService {
             case "newest": // 최신순
                 lecturePage = lectureRepository.findByGameTypeOrderByCreatedAtDesc(gameType, pageable);
                 break;
-            case "reviews": // 리뷰 많은순
-                lecturePage = lectureRepository.findByGameTypeOrderByReviewCountDesc(gameType, pageable);
-                break;
             case "priceLow": // 가격 낮은순
                 lecturePage = lectureRepository.findByGameTypeOrderByPriceAsc(gameType, pageable);
                 break;
             case "priceHigh": // 가격 높은순
                 lecturePage = lectureRepository.findByGameTypeOrderByPriceDesc(gameType, pageable);
                 break;
-            case "popularity": // 인기순 정렬 (기본)
+            case "rating": // 별점순 정렬 (기본)
             default:
-                lecturePage = lectureRepository.findByGameTypeOrderByPopularity(gameType, pageable);
+                lecturePage = lectureRepository.findByGameTypeOrderByAverageRatingDesc(gameType, pageable);
                 break;
         }
         return lecturePage.map(LectureResponseDto::fromEntity);

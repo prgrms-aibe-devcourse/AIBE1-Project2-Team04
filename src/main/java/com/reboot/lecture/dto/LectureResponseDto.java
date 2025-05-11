@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class LectureResponseDto {
     private String id; // 강의 고유 식별자
-    private String Nickname; // 강사 닉네임 (ID가 아닌 닉네임 표시)
+    private String instructorNickname; // 강사 닉네임 (ID가 아닌 닉네임 표시)
     private String title; // 강의 제목
     private String gameType; // 게임 타입(장르)
     private Integer price; // 강의 가격
@@ -45,7 +45,7 @@ public class LectureResponseDto {
         return LectureResponseDto.builder()
                 .id(String.format("LECTURE-%d", lecture.getId())) // 강의 ID + 프리픽스 추가
                 // ex) LECTURE-1001, 1002, ...
-                .Nickname(lecture.getInstructor().getNickname()) // 강사 닉네임 (ID 아님)
+                .instructorNickname(lecture.getInstructor().getNickname()) // 강사 닉네임 (ID 아님)
 
                 // LectureInfo 에서 가져오는 필드들
                 .title(info.getTitle()) // 강의 제목
