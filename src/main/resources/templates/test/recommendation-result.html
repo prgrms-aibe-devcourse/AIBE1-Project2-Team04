@@ -43,6 +43,18 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+        .lecture-image {
+            width: 100%;
+            overflow: hidden;
+        }
+        .lecture-image img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s;
+        }
+        .lecture-card:hover .lecture-image img {
+            transform: scale(1.05);
+        }
         .lecture-header {
             background-color: #4F46E5;
             color: white;
@@ -133,6 +145,9 @@
 
     <div th:if="${recommendation.recommendations != null && !recommendation.recommendations.isEmpty()}" class="lecture-cards">
         <div th:each="lecture : ${recommendation.recommendations}" class="lecture-card">
+            <div th:if="${lecture.imageUrl != null}" class="lecture-image">
+                <img th:src="${lecture.imageUrl}" alt="강의 이미지" style="width: 100%; height: auto;">
+            </div>
             <div class="lecture-header">
                 <h2 class="lecture-title" th:text="${lecture.title}">강의 제목</h2>
                 <div class="lecture-instructor" th:text="${lecture.instructorName + ' (' + lecture.instructorCareer + ')'}">
