@@ -12,11 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-// 강의 정보 응답을 위한 DTO
-// 상세 설명과 같은 크고 자세한 데이터는 제외
-// 목록 표시에 필요한 정보만 포함
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -34,6 +29,11 @@ public class LectureResponseDto {
     private Integer reviewCount; // 총 리뷰 개수
     private Integer totalMembers; // 총 수강생 수
     private LocalDateTime createdAt; // 강의 등록 시간 (최신순 정렬에 필요)
+
+    // 추가된 필드들
+    private String videoUrl; // 강의 동영상 URL
+    private String previewUrl; // 미리보기 동영상 URL
+    private String materialUrls; // 강의 자료 URL들
 
     public static LectureResponseDto fromEntity(Lecture lecture) {
         LectureInfo info = lecture.getInfo();
@@ -54,6 +54,9 @@ public class LectureResponseDto {
                 .imageUrl(info.getImageUrl()) // 이미지 URL
                 .lectureRank(info.getLectureRank()) // 랭크
                 .position(info.getPosition()) // 포지션
+                .videoUrl(info.getVideoUrl()) // 강의 동영상 URL
+                .previewUrl(info.getPreviewUrl()) // 미리보기 동영상 URL
+                .materialUrls(info.getMaterialUrls()) // 강의 자료 URL들
 
                 // LectureMetaData 에서 가져오는 필드들
                 .averageRating(metadata.getAverageRating()) // 평균 별점

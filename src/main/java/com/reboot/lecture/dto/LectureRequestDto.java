@@ -2,15 +2,11 @@ package com.reboot.lecture.dto;
 
 import com.reboot.lecture.entity.Lecture;
 import com.reboot.lecture.entity.LectureInfo;
-import com.reboot.lecture.entity.LectureMetaData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-// 강의 생성 및 수정 요청을 위한 DTO
 @Data
 @Builder
 @NoArgsConstructor
@@ -25,6 +21,10 @@ public class LectureRequestDto {
     private String lectureRank; // 랭크(티어)
     private String position; // 포지션
 
+    // 추가된 필드들
+    private String videoUrl; // 강의 동영상 URL
+    private String previewUrl; // 미리보기 동영상 URL
+    private String materialUrls; // 강의 자료 URL들
 
     // 강사 정보는 별도로 설정(서비스 계층에서 처리)
 
@@ -39,6 +39,9 @@ public class LectureRequestDto {
                 .duration(this.duration) // 기간
                 .lectureRank(this.lectureRank) // 랭크(티어)
                 .position(this.position) // 포지션
+                .videoUrl(this.videoUrl) // 강의 동영상 URL
+                .previewUrl(this.previewUrl) // 미리보기 동영상 URL
+                .materialUrls(this.materialUrls) // 강의 자료 URL들
                 .build();
 
         // 기본 Lecture 생성 - 내부 Builder 클래스에서 metadata는 자동 생성됨
@@ -48,7 +51,6 @@ public class LectureRequestDto {
 
         return lecture;
     }
-
 
     // 기존 엔티티를 업데이트합니다.
     public void updateEntity(Lecture lecture) {
@@ -67,6 +69,11 @@ public class LectureRequestDto {
         info.setDuration(this.duration);
         info.setLectureRank(this.lectureRank);
         info.setPosition(this.position);
+
+        // 추가된 필드 업데이트
+        info.setVideoUrl(this.videoUrl);
+        info.setPreviewUrl(this.previewUrl);
+        info.setMaterialUrls(this.materialUrls);
 
         // 메타데이터의 업데이트 일시는 @PreUpdate에서 자동 갱신됨
     }
