@@ -28,6 +28,38 @@ public class LectureController {
     private final LectureService lectureService;
 
     // === 웹 페이지 반환 메소드 (View) ===
+    // 전체 강의 목록 페이지 (추가)
+    @GetMapping  // 루트 경로: /lectures
+    public String lecturesList(
+            @RequestParam(required = false) String game,
+            @RequestParam(defaultValue = "rating") String sortBy,
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
+
+        // 페이징 정보 설정
+        Pageable pageable = PageRequest.of(page, 30);
+
+        // 게임 타입 목록 조회 (네비게이션 메뉴용)
+        List<String> gameTypes = lectureService.getAllActiveGameTypes();
+        model.addAttribute("gameTypes", gameTypes);
+
+        // 게임 타입이 지정된 경우
+        if (game != null && !game.isEmpty()) {
+            // 해당 게임 타입의 강의 목록을 가져옴
+            Page<LectureResponseDto> lectures = lectureService.getLecturesByGameType(game, sortBy, pageable);
+            model.addAttribute("lectures", lectures);
+            model.addAttribute("currentGameType", game);
+        } else {
+            // 전체 강의 목록을 가져옴
+            Page<LectureResponseDto> lectures = lectureService.getAllActiveLectures(pageable);
+            model.addAttribute("lectures", lectures);
+        }
+
+        model.addAttribute("currentSortBy", sortBy);
+
+        // lectures/index.html 템플릿 반환
+        return "lectures/index";
+    }
 
     // 홈 화면 (메인 페이지) - 인기 강의 목록 표시
     @GetMapping("/home") // /api/lectures/home
@@ -47,7 +79,7 @@ public class LectureController {
     @GetMapping("/game/{gameType}") // /api/lectures/game/{gameType}
     public String lecturesByGameType(
             @PathVariable String gameType,
-            @RequestParam(defaultValue = "popularity") String sortBy,
+            @RequestParam(defaultValue = "rating") String sortBy,
             @RequestParam(required = false) String rank,
             @RequestParam(required = false) String position,
             @RequestParam(defaultValue = "0") int page,
@@ -131,6 +163,7 @@ public class LectureController {
         return lectureService.getActivePopularLectures();
     }
 
+/*
     @GetMapping
     @ResponseBody
     @Operation(summary = "전체 강의 목록 조회", description = "페이징 처리된 모든 활성화된 강의 목록 조회")
@@ -140,14 +173,15 @@ public class LectureController {
         Pageable pageable = PageRequest.of(page, size);
         return lectureService.getAllActiveLectures(pageable);
     }
+*/
 
     @GetMapping("/lecture-list/game/{gameType}")
     @ResponseBody
     @Operation(summary = "게임별 강의 목록 조회", description = "특정 게임 타입에 대한 강의 목록 조회 (정렬 옵션 적용)")
     public Page<LectureResponseDto> getLecturesByGameType(
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @PathVariable String gameType,
-            @Parameter(description = "정렬 기준 (인기순, 최신순, 리뷰순, 낮은 가격순, 높은 가격순)")
-            @RequestParam(defaultValue = "popularity") String sortBy,
+            @Parameter(description = "정렬 기준 (인기순, 최신순, 낮은 가격순, 높은 가격순)")
+            @RequestParam(defaultValue = "rating") String sortBy,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기(강의 개수)") @RequestParam(defaultValue = "30") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -161,7 +195,7 @@ public class LectureController {
             @Parameter(description = "게임 타입 (예: LOL, VALORANT)") @RequestParam String gameType,
             @Parameter(description = "랭크 (예: bronze, silver, gold)") @RequestParam(required = false) String lectureRank,
             @Parameter(description = "포지션 (예: top, jungle, mid)") @RequestParam(required = false) String position,
-            @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "popularity") String sortBy,
+            @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "rating") String sortBy,
             @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기(강의 개수)") @RequestParam(defaultValue = "30") int size) {
         Pageable pageable = PageRequest.of(page, size);
