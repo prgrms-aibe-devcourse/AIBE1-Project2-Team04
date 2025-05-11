@@ -75,6 +75,8 @@ public class RefundService {
                 .completedAt(isSuccess ? LocalDateTime.now() : null) // 성공 시 환불 완료 시간 저장
                 .build();
 
+        payment.setStatus("환불 완료");
+
         // DB에 환불 내역 저장 후 반환
         return refundRepository.save(refundHistory);
 
