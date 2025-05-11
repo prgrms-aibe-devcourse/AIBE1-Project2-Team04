@@ -355,7 +355,7 @@ public class LectureRecommendationService {
         promptBuilder.append("4. 학습 목표 부합도: 회원의 학습 목표를 달성하는데 도움이 되는 강의를 추천하세요.\n");
         promptBuilder.append("5. 시간 투자 가능성: 회원이 투자할 수 있는 시간을 고려하여 적절한 강의를 추천하세요.\n");
         promptBuilder.append("6. 강의 선호도 반영: 회원이 선호하는 강의 유형(1:1, 그룹, 녹화 등)을 고려하세요.\n");
-        promptBuilder.append("7. 추천 이유와 효과: 각 강의가 왜 이 회원에게 적합한지, 어떤 효과를 기대할 수 있는지 상세히 설명하세요.\n\n");
+        promptBuilder.append("7. 추천 이유와 효과: 각 강의가 왜 이 회원에게 적합한지, 어떤 효과를 기대할 수 있는지 구체적으로 설명하세요.\n\n");
 
         // 응답 형식 - 기존과 동일하게 유지
         promptBuilder.append("## 응답 형식\n");
