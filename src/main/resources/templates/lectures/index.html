@@ -100,7 +100,10 @@
             <a href="/lectures" th:class="${currentGameType == null ? 'px-6 py-2 bg-primary text-white rounded-button font-medium' : 'px-6 py-2 bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-button font-medium'}">모든 강의</a>
             <a th:each="gameType : ${gameTypes}"
                th:href="@{'/lectures?game=' + ${gameType}}"
-               th:text="${gameType == 'LOL' ? '리그 오브 레전드' : (gameType == 'VALORANT' ? '발로란트' : '전략적 팀 전투')}"
+               th:text="${gameType == 'LOL' ? '리그 오브 레전드' :
+          (gameType == 'VALORANT' ? '발로란트' :
+          (gameType == 'TFT' ? '전략적 팀 전투' :
+          (gameType == 'ALL' ? '공통' : '기타')))}"
                th:class="${currentGameType == gameType ? 'px-6 py-2 bg-primary text-white rounded-button font-medium' : 'px-6 py-2 bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-button font-medium'}">
             </a>
         </div>
