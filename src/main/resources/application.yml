@@ -3,8 +3,9 @@ spring:
     active: dev
   jpa:
     defer-datasource-initialization: true
-    sql:
-      init:
-        mode: always
-#        schema-locations: classpath:schema.sql
-#        data-locations: classpath:data.sql
+    open-in-view: false
+  sql:
+    init:
+      mode: never
+  datasource:
+    sql-script-encoding: UTF-8

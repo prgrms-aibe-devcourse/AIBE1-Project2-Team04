@@ -10,7 +10,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none  # 운영 환경에서는 none이나 validate 권장
+      ddl-auto: none  # JPA가 테이블 구조를 변경하지 않도록 설정
+    defer-datasource-initialization: true  # SQL 스크립트가 JPA 이후에 실행되도록
     show-sql: false   # 운영 환경에서는 false로 설정하여 로그 최소화
     properties:
       hibernate:
@@ -18,9 +19,7 @@ spring:
         format_sql: false  # 운영 환경에서는 false로 설정
   sql:
     init:
-      mode: always
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
+      mode: never
 
   supabase:
     url: ${SUPABASE_URL}

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${currentGameType + ' 게임 강의 - Re:Boot'}">게임 강의 - Re:Boot</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .lecture-card {
+            transition: all 0.3s ease;
+        }
+        .lecture-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<!-- 네비게이션 바 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
+            </nav>
+        </div>
+
+        <!-- 네비게이션 바의 로그인/로그아웃 부분 -->
+        <div class="flex items-center space-x-4">
+            <!-- 네비게이션 바 검색창 수정 -->
+            <div class="relative hidden md:block">
+                <form action="/lectures/search" method="GET">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 로그인하지 않은 경우 -->
+            <div th:if="${#authentication == null || !#authentication.isAuthenticated()}" class="flex items-center space-x-4">
+                <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
+                <a th:href="@{/auth/sign}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
+            </div>
+
+            <!-- 로그인한 경우 -->
+            <div th:if="${#authentication != null && #authentication.isAuthenticated()}" class="flex items-center space-x-4">
+                <a th:href="@{/notifications}" class="text-gray-600 hover:text-primary">
+                    <i class="ri-notification-3-line text-xl"></i>
+                </a>
+                <div class="relative">
+                    <button id="profileDropdownButton" class="flex items-center space-x-2">
+                        <img src="/images/default-avatar.png" alt="프로필" class="w-8 h-8 rounded-full">
+                        <span th:text="${#authentication.name}" class="text-sm font-medium">사용자명</span>
+                    </button>
+                    <!-- 드롭다운 메뉴 -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden">
+                        <a th:href="@{/mypage}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">마이페이지</a>
+                        <a th:href="@{/mypage/lectures}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">내 강의</a>
+                        <a th:href="@{/mypage/replays}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">내 리플레이</a>
+                        <form th:action="@{/logout}" method="post" class="block">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">로그아웃</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 게임 타입 배너 -->
+<div class="bg-primary text-white py-10">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold mb-2" th:text="${currentGameType + ' 강의'}">게임 강의</h1>
+        <p class="text-indigo-100" th:if="${currentGameType == 'LOL'}">리그 오브 레전드의 모든 포지션과 챔피언에 대한 심층적인 코칭을 제공합니다.</p>
+        <p class="text-indigo-100" th:if="${currentGameType == 'VALORANT'}">에이밍부터 전략적 플레이까지, 발로란트 전문가들의 맞춤형 코칭을 받아보세요.</p>
+        <p class="text-indigo-100" th:if="${currentGameType == 'TFT'}">아이템 조합, 팀 구성, 경제 관리 등 TFT의 전략적 요소를 배워보세요.</p>
+    </div>
+</div>
+
+<!-- 필터 및 정렬 옵션 -->
+<div class="bg-white border-b py-4">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <!-- 필터 옵션 -->
+            <div class="flex flex-wrap gap-4">
+                <!-- 랭크 필터 -->
+                <div class="relative">
+                    <select id="rankFilter" class="bg-white border border-gray-300 text-gray-700 py-2 pl-4 pr-10 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">모든 랭크</option>
+                        <option th:selected="${currentRank == 'iron'}" value="iron">아이언</option>
+                        <option th:selected="${currentRank == 'bronze'}" value="bronze">브론즈</option>
+                        <option th:selected="${currentRank == 'silver'}" value="silver">실버</option>
+                        <option th:selected="${currentRank == 'gold'}" value="gold">골드</option>
+                        <option th:selected="${currentRank == 'platinum'}" value="platinum">플래티넘</option>
+                        <option th:selected="${currentRank == 'diamond'}" value="diamond">다이아몬드</option>
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentRank == 'master'}" value="master">마스터</option>
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentRank == 'grandmaster'}" value="grandmaster">그랜드마스터</option>
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentRank == 'challenger'}" value="challenger">챌린저</option>
+                        <option th:if="${currentGameType == 'VALORANT'}" th:selected="${currentRank == 'ascendant'}" value="ascendant">어센던트</option>
+                        <option th:if="${currentGameType == 'VALORANT'}" th:selected="${currentRank == 'immortal'}" value="immortal">이모탈</option>
+                        <option th:if="${currentGameType == 'VALORANT'}" th:selected="${currentRank == 'radiant'}" value="radiant">레디언트</option>
+                    </select>
+                    <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
+                        <i class="ri-arrow-down-s-line"></i>
+                    </div>
+                </div>
+
+                <!-- 포지션 필터 -->
+                <div class="relative">
+                    <select id="positionFilter" class="bg-white border border-gray-300 text-gray-700 py-2 pl-4 pr-10 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">모든 포지션</option>
+                        <!-- LOL 포지션 -->
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentPosition == 'top'}" value="top">탑</option>
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentPosition == 'jungle'}" value="jungle">정글</option>
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentPosition == 'mid'}" value="mid">미드</option>
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentPosition == 'adc'}" value="adc">원딜</option>
+                        <option th:if="${currentGameType == 'LOL'}" th:selected="${currentPosition == 'support'}" value="support">서포터</option>
+
+                        <!-- VALORANT 포지션 -->
+                        <option th:if="${currentGameType == 'VALORANT'}" th:selected="${currentPosition == 'duelist'}" value="duelist">듀얼리스트</option>
+                        <option th:if="${currentGameType == 'VALORANT'}" th:selected="${currentPosition == 'initiator'}" value="initiator">이니시에이터</option>
+                        <option th:if="${currentGameType == 'VALORANT'}" th:selected="${currentPosition == 'controller'}" value="controller">컨트롤러</option>
+                        <option th:if="${currentGameType == 'VALORANT'}" th:selected="${currentPosition == 'sentinel'}" value="sentinel">센티넬</option>
+                    </select>
+                    <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
+                        <i class="ri-arrow-down-s-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 정렬 옵션 -->
+            <div class="relative">
+                <select id="sortBy" class="bg-white border border-gray-300 text-gray-700 py-2 pl-4 pr-10 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option th:selected="${currentSortBy == 'popularity'}" value="popularity">인기순</option>
+                    <option th:selected="${currentSortBy == 'newest'}" value="newest">최신순</option>
+                    <option th:selected="${currentSortBy == 'reviews'}" value="reviews">리뷰순</option>
+                    <option th:selected="${currentSortBy == 'priceLow'}" value="priceLow">낮은 가격순</option>
+                    <option th:selected="${currentSortBy == 'priceHigh'}" value="priceHigh">높은 가격순</option>
+                </select>
+                <div class="absolute right-3 top-3 text-gray-400 pointer-events-none">
+                    <i class="ri-arrow-down-s-line"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 강의 목록 -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <!-- 결과가 없는 경우 -->
+        <div th:if="${lectures.empty}" class="text-center py-16">
+            <i class="ri-search-line text-5xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-700 mb-2">검색 결과가 없습니다</h3>
+            <p class="text-gray-500">다른 필터 옵션을 선택해 보세요.</p>
+        </div>
+
+        <!-- 강의 목록 그리드 -->
+        <div th:unless="${lectures.empty}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 강의 카드 (반복) -->
+            <div th:each="lecture : ${lectures}" class="lecture-card bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="relative">
+                    <img th:src="${lecture.imageUrl != null ? lecture.imageUrl : '/images/default-lecture.png'}" alt="강의 이미지" class="w-full h-48 object-cover">
+                    <div th:if="${lecture.isPopular}" class="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-sm font-medium">인기</div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-bold mb-1" th:text="${lecture.title}">강의 제목</h3>
+                    <p class="text-gray-500 text-sm mb-2" th:text="${lecture.instructorName}">강사 이름</p>
+                    <div class="flex items-center mb-3">
+                        <div class="flex text-yellow-400">
+                            <!-- 별점 표시 -->
+                            <i th:each="i : ${#numbers.sequence(1, lecture.rating)}" class="ri-star-fill"></i>
+                            <i th:if="${lecture.rating % 1 >= 0.5}" class="ri-star-half-fill"></i>
+                            <i th:each="i : ${#numbers.sequence(1, 5 - lecture.rating - (lecture.rating % 1 >= 0.5 ? 1 : 0))}" class="ri-star-line"></i>
+                        </div>
+                        <span class="text-gray-500 text-sm ml-1" th:text="'(' + ${lecture.rating} + ')'"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-lg" th:text="${#numbers.formatInteger(lecture.price, 0, 'COMMA') + '원'}">가격</span>
+                        <a th:href="@{'/lectures/' + ${#strings.replace(lecture.id.toString(), 'LECTURE-', '')}}" class="bg-primary text-white rounded-button py-1 px-3 text-sm hover:bg-primary/90">자세히 보기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div th:if="${!lectures.empty && lectures.totalPages > 1}" class="mt-8 flex justify-center">
+            <div class="flex space-x-1">
+                <!-- 이전 페이지 -->
+                <a th:if="${!lectures.first}" th:href="@{'/lectures/game/' + ${currentGameType} + '?sortBy=' + ${currentSortBy} + (${currentRank != null ? '&rank=' + currentRank : ''}) + (${currentPosition != null ? '&position=' + currentPosition : ''}) + '&page=' + ${lectures.number - 1}}" class="px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50">
+                    <i class="ri-arrow-left-s-line"></i>
+                </a>
+                <span th:if="${lectures.first}" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-400 cursor-not-allowed">
+                    <i class="ri-arrow-left-s-line"></i>
+                </span>
+
+                <!-- 페이지 번호 -->
+                <th:block th:with="start=${lectures.number - 2 < 0 ? 0 : lectures.number - 2}, end=${lectures.number + 2 >= lectures.totalPages ? lectures.totalPages - 1 : lectures.number + 2}">
+                    <th:block th:each="i : ${#numbers.sequence(start, end)}">
+                        <a th:if="${i != lectures.number}" th:href="@{'/lectures/game/' + ${currentGameType} + '?sortBy=' + ${currentSortBy} + (${currentRank != null ? '&rank=' + currentRank : ''}) + (${currentPosition != null ? '&position=' + currentPosition : ''}) + '&page=' + ${i}}" class="px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50" th:text="${i + 1}"></a>
+                        <span th:if="${i == lectures.number}" class="px-3 py-2 bg-primary border border-primary rounded-md text-white" th:text="${i + 1}"></span>
+                    </th:block>
+                </th:block>
+
+                <!-- 다음 페이지 -->
+                <a th:if="${!lectures.last}" th:href="@{'/lectures/game/' + ${currentGameType} + '?sortBy=' + ${currentSortBy} + (${currentRank != null ? '&rank=' + currentRank : ''}) + (${currentPosition != null ? '&position=' + currentPosition : ''}) + '&page=' + ${lectures.number + 1}}" class="px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50">
+                    <i class="ri-arrow-right-s-line"></i>
+                </a>
+                <span th:if="${lectures.last}" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-400 cursor-not-allowed">
+                    <i class="ri-arrow-right-s-line"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 추천 강의 섹션 -->
+<section class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold">맞춤 강의 찾기</h2>
+            <p class="text-gray-600 mt-2">간단한 설문을 통해 나에게 맞는 강의를 추천받으세요!</p>
+        </div>
+        <div class="text-center">
+            <a href="/survey/start" class="inline-block bg-primary text-white rounded-button px-6 py-3 font-medium hover:bg-primary/90">맞춤 설문 시작하기</a>
+        </div>
+    </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="bg-gray-900 text-white py-12 mt-auto">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- 회사 정보 -->
+            <div>
+                <a href="/" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">Re:Boot</a>
+                <p class="text-gray-400 mb-4">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-facebook-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-twitter-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-instagram-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-youtube-fill text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 서비스 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">서비스</h3>
+                <ul class="space-y-2">
+                    <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
+                    <li><a href="/replays/upload" class="text-gray-400 hover:text-white">리플레이 업로드</a></li>
+                    <li><a href="/survey/start" class="text-gray-400 hover:text-white">설문조사</a></li>
+                </ul>
+            </div>
+
+            <!-- 게임 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">게임</h3>
+                <ul class="space-y-2">
+                    <li><a href="/lectures/game/LOL" class="text-gray-400 hover:text-white">리그 오브 레전드</a></li>
+                    <li><a href="/lectures/game/VALORANT" class="text-gray-400 hover:text-white">발로란트</a></li>
+                    <li><a href="/lectures/game/TFT" class="text-gray-400 hover:text-white">전략적 팀 전투</a></li>
+                </ul>
+            </div>
+
+            <!-- 고객 지원 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">고객 지원</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">이용 약관</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">개인정보 처리방침</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">문의하기</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Re:Boot - 게이밍 코칭 매칭 플랫폼. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 모바일 메뉴 토글
+        const menuButton = document.querySelector('.md\\:hidden');
+        const mobileNav = document.querySelector('.md\\:flex');
+
+        if (menuButton && mobileNav) {
+            menuButton.addEventListener('click', function() {
+                // 모바일 메뉴 토글 구현
+                if (mobileNav.classList.contains('hidden')) {
+                    mobileNav.classList.remove('hidden');
+                    mobileNav.classList.add('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
+                } else {
+                    mobileNav.classList.add('hidden');
+                    mobileNav.classList.remove('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
+                }
+            });
+        }
+
+        // 프로필 드롭다운 메뉴 토글 기능
+        const profileDropdownButton = document.getElementById('profileDropdownButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileDropdownButton && profileDropdown) {
+            profileDropdownButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // 이벤트 전파 중지
+                profileDropdown.classList.toggle('hidden');
+            });
+
+            // 드롭다운 외부 클릭 시 닫기
+            document.addEventListener('click', function(e) {
+                if (!profileDropdownButton.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // 필터 및 정렬 변경 시 페이지 이동
+        const rankFilter = document.getElementById('rankFilter');
+        const positionFilter = document.getElementById('positionFilter');
+        const sortBy = document.getElementById('sortBy');
+
+        const applyFilters = () => {
+            const gameType = '[[${currentGameType}]]';
+            const rank = rankFilter.value;
+            const position = positionFilter.value;
+            const sort = sortBy.value;
+
+            let url = `/lectures/game/${gameType}?sortBy=${sort}`;
+            if (rank) url += `&rank=${rank}`;
+            if (position) url += `&position=${position}`;
+
+            window.location.href = url;
+        };
+
+        if (rankFilter) rankFilter.addEventListener('change', applyFilters);
+        if (positionFilter) positionFilter.addEventListener('change', applyFilters);
+        if (sortBy) sortBy.addEventListener('change', applyFilters);
+    });
+</script>
+</body>
+</html>

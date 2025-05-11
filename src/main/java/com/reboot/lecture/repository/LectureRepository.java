@@ -64,6 +64,9 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> { // ID 
     // 가격 범위로 강의 조회
     Page<Lecture> findByInfoPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 
+    // 게임별 강의 목록 - 별점순 정렬(내림차순)
+    @Query("SELECT l FROM Lecture l WHERE l.info.gameType = :gameType ORDER BY l.metadata.averageRating DESC")
+    Page<Lecture> findByGameTypeOrderByAverageRatingDesc(@Param("gameType") String gameType, Pageable pageable);
 
     // 제목 또는 설명에 특정 키워드가 포함된 강의 검색
     // 홈 화면 검색 기능 구현을 위한 메서드
@@ -89,17 +92,16 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> { // ID 
             Pageable pageable);
 
 
-    // 동적 필터링 (랭크, 포지션)과 정렬 옵션(인기순, 최신순, 리뷰수, 가격순)
     @Query("SELECT l FROM Lecture l WHERE l.info.gameType = :gameType " +
             "AND (:lectureRank IS NULL OR l.info.lectureRank = :lectureRank) " +
             "AND (:position IS NULL OR l.info.position = :position) " +
             "ORDER BY " +
             "CASE " +
-            "  WHEN :sortBy = 'popularity' THEN " + POPULARITY_FORMULA + " " +
-            "  WHEN :sortBy = 'newest' THEN 0 " +
-            "  WHEN :sortBy = 'reviews' THEN l.metadata.reviewCount " +
+            "  WHEN :sortBy = 'rating' THEN l.metadata.averageRating " +  // 변경: popularity -> rating
             "  WHEN :sortBy = 'priceHigh' THEN l.info.price " +
-            "  ELSE 0 " +
+            "  WHEN :sortBy = 'priceLow' THEN 0 " + // 가격 낮은순은 ASC로 정렬해야 함
+            "  WHEN :sortBy = 'newest' THEN 0 " +
+            "  ELSE l.metadata.averageRating " + // 기본값도 별점순으로 변경
             "END DESC, " +
             "CASE " +
             "  WHEN :sortBy = 'newest' THEN l.metadata.createdAt " +
@@ -115,7 +117,6 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> { // ID 
             @Param("position") String position,
             @Param("sortBy") String sortBy,
             Pageable pageable);
-
 
     // 게임 카테고리 목록 조회
     @Query("SELECT DISTINCT l.info.gameType FROM Lecture l ORDER BY l.info.gameType")

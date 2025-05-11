@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>테스트 설문 양식</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin-top: 30px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .btn-submit {
+            margin-top: 20px;
+        }
+        h1 {
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .game-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">테스트 설문 양식</h1>
+    <div class="card">
+        <div class="card-header">
+            강의 추천 테스트
+        </div>
+        <div class="card-body">
+            <form th:action="@{/test/submit-survey}" method="post">
+                <!-- 회원 선택 -->
+                <div class="form-group">
+                    <label for="memberId"><strong>테스트할 회원 선택:</strong></label>
+                    <select id="memberId" name="memberId" class="form-control" required onchange="updateMemberGameInfo()">
+                        <option value="">-- 회원 선택 --</option>
+                        <option th:each="member : ${members}"
+                                th:value="${member.memberId}"
+                                th:text="${member.name} + ' (' + ${member.nickname} + ')'"
+                                th:attr="data-game-type=${member.game != null ? member.game.gameType : ''},
+                                             data-game-tier=${member.game != null ? member.game.gameTier : ''},
+                                             data-game-position=${member.game != null ? member.game.gamePosition : ''}"></option>
+                    </select>
+                    <div id="memberGameInfo" class="game-info" style="display: none;">
+                        <strong>회원 게임 정보:</strong>
+                        <div id="gameTypeInfo"></div>
+                        <div id="gameTierInfo"></div>
+                        <div id="gamePositionInfo"></div>
+                    </div>
+                </div>
+
+                <!-- 게임 타입 선택 -->
+                <div class="form-group">
+                    <label for="gameType"><strong>게임 타입:</strong></label>
+                    <select id="gameType" name="gameType" class="form-control" required onchange="updateGameOptions()">
+                        <option value="">-- 게임 선택 --</option>
+                        <option th:each="type : ${gameTypes}"
+                                th:value="${type}"
+                                th:text="${type.name() == 'LOL' ? '리그 오브 레전드' :
+                                             (type.name() == 'VALORANT' ? '발로란트' :
+                                             (type.name() == 'TFT' ? '전략적 팀 전투' : type.name()))}"></option>
+                    </select>
+                </div>
+
+                <!-- 게임 티어 선택 -->
+                <div class="form-group">
+                    <label for="gameTier"><strong>게임 티어:</strong></label>
+                    <select id="gameTier" name="gameTier" class="form-control">
+                        <option value="">-- 티어 선택 --</option>
+                        <!-- 자바스크립트로 동적 업데이트 -->
+                    </select>
+                </div>
+
+                <!-- 게임 포지션 선택 -->
+                <div class="form-group">
+                    <label for="gamePosition"><strong>게임 포지션:</strong></label>
+                    <select id="gamePosition" name="gamePosition" class="form-control">
+                        <option value="">-- 포지션 선택 --</option>
+                        <!-- 자바스크립트로 동적 업데이트 -->
+                    </select>
+                </div>
+
+                <!-- 실력 수준 -->
+                <div class="form-group">
+                    <label><strong>실력 수준:</strong></label>
+                    <div class="form-check">
+                        <input type="radio" name="skillLevel" id="skillBeginner" value="BEGINNER" class="form-check-input" required>
+                        <label class="form-check-label" for="skillBeginner">초보자 (BEGINNER)</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="skillLevel" id="skillIntermediate" value="INTERMEDIATE" class="form-check-input">
+                        <label class="form-check-label" for="skillIntermediate">중급자 (INTERMEDIATE)</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="skillLevel" id="skillAdvanced" value="ADVANCED" class="form-check-input">
+                        <label class="form-check-label" for="skillAdvanced">고급자 (ADVANCED)</label>
+                    </div>
+                </div>
+
+                <!-- 학습 목표 -->
+                <div class="form-group">
+                    <label><strong>학습 목표:</strong></label>
+                    <select name="learningGoal" class="form-control" required>
+                        <option value="">-- 학습 목표 선택 --</option>
+                        <option th:each="goal : ${learningGoals}" th:value="${goal}" th:text="${goal}"></option>
+                    </select>
+                </div>
+
+                <!-- 가능 시간 -->
+                <div class="form-group">
+                    <label><strong>가능 시간:</strong></label>
+                    <select name="availableTime" class="form-control" required>
+                        <option value="">-- 가능 시간 선택 --</option>
+                        <option th:each="time : ${availableTimes}" th:value="${time}" th:text="${time}"></option>
+                    </select>
+                </div>
+
+                <!-- 강의 선호도 -->
+                <div class="form-group">
+                    <label><strong>강의 선호도:</strong></label>
+                    <select name="lecturePreference" class="form-control" required>
+                        <option value="">-- 강의 선호도 선택 --</option>
+                        <option th:each="pref : ${lecturePreferences}" th:value="${pref}" th:text="${pref}"></option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block btn-submit">설문 제출</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const gameInfo = /*[[${gameInfo}]]*/ {};
+
+    function updateMemberGameInfo() {
+        const memberSelect = document.getElementById('memberId');
+        const selectedOption = memberSelect.options[memberSelect.selectedIndex];
+        const gameTypeInfo = document.getElementById('gameTypeInfo');
+        const gameTierInfo = document.getElementById('gameTierInfo');
+        const gamePositionInfo = document.getElementById('gamePositionInfo');
+        const memberGameInfo = document.getElementById('memberGameInfo');
+
+        // 회원의 게임 정보 표시
+        if (selectedOption && selectedOption.value) {
+            const gameType = selectedOption.getAttribute('data-game-type');
+            const gameTier = selectedOption.getAttribute('data-game-tier');
+            const gamePosition = selectedOption.getAttribute('data-game-position');
+
+            if (gameType || gameTier || gamePosition) {
+                gameTypeInfo.textContent = gameType ? `게임 타입: ${gameType}` : '게임 타입: 없음';
+                gameTierInfo.textContent = gameTier ? `티어: ${gameTier}` : '티어: 없음';
+                gamePositionInfo.textContent = gamePosition ? `포지션: ${gamePosition}` : '포지션: 없음';
+                memberGameInfo.style.display = 'block';
+
+                // 게임 타입이 있으면 자동 선택
+                if (gameType) {
+                    const gameTypeSelect = document.getElementById('gameType');
+                    for (let i = 0; i < gameTypeSelect.options.length; i++) {
+                        if (gameTypeSelect.options[i].value === gameType) {
+                            gameTypeSelect.selectedIndex = i;
+                            updateGameOptions(); // 티어와 포지션 옵션 업데이트
+                            break;
+                        }
+                    }
+                }
+
+                // 티어가 있으면 자동 선택 (옵션 업데이트 후)
+                setTimeout(() => {
+                    if (gameTier) {
+                        const gameTierSelect = document.getElementById('gameTier');
+                        for (let i = 0; i < gameTierSelect.options.length; i++) {
+                            if (gameTierSelect.options[i].value === gameTier) {
+                                gameTierSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    // 포지션이 있으면 자동 선택
+                    if (gamePosition) {
+                        const gamePositionSelect = document.getElementById('gamePosition');
+                        for (let i = 0; i < gamePositionSelect.options.length; i++) {
+                            if (gamePositionSelect.options[i].value === gamePosition) {
+                                gamePositionSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }, 100);
+            } else {
+                memberGameInfo.style.display = 'none';
+            }
+        } else {
+            memberGameInfo.style.display = 'none';
+        }
+    }
+
+    function updateGameOptions() {
+        const gameType = document.getElementById('gameType').value;
+        const tierSelect = document.getElementById('gameTier');
+        const positionSelect = document.getElementById('gamePosition');
+
+        // 티어 옵션 업데이트
+        tierSelect.innerHTML = '<option value="">-- 티어 선택 --</option>';
+        if (gameInfo[gameType] && gameInfo[gameType].tiers) {
+            gameInfo[gameType].tiers.forEach(tier => {
+                const option = document.createElement('option');
+                option.value = tier;
+                option.textContent = tier;
+                tierSelect.appendChild(option);
+            });
+        }
+
+        // 포지션 옵션 업데이트
+        positionSelect.innerHTML = '<option value="">-- 포지션 선택 --</option>';
+        if (gameInfo[gameType] && gameInfo[gameType].positions) {
+            gameInfo[gameType].positions.forEach(position => {
+                const option = document.createElement('option');
+                option.value = position;
+                option.textContent = position;
+                positionSelect.appendChild(option);
+            });
+        }
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        // gameType이 이미 선택되어 있다면 옵션 업데이트
+        if (document.getElementById('gameType').value) {
+            updateGameOptions();
+        }
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

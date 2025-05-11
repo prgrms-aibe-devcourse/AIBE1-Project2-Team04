@@ -22,11 +22,8 @@ public class Instructor {
     private Long instructorId;
 
     @OneToOne
-    @JoinColumn(name = "instructor_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
-    @Column(name = "member_id", insertable = false, updatable = false)
-    private Long memberId;
 
     // 강사정보
 //    @Column(name = "Nickname", unique = true, nullable = false)
