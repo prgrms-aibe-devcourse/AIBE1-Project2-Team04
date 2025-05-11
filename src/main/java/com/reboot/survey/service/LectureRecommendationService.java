@@ -171,6 +171,11 @@ public class LectureRecommendationService {
             summary.append("강사: 정보 없음\n");
         }
 
+        System.out.println("lecture_id: " + lecture.getId());
+        System.out.println("instructor_id: " + instructor.getInstructorId());
+        System.out.println("member_id: " + instructor.getMember().getMemberId());
+        System.out.println("강사 이름: " + instructor.getMember().getName());
+
         return summary.toString();
     }
 
@@ -334,14 +339,6 @@ public class LectureRecommendationService {
         promptBuilder.append("## 회원 정보\n");
         promptBuilder.append("이름: ").append(member.getName()).append("\n");
         promptBuilder.append("닉네임: ").append(member.getNickname()).append("\n");
-
-        // 회원 게임 정보가 있으면 추가
-        if (member.getGame() != null) {
-            promptBuilder.append("게임 타입: ").append(member.getGame().getGameType()).append("\n");
-            promptBuilder.append("게임 티어: ").append(member.getGame().getGameTier()).append("\n");
-            promptBuilder.append("게임 포지션: ").append(member.getGame().getGamePosition()).append("\n");
-        }
-        promptBuilder.append("\n");
 
         // 요약된 강의 목록 추가
         promptBuilder.append("## 요약된 강의 목록\n");
