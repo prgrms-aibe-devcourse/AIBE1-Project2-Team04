@@ -1,5 +1,11 @@
 spring:
-  application:
-    name: reboot
   profiles:
     active: dev
+  jpa:
+    defer-datasource-initialization: true
+    open-in-view: false
+  sql:
+    init:
+      mode: never
+  datasource:
+    sql-script-encoding: UTF-8

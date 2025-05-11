@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영상 리플레이 업로드</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #fafbfc;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            margin-bottom: 24px;
+            color: #333;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .reservation-info {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border-left: 4px solid #2e7dff;
+        }
+
+        .reservation-info h5 {
+            margin-top: 0;
+            color: #2e7dff;
+            font-weight: 600;
+        }
+
+        .reservation-info p {
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .youtube-guide {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2e7dff;
+            padding: 20px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+        }
+
+        .youtube-guide h5 {
+            margin-top: 0;
+            color: #2e7dff;
+            font-weight: 600;
+        }
+
+        .youtube-guide p {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+        }
+
+        .form-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .preview-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 24px;
+            display: none;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #2e7dff;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #1a68e5;
+        }
+
+        .btn-secondary {
+            background: #f1f2f6;
+            color: #333;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #e1e2e6;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .d-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .button-group .btn {
+            flex: 1;
+        }
+
+        .existing-replay-alert {
+            background-color: #ffe9e3;
+            border-left: 4px solid #ff6b6b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .existing-replay-alert h5 {
+            color: #e03131;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="page-title">영상 리플레이 업로드</h2>
+
+    <!-- 성공/에러 메시지 표시 -->
+    <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <!-- 기존 리플레이가 있는 경우 경고 표시 (reservation/add/{id} 경로에서만 표시) -->
+    <div th:if="${existingReplays != null && !existingReplays.isEmpty()}" class="existing-replay-alert">
+        <h5><i class="fas fa-exclamation-triangle"></i> 기존 리플레이 발견</h5>
+        <p>이 예약에는 이미 등록된 리플레이가 있습니다. 기존 리플레이를 보거나 수정하시겠습니까?</p>
+        <div class="button-group">
+            <a th:href="@{/replays/{id}(id=${existingReplays[0].replayId})}" class="btn btn-primary">
+                <i class="fas fa-eye"></i> 리플레이 보기
+            </a>
+            <a th:href="@{/replays/{id}/edit(id=${existingReplays[0].replayId})}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> 리플레이 수정
+            </a>
+        </div>
+    </div>
+
+    <!-- 예약 정보가 있는 경우 표시 -->
+    <div th:if="${reservation}" class="reservation-info">
+        <h5>예약 정보</h5>
+        <p><strong>예약 번호:</strong> <span th:text="${reservation.reservationId}"></span></p>
+        <p><strong>강의명:</strong> <span th:text="${reservation.lectureTitle}"></span></p>
+        <p><strong>예약 일시:</strong> <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p><strong>강의 일정:</strong> <span th:text="${reservation.scheduleDate}"></span></p>
+        <p><strong>상태:</strong> <span th:text="${reservation.status}"></span></p>
+    </div>
+
+    <!-- YouTube 링크 입력 가이드 -->
+    <div class="youtube-guide">
+        <h5>YouTube 영상 링크 입력 방법</h5>
+        <p><i class="fas fa-search"></i> YouTube에서 공유하고자 하는 영상을 찾습니다.</p>
+        <p><i class="fas fa-share-alt"></i> 영상 아래의 '공유' 버튼을 클릭합니다.</p>
+        <p><i class="fas fa-copy"></i> 표시된 링크를 복사합니다 (예: https://www.youtube.com/watch?v=ABCDEFG).</p>
+        <p><i class="fas fa-paste"></i> 아래 폼의 'YouTube 링크' 란에 붙여넣습니다.</p>
+    </div>
+
+    <!-- 업로드 폼 (기존 리플레이가 없는 경우에만 표시) -->
+    <form th:unless="${existingReplays != null && !existingReplays.isEmpty()}"
+          th:action="@{/replays}" th:object="${replayRequest}" method="post" id="replayForm">
+        <input type="hidden" th:field="*{reservationId}" />
+
+        <div class="mb-4">
+            <label for="fileUrl" class="form-label">YouTube 링크</label>
+            <input type="text" class="form-control" id="fileUrl" th:field="*{fileUrl}"
+                   placeholder="https://www.youtube.com/watch?v=..." required>
+            <div class="form-text">YouTube 영상의 전체 URL을 입력해주세요.</div>
+        </div>
+
+        <div class="d-grid">
+            <button type="button" class="btn btn-secondary" id="previewBtn">
+                <i class="fas fa-eye"></i> 미리보기
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-upload"></i> 업로드
+            </button>
+        </div>
+
+        <!-- 미리보기 영역 -->
+        <div class="preview-container" id="previewContainer">
+            <div id="videoPreview"></div>
+        </div>
+    </form>
+
+    <!-- 뒤로 가기 버튼 -->
+    <div class="button-group">
+        <a th:href="@{/reservation/{id}(id=${reservation.reservationId})}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> 예약으로 돌아가기
+        </a>
+        <a th:href="@{/replays/reservation/{id}(id=${reservation.reservationId})}" class="btn btn-secondary">
+            <i class="fas fa-list"></i> 리플레이 목록
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileUrlInput = document.getElementById('fileUrl');
+        const previewBtn = document.getElementById('previewBtn');
+        const previewContainer = document.getElementById('previewContainer');
+        const videoPreview = document.getElementById('videoPreview');
+
+        // 필요한 요소가 없으면 실행하지 않음 (기존 리플레이가 있는 경우)
+        if (!fileUrlInput || !previewBtn || !previewContainer || !videoPreview) {
+            return;
+        }
+
+        // 입력 필드에 이미 URL이 있는 경우 자동으로 미리보기 표시
+        if (fileUrlInput.value.trim()) {
+            showPreview(fileUrlInput.value);
+        }
+
+        previewBtn.addEventListener('click', function() {
+            const youtubeUrl = fileUrlInput.value.trim();
+
+            if (!youtubeUrl) {
+                alert('YouTube 링크를 입력해주세요.');
+                return;
+            }
+
+            showPreview(youtubeUrl);
+        });
+
+        function showPreview(url) {
+            const embedUrl = getYouTubeEmbedUrl(url);
+
+            if (embedUrl) {
+                videoPreview.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+                previewContainer.style.display = 'block';
+
+                // 부드러운 스크롤 효과로 미리보기 영역으로 이동
+                setTimeout(() => {
+                    previewContainer.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            } else {
+                alert('유효한 YouTube 링크가 아닙니다. 다시 확인해주세요.');
+            }
+        }
+
+        function getYouTubeEmbedUrl(url) {
+            let videoId = null;
+
+            // 일반 YouTube URL (watch?v=VIDEO_ID)
+            if (url.includes('youtube.com/watch?v=')) {
+                const urlParams = new URLSearchParams(url.split('?')[1]);
+                videoId = urlParams.get('v');
+            }
+            // 단축 URL (youtu.be/VIDEO_ID)
+            else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1];
+                if (videoId.includes('?')) {
+                    videoId = videoId.substring(0, videoId.indexOf('?'));
+                }
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            return null;
+        }
+    });
+</script>
+</body>
+</html>
