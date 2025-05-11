@@ -170,7 +170,7 @@
                     <!-- 강의 정보 -->
                     <div class="p-4">
                         <h3 class="text-lg font-bold mb-2 hover:text-primary transition-colors line-clamp-2">
-                            <a th:href="@{'/lectures/' + ${lecture.id}}" th:text="${lecture.title}">강의 제목</a>
+                            <a th:href="@{'/lectures/' + ${#strings.replace(lecture.id.toString(), 'LECTURE-', '')}}" th:text="${lecture.title}">강의 제목</a>
                         </h3>
 
                         <!-- 인스트럭터 정보 -->
@@ -314,7 +314,7 @@
                     mobileNav.classList.add('hidden');
                     mobileNav.classList.remove('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
                 }
-
+            });
         }
 
         // 프로필 드롭다운 메뉴 토글 기능
