@@ -403,7 +403,7 @@
 </footer>
 
 <script>
-    const WEB_URL = 'http:localhost:8080';
+    const WEB_URL = 'http://localhost:8080';
 
     document.addEventListener('DOMContentLoaded', function () {
         // 비밀번호 표시/숨김 토글
@@ -605,16 +605,15 @@
                 role: document.getElementById('signupType').value
             };
 
-            let result;
-
-            if(signupData.role === 'user'){
-                result = await signProcess_User(signupData);
-            }
-            else if (signupData.role === 'instructor') {
-            }
+            const result = await signProcess_User(signupData);
 
             if(result.success) {
-                window.location.href = '/auth/login';
+                if(signupData.role === 'instructor') {
+                    window.location.href = '/auth/sign_details?username=' + signupData.username;
+                }
+                else{
+                    window.location.href = '/auth/login';
+                }
             }
             else{
                 errorDiv.style.display = 'block';
@@ -627,7 +626,7 @@
 
     // 일반 유저 회원가입
     async function signProcess_User(dto) {
-        const response = await fetch('http://localhost:8080/auth/sign', {
+        const response = await fetch(WEB_URL + '/auth/sign', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
@@ -636,10 +635,6 @@
         });
 
         return await response.json();
-    }
-
-    // 강사 회원가입
-    function signProcess_instructor(dto) {
     }
 </script>
 </body>

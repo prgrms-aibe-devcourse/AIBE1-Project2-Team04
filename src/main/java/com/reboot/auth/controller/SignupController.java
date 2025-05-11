@@ -1,6 +1,7 @@
 package com.reboot.auth.controller;
 
 import com.reboot.auth.dto.SignupDTO;
+import com.reboot.auth.dto.SignupDetailsDTO;
 import com.reboot.auth.dto.SignupResponse;
 import com.reboot.auth.service.SignupService;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +30,15 @@ public class SignupController {
 
         signupService.signupProcess(dto);
         return ResponseEntity.ok(new SignupResponse(true, "", "회원가입 성공"));
+    }
+
+    @PostMapping("/sign_instructor")
+    public ResponseEntity<?> signupInstructorProcess(@RequestBody SignupDetailsDTO dto) {
+        if (!signupService.existsUsername(dto.username())) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        signupService.signupDetailsProcess(dto);
+        return ResponseEntity.ok(new SignupResponse(true, "", "강사 정보 저장 성공"));
     }
 }
