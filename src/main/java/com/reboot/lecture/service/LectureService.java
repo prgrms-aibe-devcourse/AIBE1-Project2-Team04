@@ -1,5 +1,6 @@
 package com.reboot.lecture.service;
 
+import com.reboot.lecture.dto.LectureDetailResponseDto;
 import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.entity.Lecture;
 import org.springframework.data.domain.Page;
@@ -46,4 +47,6 @@ public interface LectureService {
     LectureResponseDto getLectureById(Long id);
 
     Lecture getLecture(Long id);
+
+    LectureDetailResponseDto getLectureDetailById(Long id);
 }
