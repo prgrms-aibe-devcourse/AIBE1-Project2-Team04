@@ -1,5 +1,7 @@
 package com.reboot.lecture.controller;
 
+import com.reboot.auth.entity.Member;
+import com.reboot.auth.repository.MemberRepository;
 import com.reboot.lecture.dto.LectureDetailResponseDto;
 import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.service.LectureService;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -27,6 +30,7 @@ import java.util.List;
 public class LectureController {
 
     private final LectureService lectureService;
+    private final MemberRepository memberRepository;
 
     // === 웹 페이지 반환 메소드 (View) ===
     // 전체 강의 목록 페이지 (추가)
@@ -144,11 +148,14 @@ public class LectureController {
     }
 
     // 강의 상세 페이지 (특정 ID의 강의 상세 정보 표시)
-    @GetMapping("/{id}") // /api/lectures/{id}
+    // LectureController.java의 lectureDetail 메소드 수정
+    @GetMapping("/{id}")
     public String lectureDetail(
             @PathVariable Long id,
-            Model model) {
-        // ID로 강의 상세 정보 조회 (없으면 LectureNotFoundException 발생)
+            Model model,
+            Principal principal) { // Principal 추가
+
+        // ID로 강의 상세 정보 조회
         LectureDetailResponseDto lectureDetail = lectureService.getLectureDetailById(id);
         model.addAttribute("lectureDetail", lectureDetail);
 
@@ -156,8 +163,16 @@ public class LectureController {
         LectureResponseDto lecture = lectureService.getLectureById(id);
         model.addAttribute("lecture", lecture);
 
+        // 현재 로그인한 사용자 정보 추가
+        if (principal != null) {
+            Member member = memberRepository.findByUsername(principal.getName())
+                    .orElse(null);
+            model.addAttribute("currentMember", member);
+        }
+
         return "lectures/detail";
     }
+
 
     // === REST API 메소드 (JSON 반환) ===
 
