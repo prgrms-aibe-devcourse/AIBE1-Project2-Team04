@@ -106,6 +106,7 @@
                 <!-- Hidden input for user ID or some identifier from previous step if needed -->
                 <!-- <input type="hidden" name="userId" th:value="${userId}" /> -->
 
+            <!-- 프로필 이미지 미구현으로 주석
                 <div>
                     <label for="profileImage" class="block text-sm font-medium text-gray-700 mb-1">프로필 이미지</label>
                     <div class="mt-1 flex items-center space-x-3">
@@ -140,6 +141,7 @@
                     </div>
                     <p class="mt-1 text-xs text-gray-500">PNG, JPG, GIF 파일을 최대 5MB까지 업로드할 수 있습니다.</p>
                 </div>
+                -->
 
                 <div>
                     <label for="game" class="block text-sm font-medium text-gray-700 mb-1">게임 선택</label>
@@ -296,7 +298,7 @@
                 username: urlParams.get('username'),
                 career: document.getElementById('career').value,
                 description: document.getElementById('description').value,
-                profileImage: document.getElementById('profileImagePreview').value,
+                // profileImage: document.getElementById('profileImagePreview').value,
                 gameType: document.getElementById('game').value,
                 gameTier: document.getElementById('rank').value,
                 gamePosition: document.getElementById('position').value,
