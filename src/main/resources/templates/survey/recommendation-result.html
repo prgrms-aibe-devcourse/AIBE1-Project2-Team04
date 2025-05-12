@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gigs - 맞춤 강의 추천</title>
+    <title>맞춤 강의 추천 결과</title>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -21,7 +21,6 @@
         h1 {
             color: #333;
             margin-bottom: 20px;
-            text-align: center;
         }
         .overall-recommendation {
             background-color: #eef1f8;
@@ -138,7 +137,7 @@
 </head>
 <body>
 <div class="recommendation-container">
-    <h1>맞춤형 강의 추천 결과 🎮</h1>
+    <h1>맞춤 강의 추천 결과</h1>
 
     <div class="overall-recommendation">
         <p th:text="${recommendation.overallRecommendation}">설문 결과에 따른 맞춤형 강의를 추천해 드립니다.</p>
@@ -146,7 +145,7 @@
 
     <div th:if="${recommendation.recommendations != null && !recommendation.recommendations.isEmpty()}" class="lecture-cards">
         <div th:each="lecture : ${recommendation.recommendations}" class="lecture-card">
-            <div th:if="${lecture.imageUrl != null && lecture.imageUrl != ''}" class="lecture-image">
+            <div th:if="${lecture.imageUrl != null}" class="lecture-image">
                 <img th:src="${lecture.imageUrl}" alt="강의 이미지" style="width: 100%; height: auto;">
             </div>
             <div class="lecture-header">
@@ -180,9 +179,8 @@
     </div>
 
     <div class="actions">
-        <a th:href="@{/survey/start}" class="btn btn-secondary">설문 다시 하기</a>
-        <a th:href="@{/lectures}" class="btn btn-primary" th:if="${!recommendation.recommendations.isEmpty()}">모든 강의 보기</a>
-        <a th:href="@{/index}" class="btn btn-primary" th:if="${recommendation.recommendations.isEmpty()}">홈으로 이동</a>
+        <a th:href="@{/survey/survey-form}" class="btn btn-secondary">다시 설문하기</a>
+        <a th:href="@{/}" class="btn btn-primary">홈으로 이동</a>
     </div>
 </div>
 </body>
