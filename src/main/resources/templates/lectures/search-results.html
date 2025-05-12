@@ -54,13 +54,17 @@
 
         <!-- 네비게이션 바의 로그인/로그아웃 부분 수정 -->
         <div class="flex items-center space-x-4">
+            <!-- 네비게이션 바 검색창 수정 -->
             <div class="relative hidden md:block">
-                <input type="text" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
-                <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
-                    <i class="ri-search-line"></i>
-                </div>
+                <form action="/lectures/search" method="GET">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
-
             <!-- 로그인하지 않은 경우 -->
             <div th:if="${#authentication == null || !#authentication.isAuthenticated()}" class="flex items-center space-x-4">
                 <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
@@ -124,7 +128,10 @@
             </a>
             <a th:each="gameType : ${gameTypes}"
                th:href="@{'/lectures/search?keyword=' + ${keyword} + '&gameType=' + ${gameType}}"
-               th:text="${gameType == 'LOL' ? '리그 오브 레전드' : (gameType == 'VALORANT' ? '발로란트' : '전략적 팀 전투')}"
+               th:text="${gameType == 'LOL' ? '리그 오브 레전드' :
+          (gameType == 'VALORANT' ? '발로란트' :
+          (gameType == 'TFT' ? '전략적 팀 전투' :
+          (gameType == 'ALL' ? '공통' : '기타')))}"
                th:class="${gameType == currentGameType ? 'px-4 py-2 bg-primary text-white rounded-button font-medium' : 'px-4 py-2 bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-button font-medium'}">
             </a>
         </div>
@@ -145,9 +152,53 @@
             <h2 class="text-2xl font-bold mb-8" th:text="'검색 결과: ' + ${lectures.totalElements} + '개의 강의'">검색 결과</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- 강의 카드 (같은 코드 재사용) -->
-                <div th:each="lecture : ${lectures}" class="lecture-card bg-white rounded-lg shadow-sm overflow-hidden">
-                    <!-- 내용은 이전과 동일 -->
+                <!-- 검색 결과 그리드 강의 카드 내용 추가 -->
+                <div th:each="lecture : ${lectures.content}" class="lecture-card bg-white rounded-lg shadow-sm overflow-hidden">
+                    <!-- 강의 이미지 -->
+                    <div class="h-48 overflow-hidden relative">
+                        <img th:if="${lecture.imageUrl != null}" th:src="${lecture.imageUrl}" alt="강의 이미지" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300">
+                        <img th:unless="${lecture.imageUrl != null}" src="/images/default-lecture.jpg" alt="기본 이미지" class="w-full h-full object-cover">
+                        <!-- 게임 타입 라벨 -->
+                        <div class="absolute top-3 left-3 bg-primary/80 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            <span th:text="${lecture.gameType == 'LOL' ? '리그 오브 레전드' :
+          (lecture.gameType == 'VALORANT' ? '발로란트' :
+          (lecture.gameType == 'TFT' ? '전략적 팀 전투' :
+          (lecture.gameType == 'ALL' ? '공통' : '기타')))}">게임 타입</span>
+                        </div>
+                    </div>
+
+                    <!-- 강의 정보 -->
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold mb-2 hover:text-primary transition-colors line-clamp-2">
+                            <a th:href="@{'/lectures/' + ${#strings.replace(lecture.id.toString(), 'LECTURE-', '')}}" th:text="${lecture.title}">강의 제목</a>
+                        </h3>
+
+                        <!-- 인스트럭터 정보 -->
+                        <div class="flex items-center mb-3">
+                            <img src="/images/default-avatar.png" alt="강사 이미지" class="w-6 h-6 rounded-full mr-2">
+                            <span class="text-sm text-gray-600" th:text="${lecture.instructorNickname != null ? lecture.instructorNickname : '강사 정보 없음'}">강사 이름</span>
+                        </div>
+
+                        <!-- 강의 설명 -->
+                        <p class="text-sm text-gray-500 mb-3 line-clamp-2" th:text="${lecture.description}">강의 설명...</p>
+
+                        <!-- 강의 정보 배지 -->
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span th:if="${lecture.position != null && lecture.position != 'ALL'}" class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full" th:text="${lecture.position}">포지션</span>
+                            <span th:if="${lecture.lectureRank != null && lecture.lectureRank != 'ALL'}" class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full" th:text="${lecture.lectureRank}">티어</span>
+                            <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full" th:text="${lecture.duration + '분'}">시간</span>
+                        </div>
+
+                        <!-- 가격 및 평점 -->
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg" th:text="${#numbers.formatInteger(lecture.price, 0, 'COMMA') + '원'}">35,000원</span>
+                            <div class="flex items-center">
+                                <i class="ri-star-fill text-yellow-400 mr-1"></i>
+                                <span class="text-sm font-medium" th:text="${#numbers.formatDecimal(lecture.averageRating, 1, 1)}">4.5</span>
+                                <span class="text-xs text-gray-500 ml-1" th:text="'(' + ${lecture.reviewCount} + ')'">리뷰 수</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -263,7 +314,7 @@
                     mobileNav.classList.add('hidden');
                     mobileNav.classList.remove('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
                 }
-
+            });
         }
 
         // 프로필 드롭다운 메뉴 토글 기능

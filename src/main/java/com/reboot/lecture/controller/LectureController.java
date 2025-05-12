@@ -1,5 +1,6 @@
 package com.reboot.lecture.controller;
 
+import com.reboot.lecture.dto.LectureDetailResponseDto;
 import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.service.LectureService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -148,6 +149,10 @@ public class LectureController {
             @PathVariable Long id,
             Model model) {
         // ID로 강의 상세 정보 조회 (없으면 LectureNotFoundException 발생)
+        LectureDetailResponseDto lectureDetail = lectureService.getLectureDetailById(id);
+        model.addAttribute("lectureDetail", lectureDetail);
+
+        // 기본 강의 정보도 함께 가져옴
         LectureResponseDto lecture = lectureService.getLectureById(id);
         model.addAttribute("lecture", lecture);
 

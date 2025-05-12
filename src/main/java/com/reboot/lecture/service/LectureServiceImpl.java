@@ -1,8 +1,10 @@
 package com.reboot.lecture.service;
 
+import com.reboot.lecture.dto.LectureDetailResponseDto;
 import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.entity.Lecture;
 import com.reboot.lecture.exception.LectureNotFoundException;
+import com.reboot.lecture.repository.LectureDetailRepository;
 import com.reboot.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import java.util.List;
 public class LectureServiceImpl implements LectureService {
 
     private final LectureRepository lectureRepository;
+    private final LectureDetailRepository lectureDetailRepository;
 
     // 홈 화면에 표시할 강의 목록 조회 (인기순 - 디폴트)
     @Override
@@ -88,6 +91,7 @@ public class LectureServiceImpl implements LectureService {
         return lectureRepository.findAllActiveGameTypes();
     }
 
+
     // 특정 강의 ID의 상세 정보 조회
     @Override
     public LectureResponseDto getLectureById(Long id) {
@@ -101,5 +105,14 @@ public class LectureServiceImpl implements LectureService {
     public Lecture getLecture(Long id) {
         return lectureRepository.findByIdWithInstructor(id)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + id));
+    }
+
+    // 강의 상세 정보 조회 메서드 추가
+    @Override
+    public LectureDetailResponseDto getLectureDetailById(Long id) {
+        // 강의 상세 정보 조회
+        return lectureDetailRepository.findByLectureId(id)
+                .map(LectureDetailResponseDto::fromEntity)
+                .orElseThrow(() -> new LectureNotFoundException("강의 상세 정보를 찾을 수 없습니다: " + id));
     }
 }

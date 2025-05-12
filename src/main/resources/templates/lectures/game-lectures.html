@@ -39,11 +39,16 @@
 
         <!-- 네비게이션 바의 로그인/로그아웃 부분 -->
         <div class="flex items-center space-x-4">
+            <!-- 네비게이션 바 검색창 수정 -->
             <div class="relative hidden md:block">
-                <input type="text" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
-                <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
-                    <i class="ri-search-line"></i>
-                </div>
+                <form action="/lectures/search" method="GET">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <!-- 로그인하지 않은 경우 -->
@@ -191,7 +196,7 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-lg" th:text="${#numbers.formatInteger(lecture.price, 0, 'COMMA') + '원'}">가격</span>
-                        <a th:href="@{'/lectures/' + ${lecture.id}}" class="bg-primary text-white rounded-button py-1 px-3 text-sm hover:bg-primary/90">자세히 보기</a>
+                        <a th:href="@{'/lectures/' + ${#strings.replace(lecture.id.toString(), 'LECTURE-', '')}}" class="bg-primary text-white rounded-button py-1 px-3 text-sm hover:bg-primary/90">자세히 보기</a>
                     </div>
                 </div>
             </div>
