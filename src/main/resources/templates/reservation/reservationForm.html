@@ -30,28 +30,42 @@
         /* 미리보기 창 높이 증가 */
         .preview-container { margin-top: 20px; width: 100%; height: 450px; display: none; }
         .preview-container iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+        /* 미리보기 컨테이너 - 각 리플레이 항목 내부에 위치 */
+        .item-preview-container {
+            margin-top: 15px;
+            width: 100%;
+            display: none;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .item-preview-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
         .submit-container { margin-top: 40px; display: flex; justify-content: center; }
         .submit-btn { padding: 15px 40px; font-size: 1.1rem; background: #2e7dff; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
         .submit-btn:hover { background: #185bb5; }
         .replay-controls { display: flex; gap: 10px; }
         .replay-controls button { padding: 8px 16px; border-radius: 4px; font-size: 0.9rem; }
         /* 로딩 표시기 */
-        .loading-spinner { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.5); 
-            z-index: 9999; 
-            justify-content: center; 
-            align-items: center; 
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
         }
-        .spinner-border { 
-            width: 3rem; 
-            height: 3rem; 
-            color: white; 
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: white;
         }
         /* 알림 메시지 */
         .alert {
@@ -90,9 +104,9 @@
 
     <!-- 강의 정보 섹션 -->
     <div class="section">
-        <h2 class="section-title">발란스형 강의</h2>
-        <p>모든 포지션 기본기 제공</p>
-        <div class="price">14,000원</div>
+        <h2 class="section-title" th:text="${lecture.info.title}">강의명</h2>
+        <p th:text="${lecture.info.description}">강의 설명</p>
+        <div class="price" th:text="${lecture.info.price} + '원'">14,000원</div>
     </div>
 
     <!-- 예약 정보 섹션 -->
@@ -122,13 +136,28 @@
         <!-- 리플레이 목록 -->
         <div id="replay-list" class="replay-list">
             <!-- 기존 리플레이 항목들 (있는 경우) -->
-            <div th:if="${existingReplays != null && !existingReplays.isEmpty()}" th:each="replay, replayStat : ${existingReplays}" class="replay-item" th:data-id="${replay.replayId}">
+            <div th:if="${existingReplays != null && !existingReplays.isEmpty()}"
+                 th:each="replay, replayStat : ${existingReplays}"
+                 class="replay-item"
+                 th:data-id="${replay.replayId}">
                 <div class="replay-item-title" th:text="'리플레이 ' + (${replayStat.index} + 1)"></div>
                 <div class="replay-item-actions">
-                    <button type="button" class="btn-icon view-replay" th:data-url="${replay.fileUrl}"><i class="fas fa-eye"></i></button>
-                    <button type="button" class="btn-icon edit-replay" th:data-id="${replay.replayId}" th:data-url="${replay.fileUrl}"><i class="fas fa-edit"></i></button>
-                    <button type="button" class="btn-icon delete-replay" th:data-id="${replay.replayId}"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="btn-icon view-replay" th:data-url="${replay.fileUrl}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button type="button" class="btn-icon edit-replay"
+                            th:data-id="${replay.replayId}"
+                            th:data-url="${replay.fileUrl}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn-icon delete-replay"
+                            th:data-id="${replay.replayId}"
+                            th:attr="data-existing-id=${replay.replayId}">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
+                <!-- 각 리플레이 항목마다 미리보기 컨테이너 추가 -->
+                <div class="item-preview-container"></div>
             </div>
         </div>
 
@@ -169,328 +198,420 @@
 
 <script>
     $(function() {
-        // 날짜 선택기 초기화
-        $("#scheduleDate").datepicker({
-            dateFormat: "yy-mm-dd",
-            minDate: 0
-        });
+            // 날짜 선택기 초기화
+            $("#scheduleDate").datepicker({
+                dateFormat: "yy-mm-dd",
+                minDate: 0
+            });
 
-        // 로딩 스피너 표시/숨김 함수
-        function showLoading() {
-            $("#loading-spinner").css("display", "flex");
-        }
+            // 로딩 스피너 표시/숨김 함수
+            function showLoading() {
+                $("#loading-spinner").css("display", "flex");
+            }
 
-        function hideLoading() {
-            $("#loading-spinner").hide();
-        }
+            function hideLoading() {
+                $("#loading-spinner").hide();
+            }
 
-        // 알림 메시지 표시 함수
-        function showSuccessAlert(message) {
-            $("#alert-success").text(message).show().delay(3000).fadeOut();
-        }
+            // 알림 메시지 표시 함수
+            function showSuccessAlert(message) {
+                $("#alert-success").text(message).show().delay(3000).fadeOut();
+            }
 
-        function showErrorAlert(message) {
-            $("#alert-danger").text(message).show().delay(3000).fadeOut();
-        }
+            function showErrorAlert(message) {
+                $("#alert-danger").text(message).show().delay(3000).fadeOut();
+            }
 
-        // 로컬 스토리지에서 저장된 리플레이 URL 불러오기
-        const loadSavedReplays = function() {
-            const savedReplayUrls = localStorage.getItem('pendingReplayUrls');
-            if (savedReplayUrls) {
-                try {
-                    const replayUrls = JSON.parse(savedReplayUrls);
-                    console.log("저장된 리플레이 URLs 불러옴:", replayUrls);
+            // 로컬 스토리지에서 저장된 리플레이 URL 불러오기 (수정됨)
+            const loadSavedReplays = function() {
+                const savedReplayUrls = localStorage.getItem('pendingReplayUrls');
+                if (savedReplayUrls) {
+                    try {
+                        const replayUrls = JSON.parse(savedReplayUrls);
+                        console.log("저장된 리플레이 URLs 불러옴:", replayUrls);
 
-                    replayUrls.forEach(url => {
-                        if (url) {
-                            const replayId = Date.now() + Math.floor(Math.random() * 1000); // 임시 ID 생성
+                        replayUrls.forEach((url, index) => {
+                            if (url) {
+                                // 기존 리플레이 개수를 파악하여 순번 정하기
+                                const existingCount = $(".replay-item").length;
+                                const replayNum = existingCount + index + 1;
 
-                            // 새 리플레이 항목 추가
-                            const replayItem = `
-                                <div class="replay-item" data-id="${replayId}">
-                                    <div class="replay-item-title">리플레이 #${replayId}</div>
-                                    <div class="replay-item-actions">
-                                        <button type="button" class="btn-icon view-replay" data-url="${url}"><i class="fas fa-eye"></i></button>
-                                        <button type="button" class="btn-icon edit-replay" data-id="${replayId}" data-url="${url}"><i class="fas fa-edit"></i></button>
-                                        <button type="button" class="btn-icon delete-replay" data-id="${replayId}"><i class="fas fa-trash"></i></button>
+                                // 🔧 수정: 정상적인 제목 생성 (이상한 ID 없애기)
+                                const replayId = 'temp_' + (index + 1);
+
+                                // 새 리플레이 항목 추가 (정상적인 제목으로)
+                                const replayItem = `
+                                    <div class="replay-item" data-id="${replayId}">
+                                        <div class="replay-item-title">리플레이 ${replayNum}</div>
+                                        <div class="replay-item-actions">
+                                            <button type="button" class="btn-icon view-replay" data-url="${url}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn-icon edit-replay" data-id="${replayId}" data-url="${url}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn-icon delete-replay" data-id="${replayId}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="item-preview-container"></div>
                                     </div>
-                                </div>
-                            `;
+                                `;
 
-                            $("#replay-list").append(replayItem);
+                                $("#replay-list").append(replayItem);
+                                $("#replayUrlsContainer").append(`<input type="hidden" name="replayUrls" value="${url}" />`);
+                            }
+                        });
 
-                            // hidden input 추가
-                            $("#replayUrlsContainer").append(`<input type="hidden" name="replayUrls" value="${url}" />`);
-                        }
-                    });
-
-                    // 사용 후 삭제
-                    localStorage.removeItem('pendingReplayUrls');
-                } catch (e) {
-                    console.error("저장된 리플레이 URL 로드 오류:", e);
-                }
-            }
-        };
-
-        // 페이지 로드 시 저장된 리플레이 URL 불러오기
-        loadSavedReplays();
-
-        // 리플레이 추가 버튼 클릭 이벤트
-        $("#add-replay-btn").click(function() {
-            // 미리보기 영역 초기화
-            $("#preview-container").hide();
-
-            // 편집 모드 초기화
-            $("#save-replay-btn").removeData("edit-id");
-
-            // 입력 필드 초기화
-            $("#youtube-url").val("");
-
-            // 폼 표시
-            $("#new-replay-form").show();
-        });
-
-        // 취소 버튼 클릭 이벤트
-        $("#cancel-replay-btn").click(function() {
-            $("#new-replay-form").hide();
-            $("#preview-container").hide();
-        });
-
-        // 미리보기 버튼 클릭 이벤트
-        $("#preview-btn").click(function() {
-            const youtubeUrl = $("#youtube-url").val().trim();
-            if (!youtubeUrl) {
-                showErrorAlert("YouTube URL을 입력해주세요.");
-                return;
-            }
-
-            const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
-            console.log("임베드 URL:", embedUrl);
-
-            if (embedUrl) {
-                console.log("미리보기 표시");
-                $("#preview-container").html(`<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
-                $("#preview-container").show();
-                $("#preview-container").data("current-url", youtubeUrl);
-            } else {
-                showErrorAlert("유효한 YouTube URL이 아닙니다.");
-            }
-        });
-
-        // 저장 버튼 클릭 이벤트
-        $("#save-replay-btn").click(function() {
-            const youtubeUrl = $("#youtube-url").val().trim();
-            if (!youtubeUrl) {
-                showErrorAlert("YouTube URL을 입력해주세요.");
-                return;
-            }
-
-            // 편집 모드 확인
-            const editId = $(this).data("edit-id");
-
-            if (editId) {
-                // 수정 모드: 기존 항목 업데이트
-                const item = $(`.replay-item[data-id="${editId}"]`);
-                item.find(".view-replay").data("url", youtubeUrl);
-                item.find(".edit-replay").data("url", youtubeUrl);
-
-                // hidden input 업데이트
-                $(`input[name="replayUrls"][value="${item.find('.view-replay').data('original-url')}"]`).val(youtubeUrl);
-
-                // 편집 모드 해제
-                $(this).removeData("edit-id");
-
-                showSuccessAlert("리플레이가 수정되었습니다.");
-            } else {
-                // 새 항목 추가 모드
-                const replayId = Date.now(); // 임시 ID
-
-                // 새 리플레이 항목 추가
-                // 현재 존재하는 리플레이 아이템 개수 파악
-                const currentCount = $(".replay-item").length + 1;
-
-                const replayItem = `
-                    <div class="replay-item" data-id="${replayId}">
-                        <div class="replay-item-title">리플레이 ${currentCount}</div>
-                        <div class="replay-item-actions">
-                            <button type="button" class="btn-icon view-replay" data-url="${youtubeUrl}"><i class="fas fa-eye"></i></button>
-                            <button type="button" class="btn-icon edit-replay" data-id="${replayId}" data-url="${youtubeUrl}"><i class="fas fa-edit"></i></button>
-                            <button type="button" class="btn-icon delete-replay" data-id="${replayId}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-
-                $("#replay-list").append(replayItem);
-
-                // hidden input 추가 - 컨트롤러 파라미터에 맞게 수정
-                $("#replayUrlsContainer").append(`<input type="hidden" name="replayUrls" value="${youtubeUrl}" />`);
-
-                showSuccessAlert("리플레이가 추가되었습니다.");
-            }
-
-            $("#new-replay-form").hide();
-            $("#preview-container").hide(); // 미리보기 숨기기
-        });
-
-        // .view-replay 클릭 이벤트를 다음과 같이 수정
-        $(document).on("click", ".view-replay", function(e) {
-            e.preventDefault();
-            console.log("눈알 클릭됨");
-
-            const $this = $(this);
-            const url = $this.data("url");
-            console.log("URL:", url);
-
-            // 미리보기 컨테이너
-            const previewContainer = $("#preview-container");
-            console.log("컨테이너 존재?", previewContainer.length > 0);
-
-            // 이미 표시 중이면 토글
-            if (previewContainer.is(":visible") && previewContainer.data("current-url") === url) {
-                console.log("같은 영상 토글: 닫기");
-                previewContainer.hide();
-                $this.removeClass("active");
-                return false;
-            }
-
-            // 다른 눈알 버튼 비활성화
-            $(".view-replay").removeClass("active");
-            $this.addClass("active");
-
-            // 임베드 URL 생성
-            const embedUrl = getYouTubeEmbedUrl(url);
-            console.log("임베드 URL:", embedUrl);
-
-            if (embedUrl) {
-                // 미리보기 표시 전에 상태 출력
-                console.log("미리보기 표시 전 컨테이너 상태:", {
-                    display: previewContainer.css("display"),
-                    height: previewContainer.css("height"),
-                    visibility: previewContainer.css("visibility")
-                });
-
-                // iframe 추가
-                previewContainer.html(`<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
-                previewContainer.data("current-url", url);
-                previewContainer.css("display", "block"); // show() 대신 직접 스타일 적용
-
-                // 미리보기 컨테이너를 스크롤 위치로 이동
-                $('html, body').animate({
-                    scrollTop: previewContainer.offset().top - 100
-                }, 500);
-
-                console.log("미리보기 표시 완료");
-            } else {
-                console.error("유효한 YouTube URL이 아닙니다");
-                alert("유효한 YouTube URL이 아닙니다");
-            }
-
-            return false;
-        });
-        // 편집 아이콘 클릭 이벤트 - 수정 폼 표시
-        $(document).on("click", ".edit-replay", function() {
-            const id = $(this).data("id");
-            const url = $(this).data("url");
-
-            // 수정 폼 설정 및 표시
-            $("#youtube-url").val(url);
-            $("#new-replay-form").show();
-
-            // 미리보기 표시
-            const embedUrl = getYouTubeEmbedUrl(url);
-            if (embedUrl) {
-                $("#preview-container").html(`<iframe src="${embedUrl}" allowfullscreen></iframe>`);
-                $("#preview-container").data("current-url", url); // 현재 URL 저장
-                $("#preview-container").show();
-            }
-
-            // 현재 편집 중인 리플레이 ID 저장
-            $("#save-replay-btn").data("edit-id", id);
-        });
-
-        // 삭제 아이콘 클릭 이벤트
-        $(document).on("click", ".delete-replay", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (confirm("이 리플레이를 삭제하시겠습니까?")) {
-                const id = $(this).data("id");
-                const item = $(this).closest(".replay-item");
-                const url = item.find(".view-replay").data("url");
-
-                // UI에서 항목 제거
-                item.remove();
-
-                // hidden input 제거
-                $(`input[name="replayUrls"][value="${url}"]`).remove();
-
-                // 미리보기가 현재 이 영상을 보여주고 있다면 닫기
-                if ($("#preview-container").data("current-url") === url) {
-                    $("#preview-container").hide();
-                }
-
-                // 수정 폼도 닫기
-                $("#new-replay-form").hide();
-
-                showSuccessAlert("리플레이가 삭제되었습니다.");
-            }
-
-            return false; // 이벤트 버블링 방지
-        });
-        $("#submit-reservation").click(function(e) {
-            e.preventDefault(); // 기본 제출 동작 방지
-
-            // 날짜 선택 검증
-            if (!$("#scheduleDate").val()) {
-                showErrorAlert("강의 일정을 선택해주세요.");
-                return;
-            }
-
-            // 로딩 스피너 표시
-            showLoading();
-
-            // 일반 폼 제출 방식으로 변경 - AJAX 대신 직접 제출
-            $("#reservationForm").submit();
-        });
-
-        // YouTube URL을 임베드 URL로 변환하는 함수
-        function getYouTubeEmbedUrl(url) {
-            if (!url) return null;
-            
-            let videoId = null;
-
-            // URL 디버깅
-            console.log("변환할 URL:", url);
-
-            // 일반 YouTube URL (watch?v=VIDEO_ID)
-            if (url.includes('youtube.com/watch?v=')) {
-                const urlParts = url.split('?');
-                if (urlParts.length > 1) {
-                    const urlParams = new URLSearchParams(urlParts[1]);
-                    videoId = urlParams.get('v');
-                }
-            }
-            // 단축 URL (youtu.be/VIDEO_ID)
-            else if (url.includes('youtu.be/')) {
-                const parts = url.split('youtu.be/');
-                if (parts.length > 1) {
-                    videoId = parts[1];
-                    // URL에 추가 파라미터가
-                    if (videoId.includes('?')) {
-                        videoId = videoId.substring(0, videoId.indexOf('?'));
+                        // 🔧 중요: 사용 후 즉시 삭제
+                        localStorage.removeItem('pendingReplayUrls');
+                    } catch (e) {
+                        console.error("저장된 리플레이 URL 로드 오류:", e);
+                        // 오류 발생 시 localStorage 정리
+                        localStorage.removeItem('pendingReplayUrls');
                     }
                 }
+            };
+
+            // 페이지 로드 시 여러 중복 방지
+            let replayLoadExecuted = false;
+            $(document).ready(function() {
+                if (!replayLoadExecuted) {
+                    loadSavedReplays();
+                    replayLoadExecuted = true;
+                }
+            });
+
+            // 🔧 추가: 중복 및 이상한 리플레이 정리 함수
+            function cleanupReplays() {
+                const seenUrls = new Set();
+                const itemsToRemove = [];
+
+                $('.replay-item').each(function(index) {
+                    const $item = $(this);
+                    const url = $item.find('.view-replay').attr('data-url');
+                    const title = $item.find('.replay-item-title').text();
+
+                    // 중복 URL 또는 이상한 제목 확인
+                    if (seenUrls.has(url) || title.includes('#') || title.length > 20) {
+                        itemsToRemove.push($item);
+                        return;
+                    }
+
+                    seenUrls.add(url);
+                });
+
+                // 이상한 항목들 제거
+                itemsToRemove.forEach($item => {
+                    const url = $item.find('.view-replay').attr('data-url');
+                    $item.remove();
+                    $(`input[name="replayUrls"][value="${url}"]`).remove();
+                });
+
+                // 제목 순서 정리
+                $('.replay-item').each(function(index) {
+                    $(this).find('.replay-item-title').text(`리플레이 ${index + 1}`);
+                });
             }
 
-            console.log("추출된 Video ID:", videoId);
-            
-            if (videoId) {
-                return `https://www.youtube.com/embed/${videoId}`;
-            }
+            // 페이지 로드 후 정리 실행
+            setTimeout(cleanupReplays, 1000);
+            // 페이지 로드 시 저장된 리플레이 URL 불러오기
+            loadSavedReplays();
 
-            return null;
-        }
-    });
+            // 리플레이 추가 버튼 클릭 이벤트
+            $("#add-replay-btn").click(function() {
+                // 미리보기 영역 초기화
+                $("#preview-container").hide();
+                $(".item-preview-container").hide().empty();
+                $(".view-replay").removeClass("active");
+
+                // 편집 모드 초기화
+                $("#save-replay-btn").removeData("edit-id");
+
+                // 입력 필드 초기화
+                $("#youtube-url").val("");
+
+                // 폼 표시
+                $("#new-replay-form").show();
+            });
+
+            // 취소 버튼 클릭 이벤트
+            $("#cancel-replay-btn").click(function() {
+                $("#new-replay-form").hide();
+                $("#preview-container").hide();
+            });
+
+            // 미리보기 버튼 클릭 이벤트 (폼 내의 미리보기)
+            $("#preview-btn").click(function() {
+                const youtubeUrl = $("#youtube-url").val().trim();
+                if (!youtubeUrl) {
+                    showErrorAlert("YouTube URL을 입력해주세요.");
+                    return;
+                }
+
+                const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
+                console.log("임베드 URL:", embedUrl);
+
+                if (embedUrl) {
+                    console.log("미리보기 표시");
+                    $("#preview-container").html(`<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
+                    $("#preview-container").show();
+                    $("#preview-container").data("current-url", youtubeUrl);
+                } else {
+                    showErrorAlert("유효한 YouTube URL이 아닙니다.");
+                }
+            });
+
+            // 저장 버튼 클릭 이벤트
+            $("#save-replay-btn").click(function() {
+                const youtubeUrl = $("#youtube-url").val().trim();
+                if (!youtubeUrl) {
+                    showErrorAlert("YouTube URL을 입력해주세요.");
+                    return;
+                }
+
+                // 편집 모드 확인
+                const editId = $(this).data("edit-id");
+
+                if (editId) {
+                    // 수정 모드: 기존 항목 업데이트
+                    const item = $(`.replay-item[data-id="${editId}"]`);
+                    const oldUrl = item.find(".view-replay").data("url");
+
+                    item.find(".view-replay").data("url", youtubeUrl);
+                    item.find(".edit-replay").data("url", youtubeUrl);
+
+                    // hidden input 업데이트
+                    $(`input[name="replayUrls"][value="${oldUrl}"]`).val(youtubeUrl);
+
+                    // 편집 모드 해제
+                    $(this).removeData("edit-id");
+
+                    showSuccessAlert("리플레이가 수정되었습니다.");
+                } else {
+                    // 새 항목 추가 모드
+                    const replayId = Date.now(); // 임시 ID
+
+                    // 현재 존재하는 리플레이 아이템 개수 파악
+                    const currentCount = $(".replay-item").length + 1;
+
+                    const replayItem = `
+                        <div class="replay-item" data-id="${replayId}">
+                            <div class="replay-item-title">리플레이 ${currentCount}</div>
+                            <div class="replay-item-actions">
+                                <button type="button" class="btn-icon view-replay" data-url="${youtubeUrl}"><i class="fas fa-eye"></i></button>
+                                <button type="button" class="btn-icon edit-replay" data-id="${replayId}" data-url="${youtubeUrl}"><i class="fas fa-edit"></i></button>
+                                <button type="button" class="btn-icon delete-replay" data-id="${replayId}"><i class="fas fa-trash"></i></button>
+                            </div>
+                            <div class="item-preview-container"></div>
+                        </div>
+                    `;
+
+                    $("#replay-list").append(replayItem);
+
+                    // hidden input 추가
+                    $("#replayUrlsContainer").append(`<input type="hidden" name="replayUrls" value="${youtubeUrl}" />`);
+
+                    showSuccessAlert("리플레이가 추가되었습니다.");
+                }
+
+                $("#new-replay-form").hide();
+                $("#preview-container").hide();
+            });
+
+            // ✅ 통합된 .view-replay 클릭 이벤트 (이벤트 전파 문제 해결)
+            $(document).on("click", ".view-replay", function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation(); // 이벤트 전파 완전 차단
+
+                console.log("눈 아이콘 클릭됨");
+
+                const $this = $(this);
+                const url = $this.data("url");
+                const replayItem = $this.closest(".replay-item");
+                const previewContainer = replayItem.find(".item-preview-container");
+
+                console.log("URL:", url);
+                console.log("미리보기 컨테이너 존재:", previewContainer.length);
+
+                // 토글 처리 - 현재 미리보기가 표시되어 있으면 숨기기
+                if (previewContainer.is(":visible")) {
+                    console.log("미리보기 토글: 닫기");
+                    previewContainer.hide();
+                    previewContainer.empty();
+                    $this.removeClass("active");
+                    return false;
+                }
+
+                // 다른 모든 미리보기 닫기 및 버튼 비활성화
+                console.log("다른 미리보기 닫기");
+                $(".item-preview-container").not(previewContainer).hide().empty();
+                $(".view-replay").not($this).removeClass("active");
+
+                // 폼 내의 미리보기도 닫기
+                $("#preview-container").hide();
+
+                // 현재 미리보기 표시
+                $this.addClass("active");
+
+                const embedUrl = getYouTubeEmbedUrl(url);
+                console.log("임베드 URL:", embedUrl);
+
+                if (embedUrl) {
+                    console.log("미리보기 표시 시작");
+                    const iframe = `<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+                    previewContainer.html(iframe);
+                    previewContainer.show();
+
+                    // 부드러운 스크롤 애니메이션
+                    console.log("스크롤 애니메이션 시작");
+                    $('html, body').animate({
+                        scrollTop: previewContainer.offset().top - 100
+                    }, 500);
+
+                    console.log("미리보기 표시 완료");
+                } else {
+                    console.error("유효한 YouTube URL이 아닙니다");
+                    showErrorAlert("유효한 YouTube URL이 아닙니다");
+                }
+
+                return false;
+            });
+
+            // 편집 아이콘 클릭 이벤트
+            $(document).on("click", ".edit-replay", function() {
+                const id = $(this).data("id");
+                const url = $(this).data("url");
+
+                // 수정 폼 설정 및 표시
+                $("#youtube-url").val(url);
+                $("#new-replay-form").show();
+
+                // 미리보기 표시
+                const embedUrl = getYouTubeEmbedUrl(url);
+                if (embedUrl) {
+                    $("#preview-container").html(`<iframe src="${embedUrl}" allowfullscreen></iframe>`);
+                    $("#preview-container").data("current-url", url);
+                    $("#preview-container").show();
+                }
+
+                // 모든 기존 미리보기 닫기
+                $(".item-preview-container").hide().empty();
+                $(".view-replay").removeClass("active");
+
+                // 현재 편집 중인 리플레이 ID 저장
+                $("#save-replay-btn").data("edit-id", id);
+            });
+
+            // ✅ 수정된 삭제 아이콘 클릭 이벤트
+            $(document).on("click", ".delete-replay", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (confirm("이 리플레이를 삭제하시겠습니까?")) {
+                    const $button = $(this);
+                    const item = $button.closest(".replay-item");
+                    const url = item.find(".view-replay").data("url");
+
+                    // 수정: HTML 속성으로 접근
+                    const existingReplayId = $button.attr("data-existing-id");
+                    const currentItemId = item.data("id");
+
+                    console.log("삭제 시작 - existingReplayId:", existingReplayId, "currentItemId:", currentItemId);
+
+                    // UI에서 항목 제거
+                    item.remove();
+                    $(`input[name="replayUrls"][value="${url}"]`).remove();
+
+                    // 기존 리플레이인 경우 서버 삭제 요청
+                    if (existingReplayId) {
+                        $.ajax({
+                            url: `/replays/${existingReplayId}`,
+                            type: 'DELETE',
+                            success: function(response) {
+                                console.log("리플레이 삭제 성공:", response);
+                                showSuccessAlert("리플레이가 삭제되었습니다.");
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("리플레이 삭제 실패:", error);
+                                showErrorAlert("리플레이 삭제에 실패했습니다.");
+                            }
+                        });
+                    } else {
+                        console.log("새로 추가된 리플레이 - UI에서만 제거");
+                        showSuccessAlert("리플레이가 삭제되었습니다.");
+                    }
+
+                    // 미리보기가 현재 이 영상을 보여주고 있다면 닫기
+                    if ($("#preview-container").data("current-url") === url) {
+                        $("#preview-container").hide();
+                    }
+
+                    $("#new-replay-form").hide();
+                }
+
+                return false;
+            });
+
+            // ✅ 예약 완료 후 새로고침 처리
+            $("#submit-reservation").click(function(e) {
+                e.preventDefault();
+
+                // 날짜 선택 검증
+                if (!$("#scheduleDate").val()) {
+                    showErrorAlert("강의 일정을 선택해주세요.");
+                    return;
+                }
+
+                // 로딩 스피너 표시
+                showLoading();
+
+                // 새로고침 플래그 설정
+                localStorage.setItem('refreshAfterSubmit', 'true');
+
+                // 일반 폼 제출
+                $("#reservationForm").submit();
+            });
+
+            // YouTube URL을 임베드 URL로 변환하는 함수
+            function getYouTubeEmbedUrl(url) {
+                if (!url) return null;
+
+                let videoId = null;
+
+                // URL 디버깅
+                console.log("변환할 URL:", url);
+
+                // 일반 YouTube URL (watch?v=VIDEO_ID)
+                if (url.includes('youtube.com/watch?v=')) {
+                    const urlParts = url.split('?');
+                    if (urlParts.length > 1) {
+                        const urlParams = new URLSearchParams(urlParts[1]);
+                        videoId = urlParams.get('v');
+                    }
+                }
+                // 단축 URL (youtu.be/VIDEO_ID)
+                else if (url.includes('youtu.be/')) {
+                    const parts = url.split('youtu.be/');
+                    if (parts.length > 1) {
+                        videoId = parts[1];
+                        // URL에 추가 파라미터가 있으면 제거
+                        if (videoId.includes('?')) {
+                            videoId = videoId.substring(0, videoId.indexOf('?'));
+                        }
+                    }
+                }
+
+                console.log("추출된 Video ID:", videoId);
+
+                if (videoId) {
+                    return `https://www.youtube.com/embed/${videoId}`;
+                }
+
+                return null;
+            }
+        });
 </script>
 </body>
 </html>
