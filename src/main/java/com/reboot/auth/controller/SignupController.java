@@ -32,13 +32,13 @@ public class SignupController {
         return ResponseEntity.ok(new SignupResponse(true, "", "회원가입 성공"));
     }
 
-    @PostMapping("/sign_instructor")
-    public ResponseEntity<?> signupInstructorProcess(@RequestBody SignupDetailsDTO dto) {
+    @PostMapping("/sign_details")
+    public ResponseEntity<?> signupDetailsProcess(@RequestBody SignupDetailsDTO dto) {
         if (!signupService.existsUsername(dto.username())) {
             return ResponseEntity.badRequest().build();
         }
         
         signupService.signupDetailsProcess(dto);
-        return ResponseEntity.ok(new SignupResponse(true, "", "강사 정보 저장 성공"));
+        return ResponseEntity.ok(new SignupResponse(true, "", "추가 정보 저장 성공"));
     }
 }

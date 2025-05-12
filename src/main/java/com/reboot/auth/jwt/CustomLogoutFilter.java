@@ -79,6 +79,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
+        response.sendRedirect("/");
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
