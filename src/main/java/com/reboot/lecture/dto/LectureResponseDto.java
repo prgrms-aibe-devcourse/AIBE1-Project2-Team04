@@ -48,7 +48,7 @@ public class LectureResponseDto {
         }
 
         return LectureResponseDto.builder()
-                .id(String.format("LECTURE-%d", lecture.getId()))
+                .id(String.format("%d", lecture.getId()))
                 .rawId(lecture.getId()) // 원본 ID 추가
                 .instructorNickname(lecture.getInstructor().getNickname())
                 .title(info.getTitle())

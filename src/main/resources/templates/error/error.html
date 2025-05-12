@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>오류 발생</title>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; padding: 20px; }
+        .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
+        h1 { color: #dc3545; }
+        .error-details { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+        .back-link { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #007bff; color: #fff; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>오류가 발생했습니다</h1>
+    <p>애플리케이션에서 오류가 발생했습니다. 관리자에게 문의하세요.</p>
+
+    <div class="error-details">
+        <p th:if="${status}"><strong>상태:</strong> <span th:text="${status}">999</span></p>
+        <p th:if="${error}"><strong>오류:</strong> <span th:text="${error}">오류</span></p>
+        <p th:if="${message}"><strong>메시지:</strong> <span th:text="${message}">메시지가 없습니다</span></p>
+        <p th:if="${exception}"><strong>예외:</strong> <span th:text="${exception}">없음</span></p>
+    </div>
+
+    <a href="/" class="back-link">홈으로 돌아가기</a>
+</div>
+</body>
+</html>

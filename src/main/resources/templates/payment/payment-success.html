@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>결제 성공</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { background: #f5f7fa; font-family: 'Noto Sans KR', sans-serif; }
+    .success-card { max-width: 440px; margin: 80px auto; border-radius: 16px; box-shadow: 0 2px 12px #0002; background: #fff; padding: 36px 32px 28px 32px; }
+    .success-icon { font-size: 3rem; color: #2b8a3e; margin-bottom: 18px; }
+    .success-title { font-size: 1.5rem; font-weight: 700; color: #2e7dff; margin-bottom: 12px; }
+    .success-message { font-size: 1.1rem; color: #333; margin-bottom: 10px; }
+    .error-message { color: #e03131; font-weight: 500; margin-bottom: 10px; }
+    .actions { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn { border-radius: 7px; font-size: 1rem; padding: 10px 0; flex: 1; }
+    .btn-primary { background: #2e7dff; color: #fff; border: none; }
+    .btn-primary:hover { background: #1a68e5; }
+    .btn-secondary { background: #f1f2f6; color: #333; border: none; }
+    .btn-secondary:hover { background: #e1e2e6; }
+    .btn-danger { background: #ff4757; color: #fff; border: none; }
+    .btn-danger:hover { background: #e03131; }
+    @media (max-width: 600px) {
+      .success-card { padding: 22px 8px 18px 8px; }
+      .actions { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="success-card text-center">
+  <div class="success-icon">
+    <i class="fas fa-check-circle"></i>
+  </div>
+  <div class="success-title">결제가 성공적으로 완료되었습니다!</div>
+  <div class="success-message" th:text="${message}"></div>
+  <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+  <div class="actions">
+    <a th:href="@{/}" class="btn btn-secondary">홈으로</a>
+    <a th:if="${paymentId}" th:href="@{/payments/detail/{id}(id=${paymentId})}" class="btn btn-primary">상세내역 보기</a>
+    <a th:if="${paymentId}" th:href="@{/refunds/form(paymentId=${paymentId})}" class="btn btn-danger">취소하기</a>
+  </div>
+</div>
+</body>
+</html>
