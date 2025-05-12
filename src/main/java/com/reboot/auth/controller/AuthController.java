@@ -31,8 +31,8 @@ public class AuthController {
         return "auth/signup";
     }
 
-    @GetMapping("/sign_details")
-    public String signupDetails() {
+    @GetMapping("/signup_instructor_details")
+    public String signupInstructorDetails() {
         return "auth/signup-instructor-details";
     }
 }
