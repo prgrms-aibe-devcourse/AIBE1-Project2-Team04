@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -24,21 +25,40 @@
 </head>
 <body>
 <!-- 헤더 -->
-<header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-800">게임 코칭 매칭 플랫폼</h1>
-        <nav>
-            <ul class="flex space-x-4">
-                <li><a href="/" class="text-gray-600 hover:text-primary">홈</a></li>
-                <li><a href="/lectures" class="text-gray-600 hover:text-primary">강의</a></li>
-                <li><a href="/mypage" class="text-primary font-bold">마이페이지</a></li>
-                <li>
-                    <form id="logoutForm" action="/logout" method="post" class="inline">
-                        <button type="submit" class="text-gray-600 hover:text-primary bg-transparent border-0 cursor-pointer">로그아웃</button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <div class="relative hidden md:block">
+                <form action="/lectures/search" method="GET">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 기존 로그아웃 형태 유지 -->
+            <div class="flex items-center space-x-4">
+                <form id="logoutForm" action="/logout" method="post" class="inline">
+                    <button type="submit" class="text-gray-600 hover:text-primary bg-transparent border-0 cursor-pointer">로그아웃</button>
+                </form>
+            </div>
+
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
     </div>
 </header>
 
@@ -110,90 +130,142 @@
         </div>
     </div>
 
-    <!-- 예약 내역 섹션 -->
-    <div class="bg-white rounded-lg shadow p-6">
+    <!-- 결제 완료된 강의 섹션 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">수강 내역</h3>
-            <a href="/mypage/reservationMIES" class="text-primary text-sm hover:underline">전체 내역 보기</a>
+            <h3 class="text-xl font-bold">수강 목록</h3>
         </div>
 
-        <div th:if="${#lists.isEmpty(reservationMIES)}" class="text-center py-8">
-            <p class="text-gray-500">예약 내역이 없습니다.</p>
-            <a href="/lectures" class="inline-block mt-4 bg-secondary text-white px-4 py-2 rounded-button text-sm hover:bg-green-700 transition">강의 찾아보기</a>
+        <div th:if="${#lists.isEmpty(completedPayments)}" class="text-center py-8">
+            <p class="text-gray-500">수강 강의가 없습니다.</p>
+            <a href="/lectures" class="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">강의 찾아보기</a>
         </div>
 
-        <div th:unless="${#lists.isEmpty(reservationMIES)}" class="overflow-x-auto">
+        <div th:unless="${#lists.isEmpty(completedPayments)}" class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">강의명</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">코치</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수강 날짜</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">강사</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수강 일정</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">결제 금액</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">결제일</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상세</th>
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                <tr th:each="reservation : ${reservationMIES}">
+                <tr th:each="payment : ${completedPayments}">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900" th:text="${reservation.lectureName}">게임 실력 향상 코칭</div>
+                        <div class="text-sm font-medium text-gray-900" th:text="${payment.reservation.lecture.info.title}">강의명</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900" th:text="${reservation.instructorName}">김코치</div>
+                        <div class="text-sm text-gray-900" th:text="${payment.reservation.instructor.member.name}">강사명</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900" th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}">2023-05-10 14:00</div>
+                        <div class="text-sm text-gray-900" th:text="${payment.reservation.scheduleDate}">수강일정</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span th:if="${reservation.status == 'COMPLETED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">완료</span>
-                        <span th:if="${reservation.status == 'PENDING'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">예약중</span>
-                        <span th:if="${reservation.status == 'CANCELED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">취소</span>
+                        <div class="text-sm text-gray-900" th:text="${#numbers.formatInteger(payment.price, 3, 'COMMA')} + '원'">결제금액</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <a th:href="@{/mypage/reservationMIES/{id}(id=${reservation.id})}" class="text-primary hover:underline">상세보기</a>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900" th:text="${#temporals.format(payment.paymentAt, 'yyyy-MM-dd HH:mm')}">결제일</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span th:if="${payment.status == '결제완료'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">결제완료</span>
+                        <span th:if="${payment.status == '결제 대기'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">결제 대기</span>
+                        <span th:if="${payment.status == '환불 완료'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">환불 완료</span>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!--    &lt;!&ndash; 예약 내역 섹션 &ndash;&gt;-->
+    <!--    <div class="bg-white rounded-lg shadow p-6">-->
+    <!--        <div class="flex justify-between items-center mb-6">-->
+    <!--            <h3 class="text-xl font-bold">수강 내역</h3>-->
+    <!--            <a href="/mypage/reservationMIES" class="text-primary text-sm hover:underline">전체 내역 보기</a>-->
+    <!--        </div>-->
+
+    <!--        <div th:if="${#lists.isEmpty(reservationMIES)}" class="text-center py-8">-->
+    <!--            <p class="text-gray-500">예약 내역이 없습니다.</p>-->
+    <!--            <a href="/lectures" class="inline-block mt-4 bg-secondary text-white px-4 py-2 rounded-button text-sm hover:bg-green-700 transition">강의 찾아보기</a>-->
+    <!--        </div>-->
+
+    <!--        <div th:unless="${#lists.isEmpty(reservationMIES)}" class="overflow-x-auto">-->
+    <!--            <table class="min-w-full divide-y divide-gray-200">-->
+    <!--                <thead class="bg-gray-50">-->
+    <!--                <tr>-->
+    <!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">강의명</th>-->
+    <!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">코치</th>-->
+    <!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수강 날짜</th>-->
+    <!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>-->
+    <!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상세</th>-->
+    <!--                </tr>-->
+    <!--                </thead>-->
+    <!--                <tbody class="bg-white divide-y divide-gray-200">-->
+    <!--                <tr th:each="reservation : ${reservationMIES}">-->
+    <!--                    <td class="px-6 py-4 whitespace-nowrap">-->
+    <!--                        <div class="text-sm font-medium text-gray-900" th:text="${reservation.lectureName}">게임 실력 향상 코칭</div>-->
+    <!--                    </td>-->
+    <!--                    <td class="px-6 py-4 whitespace-nowrap">-->
+    <!--                        <div class="text-sm text-gray-900" th:text="${reservation.instructorName}">김코치</div>-->
+    <!--                    </td>-->
+    <!--                    <td class="px-6 py-4 whitespace-nowrap">-->
+    <!--                        <div class="text-sm text-gray-900" th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}">2023-05-10 14:00</div>-->
+    <!--                    </td>-->
+    <!--                    <td class="px-6 py-4 whitespace-nowrap">-->
+    <!--                        <span th:if="${reservation.status == 'COMPLETED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">완료</span>-->
+    <!--                        <span th:if="${reservation.status == 'PENDING'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">예약중</span>-->
+    <!--                        <span th:if="${reservation.status == 'CANCELED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">취소</span>-->
+    <!--                    </td>-->
+    <!--                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-->
+    <!--                        <a th:href="@{/mypage/reservationMIES/{id}(id=${reservation.id})}" class="text-primary hover:underline">상세보기</a>-->
+    <!--                    </td>-->
+    <!--                </tr>-->
+    <!--                </tbody>-->
+    <!--            </table>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--</main>-->
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-lg font-bold mb-4">게임 코칭 매칭 플랫폼</h4>
+                    <p class="text-gray-400">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">바로가기</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="text-gray-400 hover:text-white">홈</a></li>
+                        <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
+                        <li><a href="/faq" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-4">연락처</h4>
+                    <p class="text-gray-400">서울특별시 강남구 포레스트로 123</p>
+                    <p class="text-gray-400">이메일: 4rest@reboot.com</p>
+                    <p class="text-gray-400">전화: 123-456-7890</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 필요한 JavaScript 코드
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('마이페이지가 로드되었습니다.');
+            // 추가 스크립트 작성
+        });
+    </script>
 </main>
-
-<!-- 푸터 -->
-<footer class="bg-gray-800 text-white py-8 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <h4 class="text-lg font-bold mb-4">게임 코칭 매칭 플랫폼</h4>
-                <p class="text-gray-400">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
-            </div>
-            <div>
-                <h4 class="text-lg font-bold mb-4">바로가기</h4>
-                <ul class="space-y-2">
-                    <li><a href="/" class="text-gray-400 hover:text-white">홈</a></li>
-                    <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
-                    <li><a href="/faq" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-lg font-bold mb-4">연락처</h4>
-                <p class="text-gray-400">대전광역시 유성구 엑스포로 123</p>
-                <p class="text-gray-400">이메일: info@gamecoaching.com</p>
-                <p class="text-gray-400">전화: 042-123-4567</p>
-            </div>
-        </div>
-        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-
-<script>
-    // 필요한 JavaScript 코드
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('마이페이지가 로드되었습니다.');
-        // 추가 스크립트 작성
-    });
-</script>
 </body>
 </html>
