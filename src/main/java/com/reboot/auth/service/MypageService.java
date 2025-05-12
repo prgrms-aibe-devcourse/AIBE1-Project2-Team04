@@ -110,8 +110,7 @@ public class MypageService {
     // 강사 인증 확인
     public boolean isInstructor(String username) {
         Member member = getCurrentMember(username);
-        // Member에 연결된 Instructor가 있는지 확인
-        return instructorRepository.existsByMember(member);
+        return "INSTRUCTOR".equals(member.getRole());
     }
 
     public Instructor getInstructorByMember(String username) {

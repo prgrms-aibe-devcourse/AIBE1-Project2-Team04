@@ -49,17 +49,20 @@ public class MypageController {
             return "redirect:/auth/login";  // 로그인 페이지로 리다이렉트
         }
 
+        // 강사인 경우 강사 페이지로 자동 리다이렉트
+        if (mypageService.isInstructor(principal.getName())) {
+            return "redirect:/mypage/instructorMypage";
+        }
+
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
         List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());//수정
         List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
+        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
         model.addAttribute("member", member);
         model.addAttribute("games", games);
         model.addAttribute("reservations", reservationMIES);
-
-        // 결제 완료된 강의 목록 추가
-        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
         model.addAttribute("completedPayments", completedPayments);
 
         // 강사 인증 확인
@@ -215,17 +218,6 @@ public class MypageController {
             return "mypage/reservation-detail";
         } else {
             return "redirect:/mypage/reservations";
-        }
-    }
-
-    // 강사 페이지 버튼 클릭 처리
-    @GetMapping("/instructor-check")
-    public String checkInstructor(Principal principal, RedirectAttributes redirectAttributes) {
-        if (mypageService.isInstructor(principal.getName())) {
-            return "redirect:/mypage/instructorMypage";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "강사 인증이 필요합니다. 강사 인증을 먼저 완료해주세요.");
-            return "redirect:/mypage";
         }
     }
 }
