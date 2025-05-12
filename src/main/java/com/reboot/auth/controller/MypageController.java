@@ -88,17 +88,33 @@ public class MypageController {
                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
                                 Principal principal,
                                 RedirectAttributes redirectAttributes) {
-        // 간단한 유효성 검사
-        if (profileDTO.getNickname() == null || profileDTO.getNickname().trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "닉네임은 필수 입력 항목입니다.");
-            return "redirect:/mypage/profile";
+        // 파일 크기 사전 검증 추가
+        if (profileImage != null && !profileImage.isEmpty()) {
+            // 5MB 제한
+            if (profileImage.getSize() > 5 * 1024 * 1024) {
+                redirectAttributes.addFlashAttribute("error", "프로필 이미지는 5MB 이하여야 합니다.");
+                return "redirect:/mypage/profile";
+            }
+
+            // 파일 형식 검증
+            String contentType = profileImage.getContentType();
+            if (contentType == null || !(contentType.equals("image/jpeg") ||
+                    contentType.equals("image/png") ||
+                    contentType.equals("image/gif"))) {
+                redirectAttributes.addFlashAttribute("error", "JPG, PNG, GIF 형식의 이미지만 허용됩니다.");
+                return "redirect:/mypage/profile";
+            }
         }
 
         try {
             mypageService.updateProfile(principal.getName(), profileDTO, profileImage);
             redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/mypage/profile";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "프로필 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/mypage/profile";
         }
         return "redirect:/mypage";
     }
