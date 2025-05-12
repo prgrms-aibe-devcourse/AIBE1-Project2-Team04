@@ -49,24 +49,31 @@ public class InstructorLectureController {
         return ResponseEntity.ok(lecture);
     }
 
+    // 새 강의 생성
     @PostMapping
     @Operation(summary = "새 강의 생성", description = "지정한 강사로 새 강의 생성")
-            Instructor instructor = instructorAuthService.getCurrentInstructor();
-            LectureResponseDto createdLecture = instructorLectureService.createLecture(request, instructor);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdLecture);
+    public ResponseEntity<LectureResponseDto> createLecture(@RequestBody LectureRequestDto request) {
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
+        LectureResponseDto createdLecture = instructorLectureService.createLecture(request, instructor);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdLecture);
     }
 
+    // 기존 강의 수정 (본인 강의만)
     @PutMapping("/{lectureId}")
     @Operation(summary = "강의 수정", description = "강사 ID와 강의 ID로 강의 정보 수정")
     public ResponseEntity<LectureResponseDto> updateLecture(
             @PathVariable String lectureId,
+            @RequestBody LectureRequestDto request) {
 
-            Instructor instructor = instructorAuthService.getCurrentInstructor();
-            LectureResponseDto updatedLecture = instructorLectureService.updateLecture(
-            return ResponseEntity.ok(updatedLecture);
+        Instructor instructor = instructorAuthService.getCurrentInstructor();
+        LectureResponseDto updatedLecture = instructorLectureService.updateLecture(
+                lectureId, request, instructor.getInstructorId());
+        return ResponseEntity.ok(updatedLecture);
     }
 
+    // 강의 삭제 (본인 강의만) - 소프트 삭제 처리
     @DeleteMapping("/{lectureId}")
+    @Operation(summary = "강의 삭제", description = "강의 소프트 삭제 (본인 강의만)")
     public ResponseEntity<Void> deleteLecture(@PathVariable String lectureId) {
         Instructor instructor = instructorAuthService.getCurrentInstructor();
         instructorLectureService.deleteLecture(lectureId, instructor.getInstructorId());
