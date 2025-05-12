@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none  # JPA가 테이블 구조를 변경하지 않도록 설정
+      ddl-auto: update  # JPA가 테이블 구조를 변경하지 않도록 설정
     defer-datasource-initialization: true  # SQL 스크립트가 JPA 이후에 실행되도록
     show-sql: false   # 운영 환경에서는 false로 설정하여 로그 최소화
     properties:
@@ -20,13 +20,6 @@ spring:
   sql:
     init:
       mode: never
-
-  # 파일 업로드 설정 추가
-  servlet:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
-      file-size-threshold: 2KB
 
   supabase:
     url: ${SUPABASE_URL}
@@ -55,3 +48,10 @@ springdoc:
     path: /swagger-ui.html
     enabled: true
   packages-to-scan: com.reboot
+
+# 토스 페이 추가해야 됨
+toss:
+  apikey: ${TOSS_APIKEY}
+
+app:
+  server_url: ${SERVER_URL}
