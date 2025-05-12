@@ -7,12 +7,16 @@ import com.reboot.reservation.dto.ReservationResponseDto;
 import com.reboot.reservation.service.ReservationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/replays")
@@ -169,17 +173,25 @@ public class ReplayController {
     }
 
     // 리플레이 삭제 처리
-    @PostMapping("/{replayId}/delete")
-    public String deleteReplay(@PathVariable Long replayId,
-                               @RequestParam Long reservationId,
-                               RedirectAttributes redirectAttributes) {
+// 리플레이 삭제 API
+    @DeleteMapping("/{replayId}")
+    public ResponseEntity<?> deleteReplay(@PathVariable Long replayId) {
         try {
+            // 리플레이 삭제 로직
             replayService.deleteReplay(replayId);
-            redirectAttributes.addFlashAttribute("message", "영상이 성공적으로 삭제되었습니다.");
-            return "redirect:/replays/reservation/" + reservationId;
+
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "리플레이가 삭제되었습니다.");
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/replays/" + replayId;
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", "리플레이 삭제에 실패했습니다: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorResponse);
         }
     }
 }
