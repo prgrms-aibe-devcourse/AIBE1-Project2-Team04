@@ -31,9 +31,12 @@
             <ul class="flex space-x-4">
                 <li><a href="/" class="text-gray-600 hover:text-primary">홈</a></li>
                 <li><a href="/lectures" class="text-gray-600 hover:text-primary">강의</a></li>
-                <li><a href="/coaches" class="text-gray-600 hover:text-primary">코치</a></li>
                 <li><a href="/mypage" class="text-primary font-bold">마이페이지</a></li>
-                <li><a href="/logout" class="text-gray-600 hover:text-primary">로그아웃</a></li>
+                <li>
+                    <form id="logoutForm" action="/logout" method="post" class="inline">
+                        <button type="submit" class="text-gray-600 hover:text-primary bg-transparent border-0 cursor-pointer">로그아웃</button>
+                    </form>
+                </li>
             </ul>
         </nav>
     </div>
@@ -75,7 +78,6 @@
 
                 <div class="mt-6 flex flex-wrap gap-3">
                     <a href="/mypage/password" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-button text-sm hover:bg-gray-200 transition">비밀번호 변경</a>
-                    <a href="/mypage/account" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-button text-sm hover:bg-gray-200 transition">계정 관리</a>
                 </div>
             </div>
         </div>
@@ -170,7 +172,6 @@
                 <ul class="space-y-2">
                     <li><a href="/" class="text-gray-400 hover:text-white">홈</a></li>
                     <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
-                    <li><a href="/coaches" class="text-gray-400 hover:text-white">코치</a></li>
                     <li><a href="/faq" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
                 </ul>
             </div>
