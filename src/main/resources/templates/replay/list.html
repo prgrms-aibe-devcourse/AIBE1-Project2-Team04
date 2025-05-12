@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 리플레이 목록</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .reservation-info {
+            background-color: #f0f7ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .replay-card {
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .replay-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            border-radius: 5px;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .empty-list {
+            text-align: center;
+            padding: 40px 0;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .upload-btn {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mb-4 text-center">예약 리플레이 목록</h2>
+
+    <!-- 예약 정보 표시 -->
+    <div th:if="${reservation}" class="reservation-info">
+        <h5>예약 정보</h5>
+        <p>예약 번호: <span th:text="${reservation.reservationId}"></span></p>
+        <p>수업 일시: <span th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p>상태: <span th:text="${reservation.status}"></span></p>
+        <!-- 추가 예약 정보가 있다면 여기에 표시 -->
+    </div>
+
+    <!-- 새 리플레이 업로드 버튼 -->
+    <div class="d-grid gap-2 upload-btn">
+        <a th:href="@{/replays/upload(reservationId=${reservation.reservationId})}" class="btn btn-primary">
+            새 리플레이 업로드
+        </a>
+    </div>
+
+    <!-- 리플레이 목록 -->
+    <div th:if="${not #lists.isEmpty(replays)}" class="replay-list">
+        <div class="row">
+            <div th:each="replay : ${replays}" class="col-md-6 col-lg-4">
+                <div class="card replay-card">
+                    <!-- 비디오 썸네일 (YouTube 썸네일 URL 활용) -->
+                    <div class="card-img-top">
+                        <img th:if="${replay.youtubeVideoId}"
+                             th:src="'https://img.youtube.com/vi/' + ${replay.youtubeVideoId} + '/mqdefault.jpg'"
+                             alt="비디오 썸네일" class="video-thumbnail">
+                        <div th:unless="${replay.youtubeVideoId}" class="p-3 bg-light text-center">
+                            <span>썸네일 없음</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">리플레이 #<span th:text="${replay.replayId}"></span></h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                업로드: <span th:text="${#temporals.format(replay.date, 'yyyy-MM-dd HH:mm')}"></span>
+                            </small>
+                        </p>
+                        <a th:href="@{/replays/{id}(id=${replay.replayId})}" class="btn btn-sm btn-outline-primary w-100">
+                            상세보기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 리플레이가 없는 경우 -->
+    <div th:if="${#lists.isEmpty(replays)}" class="empty-list">
+        <p class="mb-3">아직 업로드된 리플레이가 없습니다.</p>
+        <p>위의 '새 리플레이 업로드' 버튼을 클릭하여 첫 번째 리플레이를 등록해보세요!</p>
+    </div>
+
+    <!-- 뒤로 가기 버튼 -->
+    <div class="d-grid gap-2 mt-4">
+        <a href="javascript:history.back()" class="btn btn-secondary">
+            뒤로 가기
+        </a>
+    </div>
+</div>
+</body>
+</html>

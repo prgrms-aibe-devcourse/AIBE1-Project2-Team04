@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${lecture.title}">강의 상세 정보</title>
+    <!-- 부트스트랩 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 커스텀 CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .lecture-header {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+        }
+        .lecture-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .lecture-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .lecture-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .section-title {
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 0.5rem;
+            margin: 2rem 0 1rem 0;
+            font-weight: bold;
+        }
+        .curriculum-item {
+            background-color: #f8f9fa;
+            border-left: 3px solid #0d6efd;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 4px 4px 0;
+        }
+        .btn-enroll {
+            background-color: #0d6efd;
+            color: white;
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        .btn-enroll:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .instructor-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .learning-objectives {
+            background-color: #e9f7fe;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .learning-objectives ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .learning-objectives li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .learning-objectives li:before {
+            content: "✓";
+            color: #0d6efd;
+            position: absolute;
+            left: 0;
+        }
+        .prerequisites, .target-audience {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .lecture-footer {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        /* 게임 타입에 따른 색상 */
+        .game-type-lol {
+            background-color: #1f78b4;
+        }
+        .game-type-valorant {
+            background-color: #e31c45;
+        }
+        .game-type-tft {
+            background-color: #6a3da3;
+        }
+        .game-type-all {
+            background-color: #2ca25f;
+        }
+        .game-badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.85em;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+<!-- 상단 헤더 -->
+<header class="lecture-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 th:text="${lecture.title}">강의 제목</h1>
+                <p class="lead" th:text="${lectureDetail.overview}">강의 개요</p>
+                <div>
+                        <span class="game-badge" th:classappend="${'game-type-' + lecture.gameType.toLowerCase()}"
+                              th:text="${lecture.gameType}">게임 타입</span>
+                    <span class="badge bg-secondary" th:text="${lecture.position}">포지션</span>
+                    <span class="badge bg-info" th:text="${lecture.lectureRank}">티어</span>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <p class="lecture-price" th:text="${#numbers.formatDecimal(lecture.price, 0, 'COMMA', 0, 'POINT')} + '원'">25,000원</p>
+                <div class="lecture-stats">
+                    <span><i class="bi bi-star-fill text-warning"></i> 평점: <span th:text="${lecture.averageRating}">4.8</span>/5.0</span>
+                    <span><i class="bi bi-people-fill"></i> 수강생: <span th:text="${lecture.totalMembers}">25</span>명</span>
+                    <span><i class="bi bi-chat-left-text-fill"></i> 후기: <span th:text="${lecture.reviewCount}">12</span>개</span>
+                </div>
+                <a href="#enroll-section" class="btn btn-enroll">수강 신청</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 콘텐츠 -->
+<main class="container mb-5">
+    <div class="row">
+        <!-- 왼쪽 섹션: 강의 상세 정보 -->
+        <div class="col-lg-8">
+            <!-- 강의 이미지 -->
+            <img th:src="${lecture.imageUrl}" alt="강의 이미지" class="lecture-image mb-4">
+
+            <!-- 강의 설명 -->
+            <div class="section-title">
+                <h2>강의 소개</h2>
+            </div>
+            <p th:text="${lecture.description}" class="mb-5">강의 상세 설명</p>
+
+            <!-- 학습 목표 (CSS를 사용한 줄바꿈 처리) -->
+            <div class="section-title">
+                <h2>학습 목표</h2>
+            </div>
+            <div class="learning-objectives mb-5">
+                <!-- white-space: pre-line을 사용하여 줄바꿈 그대로 표시 -->
+                <p style="white-space: pre-line;" th:text="${lectureDetail.learningObjectives}">
+                    학습 목표 항목
+                </p>
+            </div>
+
+            <!-- 커리큘럼 (CSS를 사용한 줄바꿈 처리) -->
+            <div class="section-title">
+                <h2>커리큘럼</h2>
+            </div>
+            <div class="curriculum-list mb-5">
+                <!-- white-space: pre-line을 사용하여 줄바꿈 그대로 표시 -->
+                <p style="white-space: pre-line;" th:text="${lectureDetail.curriculum}">
+                    커리큘럼 항목
+                </p>
+            </div>
+
+            <!-- 수강 신청 섹션 -->
+            <div id="enroll-section" class="text-center py-5 my-5 bg-light rounded">
+                <h2 class="mb-4">지금 바로 시작하세요!</h2>
+                <p class="lead mb-4">수강 기간: <span th:text="${lecture.duration}">120</span>분</p>
+                <a th:if="${currentMember != null}"
+                   th:href="@{/reservation/new(lectureId=${lecture.id}, memberId=${currentMember.memberId})}"
+                   class="btn btn-enroll">수강 신청</a>
+                <a th:unless="${currentMember != null}"
+                   th:href="@{/auth/login}"
+                   class="btn btn-enroll">로그인 후 수강 신청</a>
+
+            </div>
+        </div>
+        <!-- 오른쪽 사이드바: 강사 정보 및 부가 정보 -->
+        <div class="col-lg-4">
+            <!-- 강사 정보 -->
+            <div class="instructor-info mb-4">
+                <div class="section-title">
+                    <h3>강사 소개</h3>
+                </div>
+                <p th:text="${lectureDetail.instructorBio}">강사 소개</p>
+            </div>
+
+            <!-- 수강 대상 -->
+            <div class="target-audience mb-4">
+                <div class="section-title">
+                    <h3>수강 대상</h3>
+                </div>
+                <p th:text="${lectureDetail.targetAudience}">수강 대상</p>
+            </div>
+
+            <!-- 선수 지식 -->
+            <div class="prerequisites">
+                <div class="section-title">
+                    <h3>필요한 사전 지식</h3>
+                </div>
+                <p th:text="${lectureDetail.prerequisites}">선수 지식</p>
+            </div>
+
+            <!-- 강의 정보 요약 -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">강의 정보</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>강의 시간</span>
+                            <span th:text="${lecture.duration} + '분'">120분</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>게임</span>
+                            <span th:text="${lecture.gameType}">LOL</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>포지션</span>
+                            <span th:text="${lecture.position}">TOP</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>추천 티어</span>
+                            <span th:text="${lecture.lectureRank}">SILVER-DIAMOND</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>등록일</span>
+                            <span th:text="${#temporals.format(lecture.createdAt, 'yyyy-MM-dd')}">2023-01-15</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 푸터 -->
+<footer class="lecture-footer">
+    <div class="container text-center">
+        <p>© 2023 게이밍 코칭 플랫폼. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- 부트스트랩 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

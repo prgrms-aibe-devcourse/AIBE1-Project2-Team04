@@ -1,6 +1,5 @@
 package com.reboot.lecture.service;
 
-import com.reboot.lecture.dto.InstructorResponseDto;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.exception.InstructorNotFoundException;
 import com.reboot.auth.repository.InstructorRepository;

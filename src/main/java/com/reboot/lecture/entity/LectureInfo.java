@@ -7,7 +7,7 @@ import lombok.*;
 @Embeddable
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor(access = AccessLevel.PUBLIC) // - Embeddable 클래스라서 기본 생성자 필수
 @AllArgsConstructor
 @Builder
 public class LectureInfo {
@@ -30,18 +30,9 @@ public class LectureInfo {
     private Integer duration; // 강의 기간(일) -> 수강신청 시 필요
 
     @Column(name = "lecture_rank", nullable = false)
-    private String lectureRank; // 랭크(티어) 필드 -> 홈 - 강의 목록 화면에서 필요
+    private String lectureRank; // 랭크(티어) 필터 -> 홈 - 강의 목록 화면에서 필요
+    // 'rank'는 MySQL 예약어이므로 'lecture_rank'로 컬럼명 지정
 
     @Column(nullable = false)
     private String position; // 포지션 필터 -> 홈 - 강의 목록 화면에서 필요
-
-    // 추가된 필드들
-    @Column(name = "video_url")
-    private String videoUrl; // 강의 동영상 URL
-
-    @Column(name = "preview_url")
-    private String previewUrl; // 미리보기 동영상 URL (선택적)
-
-    @Column(name = "material_urls", columnDefinition = "TEXT")
-    private String materialUrls; // 강의 자료 URL들 (콤마로 구분)
 }

@@ -1,8 +1,10 @@
 package com.reboot.lecture.service;
 
+import com.reboot.lecture.dto.LectureDetailResponseDto;
 import com.reboot.lecture.dto.LectureResponseDto;
 import com.reboot.lecture.entity.Lecture;
 import com.reboot.lecture.exception.LectureNotFoundException;
+import com.reboot.lecture.repository.LectureDetailRepository;
 import com.reboot.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import java.util.List;
 public class LectureServiceImpl implements LectureService {
 
     private final LectureRepository lectureRepository;
+    private final LectureDetailRepository lectureDetailRepository;
 
     // 홈 화면에 표시할 강의 목록 조회 (인기순 - 디폴트)
     @Override
@@ -34,7 +37,6 @@ public class LectureServiceImpl implements LectureService {
         return lecturePage.map(LectureResponseDto::fromEntity);
     }
 
-    // 게임 타입별 강의 목록 조회 (정렬 옵션)
     @Override
     public Page<LectureResponseDto> getLecturesByGameType(String gameType, String sortBy, Pageable pageable) {
         Page<Lecture> lecturePage;
@@ -44,18 +46,15 @@ public class LectureServiceImpl implements LectureService {
             case "newest": // 최신순
                 lecturePage = lectureRepository.findByGameTypeOrderByCreatedAtDesc(gameType, pageable);
                 break;
-            case "reviews": // 리뷰 많은순
-                lecturePage = lectureRepository.findByGameTypeOrderByReviewCountDesc(gameType, pageable);
-                break;
             case "priceLow": // 가격 낮은순
                 lecturePage = lectureRepository.findByGameTypeOrderByPriceAsc(gameType, pageable);
                 break;
             case "priceHigh": // 가격 높은순
                 lecturePage = lectureRepository.findByGameTypeOrderByPriceDesc(gameType, pageable);
                 break;
-            case "popularity": // 인기순 정렬 (기본)
+            case "rating": // 별점순 정렬 (기본)
             default:
-                lecturePage = lectureRepository.findByGameTypeOrderByPopularity(gameType, pageable);
+                lecturePage = lectureRepository.findByGameTypeOrderByAverageRatingDesc(gameType, pageable);
                 break;
         }
         return lecturePage.map(LectureResponseDto::fromEntity);
@@ -92,6 +91,7 @@ public class LectureServiceImpl implements LectureService {
         return lectureRepository.findAllActiveGameTypes();
     }
 
+
     // 특정 강의 ID의 상세 정보 조회
     @Override
     public LectureResponseDto getLectureById(Long id) {
@@ -99,5 +99,20 @@ public class LectureServiceImpl implements LectureService {
         return lectureRepository.findByIdWithInstructor(id)
                 .map(LectureResponseDto::fromEntity)
                 .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + id));
+    }
+
+    @Override
+    public Lecture getLecture(Long id) {
+        return lectureRepository.findByIdWithInstructor(id)
+                .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + id));
+    }
+
+    // 강의 상세 정보 조회 메서드 추가
+    @Override
+    public LectureDetailResponseDto getLectureDetailById(Long id) {
+        // 강의 상세 정보 조회
+        return lectureDetailRepository.findByLectureId(id)
+                .map(LectureDetailResponseDto::fromEntity)
+                .orElseThrow(() -> new LectureNotFoundException("강의 상세 정보를 찾을 수 없습니다: " + id));
     }
 }

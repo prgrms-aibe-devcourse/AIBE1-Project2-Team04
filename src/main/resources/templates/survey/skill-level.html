@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gigs - 실력 평가</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="survey-container">
+    <div class="close-button">
+        <a th:href="@{/home}" class="btn-close">×</a>
+    </div>
+
+    <div class="survey-header">
+        <div class="step-indicator">
+            <span class="current-step">Step 2</span>
+        </div>
+        <h2>현재 자신의 게임 실력</h2>
+        <h3>어떻게 평가하시나요?</h3>
+    </div>
+
+    <div class="skill-options">
+        <form id="skillLevelForm" th:action="@{/survey/skill-level}" method="post">
+            <input type="hidden" id="selectedSkill" name="skillLevel">
+
+            <div class="skill-option" data-skill="BEGINNER">
+                <div class="skill-icon">
+                    <img th:src="@{/images/skill-beginner.png}" alt="초보">
+                </div>
+                <span>초보</span>
+            </div>
+
+            <div class="skill-option" data-skill="INTERMEDIATE">
+                <div class="skill-icon">
+                    <img th:src="@{/images/skill-intermediate.png}" alt="평범">
+                </div>
+                <span>평범</span>
+            </div>
+
+            <div class="skill-option" data-skill="ADVANCED">
+                <div class="skill-icon">
+                    <img th:src="@{/images/skill-advanced.png}" alt="고수">
+                </div>
+                <span>고수</span>
+            </div>
+
+            <div class="survey-nav">
+                <button type="button" class="btn-secondary btn-prev" th:onclick="|window.location.href='@{/survey/game-selection}'|">이전</button>
+                <button type="submit" class="btn-primary btn-next" disabled>다음</button>
+                <a th:href="@{/survey/skip(step='learning-goal')}" class="btn-skip">Skip</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="pagination">
+        <span class="page-dot"></span>
+        <span class="page-dot active"></span>
+        <span class="page-dot"></span>
+        <span class="page-dot"></span>
+        <span class="page-dot"></span>
+    </div>
+</div>
+
+<script th:src="@{/js/survey.js}"></script>
+</body>
+</html>

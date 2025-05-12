@@ -12,7 +12,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
 
     // 멤버 ID로 게임 정보를 조회합니다.
-    Optional<Game> findByMemberMemberId(Long memberId);
+    List<Game> findByMember_MemberId(Long memberId);
 
 
     // 게임 타입으로 게임 목록을 조회합니다.

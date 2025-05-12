@@ -2,8 +2,6 @@ package com.reboot.lecture.controller;
 
 import com.reboot.lecture.dto.InstructorResponseDto;
 import com.reboot.lecture.service.InstructorService;
-import com.reboot.lecture.dto.InstructorResponseDto;
-import com.reboot.lecture.service.InstructorService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

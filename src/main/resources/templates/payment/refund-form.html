@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>결제 환불</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <style>
+        body { background: #f5f7fa; }
+        .refund-card { max-width: 520px; margin: 60px auto; border-radius: 16px; box-shadow: 0 2px 12px #0002; }
+        .refund-header { font-size: 1.5rem; font-weight: 600; color: #2b8a3e; }
+        .form-group { margin-bottom: 18px; }
+        .btn-custom { border-radius: 8px; }
+    </style>
+</head>
+<body>
+<div class="card refund-card p-4">
+    <div class="refund-header mb-3">결제 환불</div>
+    <div class="mb-4">
+        <p><strong>결제 ID:</strong> <span th:text="${payment.paymentId}"></span></p>
+        <p><strong>결제 금액:</strong> <span th:text="${payment.price}"></span>원</p>
+        <p><strong>결제 상태:</strong> <span th:text="${payment.status}"></span></p>
+        <p><strong>결제 일시:</strong> <span th:text="${payment.paymentAt}"></span></p>
+    </div>
+    <form th:action="@{/refunds/process}" method="post">
+        <input type="hidden" name="paymentId" th:value="${payment.paymentId}">
+        <input type="hidden" name="amount" th:value="${payment.price}">
+        <div class="form-group">
+            <label for="reason" class="form-label">환불 사유</label>
+            <textarea id="reason" name="reason" rows="3" class="form-control" placeholder="환불 사유를 입력하세요"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success btn-custom flex-fill">환불 요청</button>
+            <a th:href="@{/}" class="btn btn-secondary btn-custom flex-fill">취소</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
