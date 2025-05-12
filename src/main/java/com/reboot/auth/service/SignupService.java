@@ -23,17 +23,20 @@ public class SignupService {
     private final GameRepository gameRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${supabase.url}")
+    @Value("${spring.supabase.url}")
     private String supabaseUrl;
 
-    @Value("${supabase.bucket.name}")
+    @Value("${spring.supabase.img-bucket-name}")
     private String bucketName;
 
     // 기본 프로필 이미지 파일명 설정
     @Value("${default.profile.image:default-profile.png}")
     private String defaultProfileImage;
 
-    public SignupService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+    public SignupService(MemberRepository memberRepository,
+                         InstructorRepository instructorRepository,
+                         GameRepository gameRepository,
+                         PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.instructorRepository = instructorRepository;
         this.gameRepository = gameRepository;

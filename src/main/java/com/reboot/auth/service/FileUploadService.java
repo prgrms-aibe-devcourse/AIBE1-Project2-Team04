@@ -13,13 +13,13 @@ import java.util.UUID;
 @Service
 public class FileUploadService {
 
-    @Value("${supabase.url}")
+    @Value("${spring.supabase.url}")
     private String supabaseUrl;
 
-    @Value("${supabase.key}")
+    @Value("${spring.supabase.access-key}")
     private String supabaseKey;
 
-    @Value("${supabase.bucket.name}")
+    @Value("${spring.supabase.img-bucket-name}")
     private String bucketName;
 
     // 경계 문자열 생성

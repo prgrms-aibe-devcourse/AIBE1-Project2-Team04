@@ -5,57 +5,252 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gigs - 게임 선택</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .game-detail-section {
+            display: none;
+            margin-top: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .game-detail-section.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tier-position-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
-    <div class="survey-container">
-        <div class="close-button">
-            <a th:href="@{/home}" class="btn-close">×</a>
-        </div>
-
-        <div class="survey-header">
-            <div class="step-indicator">
-                <span class="current-step">Step 1</span>
-            </div>
-            <h2>어떤 게임에 빠져 계신가요?</h2>
-            <h3>Gigs에서 전문가의 조언을 받아보세요!</h3>
-        </div>
-
-        <div class="game-options">
-            <form id="gameSelectionForm" th:action="@{/survey/game-selection}" method="post">
-                <input type="hidden" id="selectedGame" name="gameType">
-
-                <!-- 3개 게임만 표시 -->
-                <div class="game-option" data-game="LOL">
-                    <img th:src="@{/images/game-lol.png}" alt="리그오브레전드">
-                    <span>리그오브레전드</span>
-                </div>
-
-                <div class="game-option" data-game="VALORANT">
-                    <img th:src="@{/images/game-valorant.png}" alt="발로란트">
-                    <span>발로란트</span>
-                </div>
-
-                <div class="game-option" data-game="TFT">
-                    <img th:src="@{/images/game-tft.png}" alt="전략적팀전투">
-                    <span>전략적팀전투</span>
-                </div>
-
-                <div class="survey-nav">
-                    <button type="submit" class="btn-primary btn-next" disabled>다음</button>
-                    <a th:href="@{/survey/skip(step='skill-level')}" class="btn-skip">Skip</a>
-                </div>
-            </form>
-        </div>
-
-        <div class="pagination">
-            <span class="page-dot active"></span>
-            <span class="page-dot"></span>
-            <span class="page-dot"></span>
-            <span class="page-dot"></span>
-            <span class="page-dot"></span>
-        </div>
+<div class="survey-container">
+    <div class="close-button">
+        <a th:href="@{/home}" class="btn-close">×</a>
     </div>
 
-    <script th:src="@{/js/survey.js}"></script>
+    <div class="survey-header">
+        <div class="step-indicator">
+            <span class="current-step">Step 1</span>
+        </div>
+        <h2>어떤 게임에 빠져 계신가요?</h2>
+        <h3>Gigs에서 전문가의 조언을 받아보세요!</h3>
+    </div>
+
+    <div class="game-options">
+        <form id="gameSelectionForm" th:action="@{/survey/game-selection}" method="post">
+            <input type="hidden" id="selectedGame" name="gameType">
+            <input type="hidden" id="selectedTier" name="gameTier">
+            <input type="hidden" id="selectedPosition" name="gamePosition">
+
+            <!-- 3개 게임만 표시 -->
+            <div class="game-option" data-game="LOL" onclick="selectGame('LOL')">
+                <img th:src="@{/images/game-lol.png}" alt="리그오브레전드">
+                <span>리그오브레전드</span>
+            </div>
+
+            <div class="game-option" data-game="VALORANT" onclick="selectGame('VALORANT')">
+                <img th:src="@{/images/game-valorant.png}" alt="발로란트">
+                <span>발로란트</span>
+            </div>
+
+            <div class="game-option" data-game="TFT" onclick="selectGame('TFT')">
+                <img th:src="@{/images/game-tft.png}" alt="전략적팀전투">
+                <span>전략적팀전투</span>
+            </div>
+
+            <!-- 게임별 티어/포지션 선택 섹션 -->
+            <div class="game-detail-section" id="gameDetailSection">
+                <div class="tier-position-container">
+                    <div class="form-group">
+                        <label for="tierSelect">티어 선택 (선택사항)</label>
+                        <select id="tierSelect" onchange="setTier()">
+                            <option value="">티어를 선택하세요</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="positionGroup">
+                        <label for="positionSelect">포지션 선택 (선택사항)</label>
+                        <select id="positionSelect" onchange="setPosition()">
+                            <option value="">포지션을 선택하세요</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="survey-nav">
+                <button type="submit" class="btn-primary btn-next" disabled>다음</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="pagination">
+        <span class="page-dot active"></span>
+        <span class="page-dot"></span>
+        <span class="page-dot"></span>
+        <span class="page-dot"></span>
+        <span class="page-dot"></span>
+    </div>
+</div>
+
+<script>
+    // 게임별 티어 정보
+    const gameTiers = {
+        'LOL': [
+            {value: 'IRON', text: '아이언'},
+            {value: 'BRONZE', text: '브론즈'},
+            {value: 'SILVER', text: '실버'},
+            {value: 'GOLD', text: '골드'},
+            {value: 'PLATINUM', text: '플래티넘'},
+            {value: 'DIAMOND', text: '다이아몬드'},
+            {value: 'MASTER', text: '마스터'},
+            {value: 'GRANDMASTER', text: '그랜드마스터'},
+            {value: 'CHALLENGER', text: '챌린저'}
+        ],
+        'VALORANT': [
+            {value: 'IRON', text: '아이언'},
+            {value: 'BRONZE', text: '브론즈'},
+            {value: 'SILVER', text: '실버'},
+            {value: 'GOLD', text: '골드'},
+            {value: 'PLATINUM', text: '플래티넘'},
+            {value: 'DIAMOND', text: '다이아몬드'},
+            {value: 'ASCENDANT', text: '어센던트'},
+            {value: 'IMMORTAL', text: '이모탈'},
+            {value: 'RADIANT', text: '레디언트'}
+        ],
+        'TFT': [
+            {value: 'IRON', text: '아이언'},
+            {value: 'BRONZE', text: '브론즈'},
+            {value: 'SILVER', text: '실버'},
+            {value: 'GOLD', text: '골드'},
+            {value: 'PLATINUM', text: '플래티넘'},
+            {value: 'DIAMOND', text: '다이아몬드'},
+            {value: 'MASTER', text: '마스터'},
+            {value: 'GRANDMASTER', text: '그랜드마스터'},
+            {value: 'CHALLENGER', text: '챌린저'}
+        ]
+    };
+
+    // 게임별 포지션 정보
+    const gamePositions = {
+        'LOL': [
+            {value: 'TOP', text: '탑'},
+            {value: 'JUNGLE', text: '정글'},
+            {value: 'MID', text: '미드'},
+            {value: 'ADC', text: '원딜(ADC)'},
+            {value: 'SUPPORT', text: '서포터'}
+        ],
+        'VALORANT': [
+            {value: 'DUELIST', text: '듀얼리스트'},
+            {value: 'SENTINEL', text: '센티널'},
+            {value: 'INITIATOR', text: '이니시에이터'},
+            {value: 'CONTROLLER', text: '컨트롤러'}
+        ],
+        'TFT': [] // TFT는 포지션이 없음
+    };
+
+    let selectedGameType = '';
+
+    function selectGame(gameType) {
+        selectedGameType = gameType;
+        document.getElementById('selectedGame').value = gameType;
+
+        // 모든 게임 옵션에서 선택 상태 제거
+        document.querySelectorAll('.game-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        // 선택한 게임에 선택 상태 추가
+        event.target.closest('.game-option').classList.add('selected');
+
+        // 게임별 티어/포지션 업데이트
+        updateGameDetails(gameType);
+
+        // 다음 버튼 활성화
+        document.querySelector('.btn-next').disabled = false;
+    }
+
+    function updateGameDetails(gameType) {
+        const gameDetailSection = document.getElementById('gameDetailSection');
+        const tierSelect = document.getElementById('tierSelect');
+        const positionSelect = document.getElementById('positionSelect');
+        const positionGroup = document.getElementById('positionGroup');
+
+        // 기존 선택 초기화
+        tierSelect.value = '';
+        positionSelect.value = '';
+        document.getElementById('selectedTier').value = '';
+        document.getElementById('selectedPosition').value = '';
+
+        // 티어 옵션 업데이트
+        tierSelect.innerHTML = '<option value="">티어를 선택하세요</option>';
+        if (gameTiers[gameType]) {
+            gameTiers[gameType].forEach(tier => {
+                const option = document.createElement('option');
+                option.value = tier.value;
+                option.textContent = tier.text;
+                tierSelect.appendChild(option);
+            });
+        }
+
+        // 포지션 옵션 업데이트
+        positionSelect.innerHTML = '<option value="">포지션을 선택하세요</option>';
+        if (gamePositions[gameType] && gamePositions[gameType].length > 0) {
+            gamePositions[gameType].forEach(position => {
+                const option = document.createElement('option');
+                option.value = position.value;
+                option.textContent = position.text;
+                positionSelect.appendChild(option);
+            });
+            positionGroup.style.display = 'block';
+        } else {
+            // TFT의 경우 포지션 숨기기
+            positionGroup.style.display = 'none';
+            document.getElementById('selectedPosition').value = '';
+        }
+
+        // 게임 상세 정보 섹션 표시
+        gameDetailSection.classList.add('show');
+    }
+
+    function setTier() {
+        document.getElementById('selectedTier').value = document.getElementById('tierSelect').value;
+    }
+
+    function setPosition() {
+        document.getElementById('selectedPosition').value = document.getElementById('positionSelect').value;
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.btn-next').disabled = true;
+    });
+</script>
 </body>
 </html>
