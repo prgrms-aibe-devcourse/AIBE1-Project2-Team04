@@ -1,7 +1,9 @@
 package com.reboot.auth.service;
 
 import com.reboot.auth.dto.ProfileDTO;
+import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
+import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.payment.entity.Payment;
@@ -104,4 +106,20 @@ public class MypageService {
         Member member = getCurrentMember(username);
         return paymentRepository.findCompletedPaymentsByMember(member.getMemberId());
     }
+
+    // 강사 인증 확인
+    public boolean isInstructor(String username) {
+        Member member = getCurrentMember(username);
+        // Member에 연결된 Instructor가 있는지 확인
+        return instructorRepository.existsByMember(member);
+    }
+
+    public Instructor getInstructorByMember(String username) {
+        Member member = getCurrentMember(username);
+        return instructorRepository.findByMember(member)
+                .orElseThrow(() -> new RuntimeException("강사 정보를 찾을 수 없습니다."));
+    }
+
+    @Autowired
+    private InstructorRepository instructorRepository;
 }

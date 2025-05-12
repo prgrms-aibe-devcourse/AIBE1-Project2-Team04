@@ -78,6 +78,10 @@
 
                 <div class="mt-6 flex flex-wrap gap-3">
                     <a href="/mypage/password" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-button text-sm hover:bg-gray-200 transition">비밀번호 변경</a>
+                    <a href="/mypage/instructor-check" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-button text-sm hover:bg-blue-200 transition">
+                        <span th:if="${isInstructor}">강사 페이지</span>
+                        <span th:unless="${isInstructor}">강사 인증</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -228,9 +232,9 @@
             </div>
             <div>
                 <h4 class="text-lg font-bold mb-4">연락처</h4>
-                <p class="text-gray-400">대전광역시 유성구 엑스포로 123</p>
-                <p class="text-gray-400">이메일: info@gamecoaching.com</p>
-                <p class="text-gray-400">전화: 042-123-4567</p>
+                <p class="text-gray-400">서울특별시 강남구 포레스트로 123</p>
+                <p class="text-gray-400">이메일: 4rest@reboot.com</p>
+                <p class="text-gray-400">전화: 123-456-7890</p>
             </div>
         </div>
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">

@@ -62,6 +62,10 @@ public class MypageController {
         List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
         model.addAttribute("completedPayments", completedPayments);
 
+        // 강사 인증 확인
+        boolean isInstructor = mypageService.isInstructor(principal.getName());
+        model.addAttribute("isInstructor", isInstructor);
+
         return "mypage/index";
     }
 
@@ -211,6 +215,17 @@ public class MypageController {
             return "mypage/reservation-detail";
         } else {
             return "redirect:/mypage/reservations";
+        }
+    }
+
+    // 강사 페이지 버튼 클릭 처리
+    @GetMapping("/instructor-check")
+    public String checkInstructor(Principal principal, RedirectAttributes redirectAttributes) {
+        if (mypageService.isInstructor(principal.getName())) {
+            return "redirect:/mypage/instructorMypage";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "강사 인증이 필요합니다. 강사 인증을 먼저 완료해주세요.");
+            return "redirect:/mypage";
         }
     }
 }
