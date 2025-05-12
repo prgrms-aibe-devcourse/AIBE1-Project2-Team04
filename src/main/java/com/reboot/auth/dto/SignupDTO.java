@@ -5,6 +5,9 @@ public record SignupDTO(
         String password,
         String name,
         String email,
-        String nickname
+        String nickname,
+        String phone,
+        String profile_image,
+        String role
 ) {
 }
