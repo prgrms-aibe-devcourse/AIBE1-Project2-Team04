@@ -4,7 +4,6 @@ import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.survey.dto.RecommendationResponse;
 import com.reboot.survey.dto.SurveyRequest;
-import com.reboot.survey.entity.Survey;
 import com.reboot.survey.entity.enums.*;
 import com.reboot.survey.service.SurveyService;
 import jakarta.servlet.http.HttpSession;
@@ -37,12 +36,12 @@ public class SurveyController {
 
     @GetMapping("/welcome")
     public String welcomePage() {
-        return "survey/welcome"; // → templates/welcome.html 있어야 함
+        return "survey/welcome";
     }
 
     @GetMapping("/index")
     public String showIndexPage() {
-        return "index"; // templates/index.html로 직접 리턴
+        return "index";
     }
 
     @GetMapping("/start")
@@ -52,6 +51,8 @@ public class SurveyController {
         session.removeAttribute("skillLevel");
         session.removeAttribute("learningGoal");
         session.removeAttribute("availableTime");
+        session.removeAttribute("gameTier");
+        session.removeAttribute("gamePosition");
 
         return "redirect:/survey/game-selection";
     }
@@ -62,8 +63,24 @@ public class SurveyController {
     }
 
     @PostMapping("/game-selection")
-    public String processGameSelection(@RequestParam("gameType") GameType gameType, HttpSession session) {
+    public String processGameSelection(
+            @RequestParam("gameType") GameType gameType,
+            @RequestParam(value = "gameTier", required = false) String gameTier,
+            @RequestParam(value = "gamePosition", required = false) String gamePosition,
+            HttpSession session) {
+
         session.setAttribute("gameType", gameType);
+
+        // 티어와 포지션 정보가 있다면 세션에 저장
+        if (gameTier != null && !gameTier.isEmpty()) {
+            session.setAttribute("gameTier", gameTier);
+        }
+        if (gamePosition != null && !gamePosition.isEmpty()) {
+            session.setAttribute("gamePosition", gamePosition);
+        }
+
+        log.info("게임 선택 완료 - 게임: {}, 티어: {}, 포지션: {}", gameType, gameTier, gamePosition);
+
         return "redirect:/survey/skill-level";
     }
 
@@ -119,22 +136,35 @@ public class SurveyController {
 
     @PostMapping("/complete")
     public String completeSurvey(
-            @RequestParam(value = "memberId", required = false) Long memberId,
             @RequestParam(value = "lecturePreference") LecturePreference lecturePreference,
-            @RequestParam(value = "gameTier", required = false) String gameTier,
-            @RequestParam(value = "gamePosition", required = false) String gamePosition,
             HttpSession session,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            Model model) {
 
         try {
-            // 로그인한 사용자 정보 가져오기
+            // 현재 인증된 사용자 확인
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Long memberId = null;
+
             if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-                // UserDetails에서 회원 ID 추출
+                // 로그인한 사용자의 경우 UserDetails에서 회원 ID 추출
+                // UserDetails에서 memberId를 가져오는 방식은 구현에 따라 달라질 수 있음
                 // memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
-            } else if (memberId == null) {
-                // 로그인하지 않은 상태이고 memberId가 없을 경우 기본값 설정
-                memberId = 1L; // 또는 에러 처리
+
+                // 임시로 첫 번째 회원 ID 사용 (실제 구현 시 수정 필요)
+                Member member = memberRepository.findAll().stream().findFirst().orElse(null);
+                if (member != null) {
+                    memberId = member.getMemberId();
+                }
+            } else {
+                // 로그인하지 않은 경우 기본 회원 ID 사용
+                Member defaultMember = memberRepository.findAll().stream().findFirst().orElse(null);
+                if (defaultMember != null) {
+                    memberId = defaultMember.getMemberId();
+                } else {
+                    // 회원이 없으면 기본값 사용
+                    memberId = 1L;
+                }
             }
 
             // 세션에서 설문 데이터 가져오기
@@ -142,18 +172,33 @@ public class SurveyController {
             SkillLevel skillLevel = (SkillLevel) session.getAttribute("skillLevel");
             LearningGoal learningGoal = (LearningGoal) session.getAttribute("learningGoal");
             AvailableTime availableTime = (AvailableTime) session.getAttribute("availableTime");
+            String gameTier = (String) session.getAttribute("gameTier");
+            String gamePosition = (String) session.getAttribute("gamePosition");
+
+            // 디버깅 로그 추가
+            log.info("설문 완료 - 세션에서 가져온 데이터:");
+            log.info(" - gameType: {}", gameType);
+            log.info(" - gameTier: {}", gameTier);
+            log.info(" - gamePosition: {}", gamePosition);
+            log.info(" - skillLevel: {}", skillLevel);
+            log.info(" - learningGoal: {}", learningGoal);
+            log.info(" - availableTime: {}", availableTime);
+            log.info(" - lecturePreference: {}", lecturePreference);
 
             // 필수 데이터 확인
             if (gameType == null || skillLevel == null || learningGoal == null || availableTime == null) {
                 throw new IllegalStateException("필수 설문 데이터가 누락되었습니다.");
             }
 
+            log.info("설문 제출 시작 - memberId: {}, 게임: {}, 티어: {}, 포지션: {}",
+                    memberId, gameType, gameTier, gamePosition);
+
             // SurveyRequest 객체 생성
             SurveyRequest surveyRequest = new SurveyRequest();
             surveyRequest.setMemberId(memberId);
             surveyRequest.setGameType(gameType);
-            surveyRequest.setGameTier(gameTier);
-            surveyRequest.setGamePosition(gamePosition);
+            surveyRequest.setGameTier(gameTier != null && !gameTier.isEmpty() ? gameTier : null);
+            surveyRequest.setGamePosition(gamePosition != null && !gamePosition.isEmpty() ? gamePosition : null);
             surveyRequest.setSkillLevel(skillLevel);
             surveyRequest.setLearningGoal(learningGoal);
             surveyRequest.setAvailableTime(availableTime);
@@ -162,14 +207,22 @@ public class SurveyController {
             // 설문 제출 및 추천 결과 가져오기
             RecommendationResponse recommendationResponse = surveyService.submitSurveyAndGetRecommendations(memberId, surveyRequest);
 
+            if (recommendationResponse == null) {
+                model.addAttribute("error", "추천 결과를 생성할 수 없습니다.");
+                return "survey/error";
+            }
+
+            log.info("추천 결과 수신 - 추천 개수: {}",
+                    recommendationResponse.getRecommendations() != null ? recommendationResponse.getRecommendations().size() : 0);
+
             // 추천 결과를 세션에 저장
             session.setAttribute("recommendation", recommendationResponse);
 
             return "redirect:/survey/recommendation";
         } catch (Exception e) {
             log.error("설문 제출 중 오류 발생: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("error", "설문 처리 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/survey/error";
+            model.addAttribute("error", "설문 처리 중 오류가 발생했습니다: " + e.getMessage());
+            return "survey/error";
         }
     }
 
@@ -178,23 +231,12 @@ public class SurveyController {
         RecommendationResponse recommendation = (RecommendationResponse) session.getAttribute("recommendation");
 
         if (recommendation == null) {
+            log.warn("세션에 추천 결과가 없어 시작 페이지로 리다이렉트");
             return "redirect:/survey/start";
         }
 
         model.addAttribute("recommendation", recommendation);
         return "survey/recommendation";
-    }
-
-    @GetMapping("/skip")
-    public String skipSurvey(@RequestParam("step") String step) {
-        return switch (step) {
-            case "game-selection" -> "redirect:/survey/skill-level";
-            case "skill-level" -> "redirect:/survey/learning-goal";
-            case "learning-goal" -> "redirect:/survey/available-time";
-            case "available-time" -> "redirect:/survey/lecture-preference";
-            case "lecture-preference" -> "redirect:/survey/complete";
-            default -> "redirect:/survey/start";
-        };
     }
 
     @GetMapping("/error")
