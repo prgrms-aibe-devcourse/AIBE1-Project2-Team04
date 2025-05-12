@@ -3,6 +3,7 @@ package com.reboot.reservation.entity;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
 import com.reboot.lecture.entity.Lecture;
+import com.reboot.payment.entity.Payment;
 import com.reboot.replay.entity.Replay;
 import jakarta.persistence.*;
 import lombok.*;
