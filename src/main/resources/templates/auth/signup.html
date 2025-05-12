@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원가입 - 게임 코칭 매칭 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#4F46E5', secondary: '#10B981' },
+                    borderRadius: {
+                        none: '0px',
+                        sm: '4px',
+                        DEFAULT: '8px',
+                        md: '12px',
+                        lg: '16px',
+                        xl: '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        full: '9999px',
+                        button: '8px',
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+    <style>
+        :where([class^='ri-'])::before {
+            content: '\f3c2';
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid #d1d5db;
+            background-color: white;
+            transition: all 0.2s;
+        }
+
+        .custom-checkbox.checked {
+            border-color: #4f46e5;
+            background-color: #4f46e5;
+        }
+
+        .custom-checkbox.checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .social-login-btn {
+            transition: all 0.2s;
+        }
+
+        .social-login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .password-strength {
+            height: 4px;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<!-- 네비게이션 바 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">logo</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">코치찾기</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="#" class="text-gray-800 hover:text-primary font-medium">커뮤니티</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="relative hidden md:block">
+                <input
+                        type="text"
+                        placeholder="게임, 코치, 강의 검색"
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64"
+                />
+                <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
+                    <i class="ri-search-line"></i>
+                </div>
+            </div>
+            <a
+                    th:href="@{/auth/login}"
+                    class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap"
+            >로그인</a
+            >
+            <a
+                    th:href="@{/auth/select-type}"
+                    class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap"
+            >회원가입</a
+            >
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 콘텐츠 -->
+<div class="flex-grow flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md">
+        <!-- 뒤로가기 버튼 -->
+        <div class="mb-6">
+            <a th:href="@{/auth/select_signup_type}" class="inline-flex items-center text-gray-600 hover:text-primary">
+                <i class="ri-arrow-left-s-line mr-1"></i>
+                <span>뒤로가기</span>
+            </a>
+        </div>
+
+        <!-- 로고 및 타이틀 -->
+        <div class="text-center mb-8">
+            <h2 th:if="${signupType == 'user'}" class="text-2xl font-bold text-gray-900">회원가입</h2>
+            <h2 th:if="${signupType == 'instructor'}" class="text-2xl font-bold text-gray-900">강사 회원가입</h2>
+            <p class="text-gray-600 mt-2">계정을 만들고 다양한 서비스를 이용하세요</p>
+        </div>
+
+        <!-- 오류 메시지 표시 -->
+        <div id="errorDiv" class="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded">
+            <p id="errorMsg"></p>
+        </div>
+
+        <!-- 회원가입 폼 -->
+        <div class="bg-white shadow-sm rounded-lg p-8 mb-6">
+            <form th:action="@{/auth/sign}" method="post" class="space-y-5">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">아이디</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        <input
+                                id="username"
+                                name="username"
+                                type="text"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="아이디를 입력하세요"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-lock-line"></i>
+                        </div>
+                        <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                class="pl-10 pr-10 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="비밀번호를 입력하세요"
+                        />
+                        <button
+                                type="button"
+                                id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                        >
+                            <i class="ri-eye-off-line"></i>
+                        </button>
+                    </div>
+                    <div class="mt-1">
+                        <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
+                            <div
+                                    id="passwordStrength"
+                                    class="password-strength bg-gray-400 rounded-full h-1"
+                                    style="width: 0%"
+                            ></div>
+                        </div>
+                        <p id="passwordHint" class="text-xs text-gray-500 mt-1">8자 이상, 대소문자, 숫자, 특수문자 포함</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="passwordConfirm" class="block text-sm font-medium text-gray-700 mb-1">비밀번호 확인</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-lock-line"></i>
+                        </div>
+                        <input
+                                id="passwordConfirm"
+                                type="password"
+                                required
+                                class="pl-10 pr-10 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="비밀번호를 다시 입력하세요"
+                        />
+                        <button
+                                type="button"
+                                id="togglePasswordConfirm"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                        >
+                            <i class="ri-eye-off-line"></i>
+                        </button>
+                    </div>
+                    <p id="passwordMatch" class="text-xs text-gray-500 mt-1 hidden">비밀번호가 일치합니다</p>
+                </div>
+
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">이름</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="이름을 입력하세요"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-mail-line"></i>
+                        </div>
+                        <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="이메일을 입력하세요"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="nickname" class="block text-sm font-medium text-gray-700 mb-1">닉네임</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        <input
+                                id="nickname"
+                                name="nickname"
+                                type="text"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="닉네임을 입력하세요"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">휴대폰 번호</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        <input
+                                id="phone"
+                                name="phone"
+                                type="tel"
+                                required
+                                class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                placeholder="닉네임을 입력하세요"
+                        />
+                    </div>
+                </div>
+
+                <!-- Signup Type  -->
+                <input type="hidden" id="signupType" th:value="${signupType}"/>
+
+                <!-- 약관 동의 섹션 -->
+                <div class="space-y-3 mt-6 pt-4 border-t border-gray-200">
+                    <div class="flex items-center">
+                        <div id="agreeAll" class="custom-checkbox mr-2 cursor-pointer"></div>
+                        <label class="text-sm font-medium text-gray-700 cursor-pointer">모든 약관에 동의합니다</label>
+                    </div>
+
+                    <div class="ml-6 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div id="agreeTerms" class="custom-checkbox mr-2 cursor-pointer"></div>
+                                <label class="text-sm text-gray-600 cursor-pointer">[필수] 서비스 이용약관 동의</label>
+                            </div>
+                            <a href="#" class="text-xs text-primary">보기</a>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div id="agreePrivacy" class="custom-checkbox mr-2 cursor-pointer"></div>
+                                <label class="text-sm text-gray-600 cursor-pointer">[필수] 개인정보 처리방침 동의</label>
+                            </div>
+                            <a href="#" class="text-xs text-primary">보기</a>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div id="agreeMarketing" class="custom-checkbox mr-2 cursor-pointer"></div>
+                                <label class="text-sm text-gray-600 cursor-pointer">[선택] 마케팅 정보 수신 동의</label>
+                            </div>
+                            <a href="#" class="text-xs text-primary">보기</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button
+                            type="submit"
+                            id="registerButton"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent !rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary whitespace-nowrap"
+                    >
+                        회원가입
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6" hidden="hidden">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">또는</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 grid grid-cols-1 gap-3">
+                    <button
+                            type="button"
+                            class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-[#FEE500] text-sm font-medium text-gray-800 hover:bg-[#FEE500]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FEE500] whitespace-nowrap"
+                    >
+                        <div class="w-5 h-5 mr-2 flex items-center justify-center">
+                            <i class="ri-kakao-talk-fill"></i>
+                        </div>
+                        카카오로 회원가입
+                    </button>
+                    <button
+                            type="button"
+                            class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-[#03C75A] text-sm font-medium text-white hover:bg-[#03C75A]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#03C75A] whitespace-nowrap"
+                    >
+                        <div class="w-5 h-5 mr-2 flex items-center justify-center">
+                            <i class="ri-naver-fill"></i>
+                        </div>
+                        네이버로 회원가입
+                    </button>
+                    <button
+                            type="button"
+                            class="social-login-btn w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 whitespace-nowrap"
+                    >
+                        <div class="w-5 h-5 mr-2 flex items-center justify-center">
+                            <i class="ri-google-fill"></i>
+                        </div>
+                        구글로 회원가입
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 로그인 안내 -->
+        <div class="text-center">
+            <p class="text-sm text-gray-600">
+                이미 계정이 있으신가요?
+                <a th:href="@{/auth/login}" class="font-medium text-primary hover:text-primary/80">로그인</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- 간소화된 푸터 -->
+<footer class="bg-gray-900 text-white pt-10 pb-6">
+    <div class="container mx-auto px-4 text-center">
+        <p class="text-gray-400">© 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    const WEB_URL = 'http://localhost:8080';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // 비밀번호 표시/숨김 토글
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            const icon = this.querySelector('i');
+            if (type === 'password') {
+                icon.classList.remove('ri-eye-line');
+                icon.classList.add('ri-eye-off-line');
+            } else {
+                icon.classList.remove('ri-eye-off-line');
+                icon.classList.add('ri-eye-line');
+            }
+        });
+
+        // 비밀번호 확인 표시/숨김 토글
+        const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
+        const passwordConfirm = document.getElementById('passwordConfirm');
+        togglePasswordConfirm.addEventListener('click', function () {
+            const type = passwordConfirm.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordConfirm.setAttribute('type', type);
+            const icon = this.querySelector('i');
+            if (type === 'password') {
+                icon.classList.remove('ri-eye-line');
+                icon.classList.add('ri-eye-off-line');
+            } else {
+                icon.classList.remove('ri-eye-off-line');
+                icon.classList.add('ri-eye-line');
+            }
+        });
+
+        // 비밀번호 강도 체크
+        const passwordStrength = document.getElementById('passwordStrength');
+        const passwordHint = document.getElementById('passwordHint');
+
+        password.addEventListener('input', function () {
+            const value = password.value;
+            let strength = 0;
+
+            if (value.length >= 8) strength += 25;
+            if (/[A-Z]/.test(value)) strength += 25;
+            if (/[0-9]/.test(value)) strength += 25;
+            if (/[^A-Za-z0-9]/.test(value)) strength += 25;
+
+            passwordStrength.style.width = strength + '%';
+
+            if (strength <= 25) {
+                passwordStrength.classList.remove('bg-yellow-500', 'bg-green-500');
+                passwordStrength.classList.add('bg-red-500');
+                passwordHint.textContent = '비밀번호가 너무 약합니다';
+            } else if (strength <= 50) {
+                passwordStrength.classList.remove('bg-red-500', 'bg-green-500');
+                passwordStrength.classList.add('bg-yellow-500');
+                passwordHint.textContent = '비밀번호가 적당합니다';
+            } else {
+                passwordStrength.classList.remove('bg-red-500', 'bg-yellow-500');
+                passwordStrength.classList.add('bg-green-500');
+                passwordHint.textContent = '강력한 비밀번호입니다';
+            }
+
+            checkPasswordMatch();
+        });
+
+        // 비밀번호 일치 확인
+        const passwordMatch = document.getElementById('passwordMatch');
+
+        passwordConfirm.addEventListener('input', checkPasswordMatch);
+
+        function checkPasswordMatch() {
+            if (passwordConfirm.value === '') {
+                passwordMatch.classList.add('hidden');
+                return;
+            }
+
+            if (password.value === passwordConfirm.value) {
+                passwordMatch.textContent = '비밀번호가 일치합니다';
+                passwordMatch.classList.remove('text-red-500', 'hidden');
+                passwordMatch.classList.add('text-green-500');
+            } else {
+                passwordMatch.textContent = '비밀번호가 일치하지 않습니다';
+                passwordMatch.classList.remove('text-green-500', 'hidden');
+                passwordMatch.classList.add('text-red-500');
+            }
+        }
+
+        // 약관 동의 체크박스
+        const agreeAll = document.getElementById('agreeAll');
+        const agreeTerms = document.getElementById('agreeTerms');
+        const agreePrivacy = document.getElementById('agreePrivacy');
+        const agreeMarketing = document.getElementById('agreeMarketing');
+        const registerButton = document.getElementById('registerButton');
+
+        // 전체 동의 체크박스 클릭
+        agreeAll.addEventListener('click', function () {
+            const isChecked = this.classList.toggle('checked');
+            if (isChecked) {
+                agreeTerms.classList.add('checked');
+                agreePrivacy.classList.add('checked');
+                agreeMarketing.classList.add('checked');
+            } else {
+                agreeTerms.classList.remove('checked');
+                agreePrivacy.classList.remove('checked');
+                agreeMarketing.classList.remove('checked');
+            }
+            validateForm();
+        });
+
+        // 개별 체크박스 클릭
+        agreeTerms.addEventListener('click', function () {
+            this.classList.toggle('checked');
+            updateAgreeAll();
+            validateForm();
+        });
+
+        agreePrivacy.addEventListener('click', function () {
+            this.classList.toggle('checked');
+            updateAgreeAll();
+            validateForm();
+        });
+
+        agreeMarketing.addEventListener('click', function () {
+            this.classList.toggle('checked');
+            updateAgreeAll();
+        });
+
+        function updateAgreeAll() {
+            if (
+                agreeTerms.classList.contains('checked') &&
+                agreePrivacy.classList.contains('checked') &&
+                agreeMarketing.classList.contains('checked')
+            ) {
+                agreeAll.classList.add('checked');
+            } else {
+                agreeAll.classList.remove('checked');
+            }
+        }
+
+        // 폼 유효성 검사
+        function validateForm() {
+            const isTermsChecked = agreeTerms.classList.contains('checked');
+            const isPrivacyChecked = agreePrivacy.classList.contains('checked');
+
+            if (isTermsChecked && isPrivacyChecked) {
+                registerButton.disabled = false;
+                registerButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                registerButton.disabled = true;
+                registerButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            document.getElementById('errorDiv').style.display = 'hidden';
+        }
+
+        // 초기 폼 유효성 검사
+        validateForm();
+
+        // 회원가입 에러 영역
+        const errorDiv = document.getElementById('errorDiv');
+        const errorMsg = document.getElementById('errorMsg');
+        errorDiv.style.display = 'none';
+
+        // 회원가입 폼 제출
+        const registerForm = document.querySelector('form');
+        registerForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // 필수 약관 동의 확인
+            if (!agreeTerms.classList.contains('checked') || !agreePrivacy.classList.contains('checked')) {
+                e.preventDefault();
+                alert('필수 약관에 동의해주세요.');
+                return;
+            }
+
+            // 비밀번호 일치 확인
+            if (password.value !== passwordConfirm.value) {
+                e.preventDefault();
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            // 마케팅 동의 여부를 hidden input으로 추가
+            const marketingAgreed = agreeMarketing.classList.contains('checked');
+            const marketingInput = document.createElement('input');
+            marketingInput.type = 'hidden';
+            marketingInput.name = 'marketingAgreed';
+            marketingInput.value = marketingAgreed;
+            this.appendChild(marketingInput);
+
+            const signupData = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value,
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                nickname: document.getElementById("nickname").value,
+                phone: document.getElementById("phone").value,
+                role: document.getElementById('signupType').value
+            };
+
+            const result = await signProcess_User(signupData);
+
+            if(result.success) {
+                if(signupData.role === 'instructor') {
+                    window.location.href = '/auth/sign_details?username=' + signupData.username;
+                }
+                else{
+                    window.location.href = '/auth/login';
+                }
+            }
+            else{
+                errorDiv.style.display = 'block';
+                errorMsg.textContent = result.message;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    });
+
+
+    // 일반 유저 회원가입
+    async function signProcess_User(dto) {
+        const response = await fetch(WEB_URL + '/auth/sign', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dto)
+        });
+
+        return await response.json();
+    }
+</script>
+</body>
+</html>

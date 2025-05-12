@@ -37,3 +37,7 @@ out/
 .vscode/
 
 *-dev.yml
+
+.env
+.env.*
+*-prod.yml

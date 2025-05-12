@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re:Boot - 게이밍 코칭 매칭 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+        }
+        .game-card {
+            transition: all 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+        .lecture-card {
+            transition: all 0.3s ease;
+        }
+        .lecture-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<!-- 네비게이션 바 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
+            </nav>
+        </div>
+
+        <!-- 네비게이션 바의 로그인/로그아웃 부분 수정 -->
+        <div class="flex items-center space-x-4">
+            <!-- 네비게이션 바 검색창 수정 -->
+            <div class="relative hidden md:block">
+                <form action="/lectures/search" method="GET">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- 로그인하지 않은 경우 -->
+            <div th:if="${#authentication == null || !#authentication.isAuthenticated()}" class="flex items-center space-x-4">
+                <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
+                <a th:href="@{/auth/sign}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
+            </div>
+
+            <!-- 로그인한 경우 -->
+            <div th:if="${#authentication != null && #authentication.isAuthenticated()}" class="flex items-center space-x-4">
+                <a th:href="@{/notifications}" class="text-gray-600 hover:text-primary">
+                    <i class="ri-notification-3-line text-xl"></i>
+                </a>
+                <div class="relative">
+                    <button id="profileDropdownButton" class="flex items-center space-x-2">
+                        <img src="/images/default-avatar.png" alt="프로필" class="w-8 h-8 rounded-full">
+                        <span th:text="${#authentication.name}" class="text-sm font-medium">사용자명</span>
+                    </button>
+                    <!-- 드롭다운 메뉴 -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden">
+                        <a th:href="@{/mypage}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">마이페이지</a>
+                        <a th:href="@{/mypage/lectures}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">내 강의</a>
+                        <a th:href="@{/mypage/replays}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">내 리플레이</a>
+                        <form th:action="@{/logout}" method="post" class="block">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">로그아웃</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 히어로 섹션 -->
+<section class="hero-gradient text-white py-20">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row items-center">
+            <div class="lg:w-1/2 mb-10 lg:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">게임 실력 향상을 위한<br>최고의 코칭 플랫폼</h1>
+                <p class="text-lg md:text-xl mb-8 text-indigo-100">다양한 게임 전문가들의 맞춤형 코칭을 통해<br>당신의 게임 실력을 한 단계 업그레이드하세요!</p>
+                <div class="flex flex-wrap gap-4">
+                    <a th:href="@{/survey/start}" class="bg-white text-primary hover:bg-gray-100 px-6 py-3 rounded-button font-medium">맞춤 강의 찾기</a>
+                    <a href="#games" class="bg-transparent border border-white text-white hover:bg-white/10 px-6 py-3 rounded-button font-medium">게임 살펴보기</a>
+                </div>
+            </div>
+            <div class="lg:w-1/2 flex justify-center">
+                <img src="/images/hero-image.png" alt="게이밍 코칭" class="max-w-full h-auto rounded-lg shadow-xl">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 게임 카테고리 섹션 -->
+<section id="games" class="py-16">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-4">다양한 게임의 전문 코칭</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">리그 오브 레전드, 발로란트, 전략적 팀 전투 등 다양한 게임에 대한 맞춤형 코칭을 제공합니다.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 리그 오브 레전드 -->
+            <div class="game-card bg-white rounded-lg shadow-sm overflow-hidden">
+                <img src="/images/game-lol.png" alt="리그 오브 레전드" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">리그 오브 레전드</h3>
+                    <p class="text-gray-600 mb-4">리그 오브 레전드의 모든 포지션과 챔피언에 대한 심층적인 코칭을 제공합니다.</p>
+                    <a href="/lectures?game=LOL" class="text-primary font-medium hover:underline flex items-center">
+                        <span>강의 찾아보기</span>
+                        <i class="ri-arrow-right-line ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 발로란트 -->
+            <div class="game-card bg-white rounded-lg shadow-sm overflow-hidden">
+                <img src="/images/game-valorant.png" alt="발로란트" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">발로란트</h3>
+                    <p class="text-gray-600 mb-4">에이밍부터 전략적 플레이까지, 발로란트 전문가들의 맞춤형 코칭을 받아보세요.</p>
+                    <a href="/lectures?game=VALORANT" class="text-primary font-medium hover:underline flex items-center">
+                        <span>강의 찾아보기</span>
+                        <i class="ri-arrow-right-line ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 전략적 팀 전투 -->
+            <div class="game-card bg-white rounded-lg shadow-sm overflow-hidden">
+                <img src="/images/game-tft.png" alt="전략적 팀 전투" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">전략적 팀 전투</h3>
+                    <p class="text-gray-600 mb-4">아이템 조합, 팀 구성, 경제 관리 등 TFT의 전략적 요소를 배워보세요.</p>
+                    <a href="/lectures?game=TFT" class="text-primary font-medium hover:underline flex items-center">
+                        <span>강의 찾아보기</span>
+                        <i class="ri-arrow-right-line ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 특징 섹션 -->
+<section class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-4">Re:Boot의 특별한 기능</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">게임 실력 향상을 위한 다양한 기능을 제공합니다.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 특징 1 -->
+            <div class="feature-card bg-white p-6 rounded-lg shadow-sm">
+                <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="ri-user-star-line text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">맞춤형 강의 추천</h3>
+                <p class="text-gray-600">간단한 설문으로 나에게 맞는 강의를 추천받아 효과적으로 실력을 향상시킬 수 있습니다.</p>
+            </div>
+
+            <!-- 특징 2 -->
+            <div class="feature-card bg-white p-6 rounded-lg shadow-sm">
+                <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="ri-vidicon-line text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">리플레이 관리</h3>
+                <p class="text-gray-600">게임 리플레이 URL을 저장하고 관리하여 수업 자료로 활용할 수 있습니다.</p>
+            </div>
+
+            <!-- 특징 3 -->
+            <div class="feature-card bg-white p-6 rounded-lg shadow-sm">
+                <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="ri-calendar-check-line text-2xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">쉬운 강의 예약</h3>
+                <p class="text-gray-600">원하는 강의를 간편하게 예약하고 관리할 수 있는 시스템을 제공합니다.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 인기 강의 섹션 -->
+<section class="py-16">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-4">인기 강의</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">많은 사용자들이 선택한 인기 강의를 확인해보세요.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 강의 1: 발로란트 에이밍 마스터 -->
+            <div class="lecture-card bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="relative">
+                    <img src="https://krerzbdfkvnhxlajbofd.supabase.co/storage/v1/object/public/lecture-images//lecture_6.png" alt="발로란트 에이밍 마스터" class="w-full h-48 object-cover">
+                    <div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-sm font-medium">인기</div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-bold mb-1">발로란트 에이밍 마스터</h3>
+                    <p class="text-gray-500 text-sm mb-2">코치윤</p>
+                    <div class="flex items-center mb-3">
+                        <div class="flex text-yellow-400">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                        </div>
+                        <span class="text-gray-500 text-sm ml-1">(4.9)</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-lg">25,000원</span>
+                        <a href="/lectures/6" class="bg-primary text-white rounded-button py-1 px-3 text-sm hover:bg-primary/90">자세히 보기</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 강의 2: 발로란트 초보자 가이드 -->
+            <div class="lecture-card bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="relative">
+                    <img src="https://krerzbdfkvnhxlajbofd.supabase.co/storage/v1/object/public/lecture-images//lecture_7.png" alt="발로란트 초보자 가이드" class="w-full h-48 object-cover">
+                    <div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-sm font-medium">인기</div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-bold mb-1">발로란트 초보자 가이드</h3>
+                    <p class="text-gray-500 text-sm mb-2">코치윤</p>
+                    <div class="flex items-center mb-3">
+                        <div class="flex text-yellow-400">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                        </div>
+                        <span class="text-gray-500 text-sm ml-1">(4.9)</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-lg">18,000원</span>
+                        <a href="/lectures/7" class="bg-primary text-white rounded-button py-1 px-3 text-sm hover:bg-primary/90">자세히 보기</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 강의 3: 탑 라인 마스터 클래스 -->
+            <div class="lecture-card bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="relative">
+                    <img src="https://krerzbdfkvnhxlajbofd.supabase.co/storage/v1/object/public/lecture-images//lecture_1.png" alt="탑 라인 마스터 클래스" class="w-full h-48 object-cover">
+                    <div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-sm font-medium">인기</div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-bold mb-1">탑 라인 마스터 클래스</h3>
+                    <p class="text-gray-500 text-sm mb-2">코치킴</p>
+                    <div class="flex items-center mb-3">
+                        <div class="flex text-yellow-400">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                        </div>
+                        <span class="text-gray-500 text-sm ml-1">(4.8)</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-lg">25,000원</span>
+                        <a href="/lectures/1" class="bg-primary text-white rounded-button py-1 px-3 text-sm hover:bg-primary/90">자세히 보기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="/lectures" class="inline-block bg-white text-primary border border-primary rounded-button px-6 py-3 font-medium hover:bg-gray-50">모든 강의 보기</a>
+        </div>
+    </div>
+</section>
+
+<!-- 설문 & 강의 추천 -->
+<section class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="md:flex items-center">
+                <!-- 왼쪽 텍스트 영역 -->
+                <div class="md:w-1/2 p-8 md:p-12">
+                    <h2 class="text-2xl font-bold mb-4">나에게 맞는 강의 찾기</h2>
+                    <p class="text-gray-600 mb-6">간단한 설문을 통해 나의 게임 실력과 목표에 맞는 최적의 강의를 추천받으세요.</p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-start">
+                            <i class="ri-check-line text-primary mt-1 mr-2"></i>
+                            <span>게임 종류 및 실력 수준 분석</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="ri-check-line text-primary mt-1 mr-2"></i>
+                            <span>학습 목표 및 가능 시간 고려</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="ri-check-line text-primary mt-1 mr-2"></i>
+                            <span>선호하는 강의 형태 반영</span>
+                        </li>
+                    </ul>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="/survey/start" class="inline-block bg-primary text-white rounded-button px-6 py-3 font-medium hover:bg-primary/90">설문 시작하기</a>
+                        <a href="/test/survey-form" class="inline-block bg-secondary text-white rounded-button px-6 py-3 font-medium hover:bg-secondary/90">테스트 설문 시작</a>
+                    </div>
+                </div>
+
+                <!-- 오른쪽 이미지 영역 -->
+                <div class="md:w-1/2 p-4 md:p-6 flex justify-center items-center bg-gray-50 relative overflow-hidden">
+                    <!-- 배경 원형 장식 요소 -->
+                    <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-primary/5"></div>
+                    <div class="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-secondary/5"></div>
+
+                    <!-- 메인 이미지 -->
+                    <div class="relative z-10 transform transition-transform duration-500 hover:scale-105">
+                        <img
+                                src="/images/survey-illustration.png"
+                                alt="게임 설문조사"
+                                class="max-w-full h-auto rounded-lg shadow-lg"
+                                onerror="this.src='/images/default-placeholder.png'; this.onerror=null;"
+                        >
+
+                        <!-- 체크 마크 장식 -->
+                        <div class="absolute -top-4 -right-4 w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-md">
+                            <i class="ri-check-line text-white text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 예약 간편 안내 -->
+<section class="py-16">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-4">간편한 예약 과정</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">쉽고 빠르게 원하는 강의를 예약하고 시작하세요.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- 과정 1 -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-primary text-2xl mx-auto mb-4">1</div>
+                <h3 class="text-lg font-bold mb-2">강의 선택</h3>
+                <p class="text-gray-600">원하는 강의를 찾아보고 선택하세요.</p>
+            </div>
+
+            <!-- 과정 2 -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-primary text-2xl mx-auto mb-4">2</div>
+                <h3 class="text-lg font-bold mb-2">일정 선택</h3>
+                <p class="text-gray-600">가능한 날짜와 시간을 선택하세요.</p>
+            </div>
+
+            <!-- 과정 3 -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-primary text-2xl mx-auto mb-4">3</div>
+                <h3 class="text-lg font-bold mb-2">리플레이 업로드</h3>
+                <p class="text-gray-600">게임 리플레이 URL을 업로드하세요.</p>
+            </div>
+
+            <!-- 과정 4 -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-primary text-2xl mx-auto mb-4">4</div>
+                <h3 class="text-lg font-bold mb-2">강의 시작</h3>
+                <p class="text-gray-600">코치와 함께 실력 향상 시작!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA 섹션 -->
+<section class="py-20 hero-gradient text-white text-center">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-6">지금 바로 시작하세요!</h2>
+        <p class="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">Re:Boot와 함께 게임 실력을 향상시키고<br>더 나은 게이머로 성장하세요.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="/survey/start" class="bg-white text-primary hover:bg-gray-100 px-6 py-3 rounded-button font-medium">맞춤 강의 찾기</a>
+            <a href="/auth/sign" class="bg-transparent border border-white text-white hover:bg-white/10 px-6 py-3 rounded-button font-medium">회원가입</a>
+        </div>
+    </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- 회사 정보 -->
+            <div>
+                <a href="/" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">Re:Boot</a>
+                <p class="text-gray-400 mb-4">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-facebook-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-twitter-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-instagram-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-youtube-fill text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 서비스 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">서비스</h3>
+                <ul class="space-y-2">
+                    <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
+                    <li><a href="/replays/upload" class="text-gray-400 hover:text-white">리플레이 업로드</a></li>
+                    <li><a href="/survey/start" class="text-gray-400 hover:text-white">설문조사</a></li>
+                </ul>
+            </div>
+
+            <!-- 게임 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">게임</h3>
+                <ul class="space-y-2">
+                    <li><a href="/lectures?game=LOL" class="text-gray-400 hover:text-white">리그 오브 레전드</a></li>
+                    <li><a href="/lectures?game=VALORANT" class="text-gray-400 hover:text-white">발로란트</a></li>
+                    <li><a href="/lectures?game=TFT" class="text-gray-400 hover:text-white">전략적 팀 전투</a></li>
+                </ul>
+            </div>
+
+            <!-- 고객 지원 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">고객 지원</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">이용 약관</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">개인정보 처리방침</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">문의하기</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Re:Boot - 게이밍 코칭 매칭 플랫폼. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 모바일 메뉴 토글
+        const menuButton = document.querySelector('.md\\:hidden');
+        const mobileNav = document.querySelector('.md\\:flex');
+
+        if (menuButton && mobileNav) {
+            menuButton.addEventListener('click', function() {
+                // 모바일 메뉴 토글 구현
+                if (mobileNav.classList.contains('hidden')) {
+                    mobileNav.classList.remove('hidden');
+                    mobileNav.classList.add('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
+                } else {
+                    mobileNav.classList.add('hidden');
+                    mobileNav.classList.remove('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
+                }
+            });
+        }
+
+        // 프로필 드롭다운 메뉴 토글 기능
+        const profileDropdownButton = document.getElementById('profileDropdownButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileDropdownButton && profileDropdown) {
+            profileDropdownButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // 이벤트 전파 중지
+                profileDropdown.classList.toggle('hidden');
+            });
+
+            // 드롭다운 외부 클릭 시 닫기
+            document.addEventListener('click', function(e) {
+                if (!profileDropdownButton.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // 부드러운 스크롤
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 스크롤 시 네비게이션 바 스타일 변경
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-md');
+                header.classList.remove('shadow-sm');
+            } else {
+                header.classList.remove('shadow-md');
+                header.classList.add('shadow-sm');
+            }
+        });
+
+        // 이미지 로드 에러 처리
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('error', function() {
+                this.src = '/images/default-placeholder.png';
+            });
+        });
+
+        // 검색 기능 구현
+        const searchInput = document.querySelector('input[placeholder="게임, 강의 검색"]');
+        if (searchInput) {
+            // 폼이 있는지 확인하고, 없으면 부모 요소 사용
+            const searchForm = searchInput.closest('form');
+
+            if (searchForm) {
+                // 폼이 있으면 기본 제출 기능 사용
+                // 추가 기능이 필요하면 여기에 코드 추가
+            } else {
+                // 폼이 없는 경우 수동으로 검색 기능 구현
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+
+                // 검색 아이콘 클릭 이벤트 처리
+                const searchIcon = searchInput.parentElement.querySelector('.ri-search-line');
+                if (searchIcon) {
+                    const iconParent = searchIcon.parentElement;
+                    iconParent.addEventListener('click', function() {
+                        performSearch();
+                    });
+                }
+            }
+        }
+
+        function performSearch() {
+            const keyword = searchInput.value.trim();
+            if (keyword) {
+                window.location.href = `/api/lectures/search?keyword=${encodeURIComponent(keyword)}`;
+            }
+        }
+    });
+</script>
+</body>
+</html>
