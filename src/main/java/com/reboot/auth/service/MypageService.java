@@ -4,12 +4,16 @@ import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
+import com.reboot.payment.entity.Payment;
+import com.reboot.payment.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class MypageService {
@@ -90,5 +94,14 @@ public class MypageService {
         memberRepository.save(member);
 
         return true;
+    }
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    // 결제 완료된 강의 목록 조회
+    public List<Payment> getCompletedPayments(String username) {
+        Member member = getCurrentMember(username);
+        return paymentRepository.findCompletedPaymentsByMember(member.getMemberId());
     }
 }

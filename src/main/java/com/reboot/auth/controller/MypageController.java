@@ -8,6 +8,7 @@ import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
+import com.reboot.payment.entity.Payment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,10 @@ public class MypageController {
         model.addAttribute("member", member);
         model.addAttribute("games", games);
         model.addAttribute("reservations", reservationMIES);
+
+        // 결제 완료된 강의 목록 추가
+        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
+        model.addAttribute("completedPayments", completedPayments);
 
         return "mypage/index";
     }
