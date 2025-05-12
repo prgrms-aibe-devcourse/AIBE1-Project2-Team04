@@ -27,31 +27,55 @@
         .btn-icon:hover { color: #0056b3; }
         .btn-icon.active { color: #ff6b6b; }
         .replay-form { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; }
-        /* 미리보기 창 높이 증가 */
-        .preview-container { margin-top: 20px; width: 100%; height: 450px; display: none; }
-        .preview-container iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+        /* 미리보기 컨테이너 - 각 리플레이 항목 내부에 위치 */
+        .item-preview-container {
+            margin-top: 15px;
+            width: 100%;
+            display: none;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .item-preview-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+        /* 폼 내부 미리보기 컨테이너 */
+        .preview-container {
+            margin-top: 20px;
+            width: 100%;
+            height: 450px;
+            display: none;
+        }
+        .preview-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
         .submit-container { margin-top: 40px; display: flex; justify-content: center; }
         .submit-btn { padding: 15px 40px; font-size: 1.1rem; background: #2e7dff; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
         .submit-btn:hover { background: #185bb5; }
         .replay-controls { display: flex; gap: 10px; }
         .replay-controls button { padding: 8px 16px; border-radius: 4px; font-size: 0.9rem; }
         /* 로딩 표시기 */
-        .loading-spinner { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.5); 
-            z-index: 9999; 
-            justify-content: center; 
-            align-items: center; 
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
         }
-        .spinner-border { 
-            width: 3rem; 
-            height: 3rem; 
-            color: white; 
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: white;
         }
         /* 알림 메시지 */
         .alert {
@@ -122,13 +146,26 @@
         <!-- 리플레이 목록 -->
         <div id="replay-list" class="replay-list">
             <!-- 기존 리플레이 항목들 (있는 경우) -->
-            <div th:if="${existingReplays != null && !existingReplays.isEmpty()}" th:each="replay, replayStat : ${existingReplays}" class="replay-item" th:data-id="${replay.replayId}">
+            <div th:if="${existingReplays != null && !existingReplays.isEmpty()}"
+                 th:each="replay, replayStat : ${existingReplays}"
+                 class="replay-item"
+                 th:data-id="${replay.replayId}">
                 <div class="replay-item-title" th:text="'리플레이 ' + (${replayStat.index} + 1)"></div>
                 <div class="replay-item-actions">
-                    <button type="button" class="btn-icon view-replay" th:data-url="${replay.fileUrl}"><i class="fas fa-eye"></i></button>
-                    <button type="button" class="btn-icon edit-replay" th:data-id="${replay.replayId}" th:data-url="${replay.fileUrl}"><i class="fas fa-edit"></i></button>
-                    <button type="button" class="btn-icon delete-replay" th:data-id="${replay.replayId}"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="btn-icon view-replay" th:data-url="${replay.fileUrl}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button type="button" class="btn-icon edit-replay"
+                            th:data-id="${replay.replayId}"
+                            th:data-url="${replay.fileUrl}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn-icon delete-replay" th:data-id="${replay.replayId}">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
+                <!-- 각 리플레이 항목마다 미리보기 컨테이너 추가 -->
+                <div class="item-preview-container"></div>
             </div>
         </div>
 
@@ -214,6 +251,7 @@
                                         <button type="button" class="btn-icon edit-replay" data-id="${replayId}" data-url="${url}"><i class="fas fa-edit"></i></button>
                                         <button type="button" class="btn-icon delete-replay" data-id="${replayId}"><i class="fas fa-trash"></i></button>
                                     </div>
+                                    <div class="item-preview-container"></div>
                                 </div>
                             `;
 
@@ -305,7 +343,6 @@
                 // 새 항목 추가 모드
                 const replayId = Date.now(); // 임시 ID
 
-                // 새 리플레이 항목 추가
                 // 현재 존재하는 리플레이 아이템 개수 파악
                 const currentCount = $(".replay-item").length + 1;
 
@@ -317,77 +354,71 @@
                             <button type="button" class="btn-icon edit-replay" data-id="${replayId}" data-url="${youtubeUrl}"><i class="fas fa-edit"></i></button>
                             <button type="button" class="btn-icon delete-replay" data-id="${replayId}"><i class="fas fa-trash"></i></button>
                         </div>
+                        <div class="item-preview-container"></div>
                     </div>
                 `;
 
                 $("#replay-list").append(replayItem);
 
-                // hidden input 추가 - 컨트롤러 파라미터에 맞게 수정
+                // hidden input 추가
                 $("#replayUrlsContainer").append(`<input type="hidden" name="replayUrls" value="${youtubeUrl}" />`);
 
                 showSuccessAlert("리플레이가 추가되었습니다.");
             }
 
             $("#new-replay-form").hide();
-            $("#preview-container").hide(); // 미리보기 숨기기
+            $("#preview-container").hide();
         });
 
-        // .view-replay 클릭 이벤트를 다음과 같이 수정
+        // 여기가 핵심 수정 부분 - .view-replay 클릭 이벤트
         $(document).on("click", ".view-replay", function(e) {
             e.preventDefault();
-            console.log("눈알 클릭됨");
+            e.stopPropagation();
+
+            console.log("눈 아이콘 클릭됨");
 
             const $this = $(this);
             const url = $this.data("url");
+            const replayItem = $this.closest(".replay-item");
+            const previewContainer = replayItem.find(".item-preview-container");
+
             console.log("URL:", url);
+            console.log("미리보기 컨테이너 존재:", previewContainer.length);
 
-            // 미리보기 컨테이너
-            const previewContainer = $("#preview-container");
-            console.log("컨테이너 존재?", previewContainer.length > 0);
-
-            // 이미 표시 중이면 토글
-            if (previewContainer.is(":visible") && previewContainer.data("current-url") === url) {
-                console.log("같은 영상 토글: 닫기");
+            // 토글 처리
+            if (previewContainer.is(":visible")) {
                 previewContainer.hide();
+                previewContainer.empty();
                 $this.removeClass("active");
                 return false;
             }
 
-            // 다른 눈알 버튼 비활성화
+            // 다른 모든 미리보기 닫기
+            $(".item-preview-container").hide().empty();
             $(".view-replay").removeClass("active");
-            $this.addClass("active");
 
-            // 임베드 URL 생성
+            // 현재 미리보기 표시
             const embedUrl = getYouTubeEmbedUrl(url);
             console.log("임베드 URL:", embedUrl);
 
             if (embedUrl) {
-                // 미리보기 표시 전에 상태 출력
-                console.log("미리보기 표시 전 컨테이너 상태:", {
-                    display: previewContainer.css("display"),
-                    height: previewContainer.css("height"),
-                    visibility: previewContainer.css("visibility")
-                });
+                const iframe = `<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+                previewContainer.html(iframe);
+                previewContainer.show();
+                $this.addClass("active");
 
-                // iframe 추가
-                previewContainer.html(`<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
-                previewContainer.data("current-url", url);
-                previewContainer.css("display", "block"); // show() 대신 직접 스타일 적용
-
-                // 미리보기 컨테이너를 스크롤 위치로 이동
+                // 스크롤
                 $('html, body').animate({
                     scrollTop: previewContainer.offset().top - 100
                 }, 500);
-
-                console.log("미리보기 표시 완료");
             } else {
-                console.error("유효한 YouTube URL이 아닙니다");
                 alert("유효한 YouTube URL이 아닙니다");
             }
 
             return false;
         });
-        // 편집 아이콘 클릭 이벤트 - 수정 폼 표시
+
+        // 편집 아이콘 클릭 이벤트
         $(document).on("click", ".edit-replay", function() {
             const id = $(this).data("id");
             const url = $(this).data("url");
@@ -400,7 +431,7 @@
             const embedUrl = getYouTubeEmbedUrl(url);
             if (embedUrl) {
                 $("#preview-container").html(`<iframe src="${embedUrl}" allowfullscreen></iframe>`);
-                $("#preview-container").data("current-url", url); // 현재 URL 저장
+                $("#preview-container").data("current-url", url);
                 $("#preview-container").show();
             }
 
@@ -435,10 +466,12 @@
                 showSuccessAlert("리플레이가 삭제되었습니다.");
             }
 
-            return false; // 이벤트 버블링 방지
+            return false;
         });
+
+        // 예약 완료 버튼 클릭
         $("#submit-reservation").click(function(e) {
-            e.preventDefault(); // 기본 제출 동작 방지
+            e.preventDefault();
 
             // 날짜 선택 검증
             if (!$("#scheduleDate").val()) {
@@ -449,14 +482,14 @@
             // 로딩 스피너 표시
             showLoading();
 
-            // 일반 폼 제출 방식으로 변경 - AJAX 대신 직접 제출
+            // 일반 폼 제출
             $("#reservationForm").submit();
         });
 
         // YouTube URL을 임베드 URL로 변환하는 함수
         function getYouTubeEmbedUrl(url) {
             if (!url) return null;
-            
+
             let videoId = null;
 
             // URL 디버깅
@@ -475,7 +508,7 @@
                 const parts = url.split('youtu.be/');
                 if (parts.length > 1) {
                     videoId = parts[1];
-                    // URL에 추가 파라미터가
+                    // URL에 추가 파라미터가 있으면 제거
                     if (videoId.includes('?')) {
                         videoId = videoId.substring(0, videoId.indexOf('?'));
                     }
@@ -483,7 +516,7 @@
             }
 
             console.log("추출된 Video ID:", videoId);
-            
+
             if (videoId) {
                 return `https://www.youtube.com/embed/${videoId}`;
             }
