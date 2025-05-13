@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강사 프로필 수정 - 게임 코칭 매칭 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f5f5f7;
+        }
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+<!-- 헤더 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <form id="logoutForm" action="/logout" method="post" class="inline">
+                <button type="submit" class="text-gray-600 hover:text-primary bg-transparent border-0 cursor-pointer">로그아웃</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- 알림 메시지 -->
+    <div th:if="${message}" class="mb-6 p-4 bg-green-100 border border-green-300 text-green-700 rounded">
+        <p th:text="${message}">성공 메시지</p>
+    </div>
+    <div th:if="${error}" class="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded">
+        <p th:text="${error}">오류 메시지</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-2xl font-bold mb-6">강사 프로필 수정</h2>
+        <form th:action="@{/mypage/instructor/profile}" th:object="${instructorProfileDTO}" method="post" enctype="multipart/form-data">
+            <!-- 프로필 이미지 섹션 -->
+            <div class="mb-8">
+                <div class="flex flex-col items-center">
+                    <div class="mb-4">
+                        <img th:if="${member.profileImage}" th:src="${member.profileImage}" alt="프로필 이미지" class="profile-image">
+                        <img th:unless="${member.profileImage}" src="/images/default-profile.png" alt="기본 프로필 이미지" class="profile-image">
+                    </div>
+                    <div>
+                        <label for="profileImage" class="block text-sm font-medium text-gray-700 mb-2">프로필 이미지 변경</label>
+                        <input type="file" id="profileImage" name="profileImage" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100">
+                        <p class="text-xs text-gray-500 mt-1">JPG, PNG, GIF 형식만 허용됩니다. (최대 5MB)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 기본 정보 섹션 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label for="nickname" class="block text-sm font-medium text-gray-700 mb-2">닉네임</label>
+                    <input type="text" id="nickname" th:field="*{nickname}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+                </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">전화번호</label>
+                    <input type="tel" id="phone" th:field="*{phone}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+                </div>
+            </div>
+
+            <!-- 강사 정보 섹션 -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4">강사 정보</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="career" class="block text-sm font-medium text-gray-700 mb-2">경력</label>
+                        <textarea id="career" th:field="*{career}" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="예: 5년 경력의 다이아몬드 랭크 강사입니다."></textarea>
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">소개글</label>
+                        <textarea id="description" th:field="*{description}" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="자신만의 코칭 스타일과 강점을 소개해주세요."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 게임 정보 섹션 -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4">게임 정보</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="gameType" class="block text-sm font-medium text-gray-700 mb-2">게임 종류</label>
+                        <select id="gameType" th:field="*{gameType}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">게임을 선택해주세요</option>
+                            <option value="리그 오브 레전드">리그 오브 레전드</option>
+                            <option value="배틀그라운드">배틀그라운드</option>
+                            <option value="발로란트">발로란트</option>
+                            <option value="오버워치2">오버워치2</option>
+                            <option value="토탈 워: 워해머3">토탈 워: 워해머3</option>
+                        </select>
+                    </div>
+                    <!-- 게임 정보 섹션에서 -->
+                    <div>
+                        <label for="gameTier" class="block text-sm font-medium text-gray-700 mb-2">티어</label>
+                        <select id="gameTier" th:field="*{gameTier}"
+                                th:data-selected="${instructorProfileDTO.gameTier}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">티어를 선택해주세요</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="gamePosition" class="block text-sm font-medium text-gray-700 mb-2">포지션</label>
+                        <select id="gamePosition" th:field="*{gamePosition}"
+                                th:data-selected="${instructorProfileDTO.gamePosition}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">포지션을 선택해주세요</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 버튼 섹션 -->
+            <div class="flex justify-end space-x-4">
+                <a href="/mypage/instructorMypage" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-button text-sm hover:bg-gray-400 transition">취소</a>
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">저장</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- 푸터 -->
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-gray-400">
+            <p>&copy; 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const gameTypeSelect = document.getElementById('gameType');
+        const gameTierSelect = document.getElementById('gameTier');
+        const gamePositionSelect = document.getElementById('gamePosition');
+
+        // 변수 선언 추가
+        const currentGameType = gameTypeSelect.value;
+        const currentGameTier = gameTierSelect.getAttribute('data-selected') || '';
+        const currentGamePosition = gamePositionSelect.getAttribute('data-selected') || '';
+
+        // 페이지 로드 시 현재 값에 따라 옵션 설정
+        if (currentGameType) {
+            updateTierOptions(currentGameType);
+            updatePositionOptions(currentGameType);
+
+            // 기존 선택값 복원
+            setTimeout(() => {
+                if (currentGameTier) gameTierSelect.value = currentGameTier;
+                if (currentGamePosition) gamePositionSelect.value = currentGamePosition;
+            }, 100);
+        }
+
+        gameTypeSelect.addEventListener('change', function() {
+            updateTierOptions(this.value);
+            updatePositionOptions(this.value);
+        });
+
+        function updateTierOptions(selectedGame) {
+            const selectedValue = gameTierSelect.value; // 현재 선택된 값 저장
+            gameTierSelect.innerHTML = '<option value="">티어를 선택해주세요</option>';
+
+            if (selectedGame === '리그 오브 레전드') {
+                ['아이언', '브론즈', '실버', '골드', '플래티넘', '다이아몬드', '마스터', '그랜드마스터', '챌린저']
+                    .forEach(tier => {
+                        const option = document.createElement('option');
+                        option.value = tier;
+                        option.textContent = tier;
+                        gameTierSelect.appendChild(option);
+                    });
+            } else if (selectedGame === '발로란트') {
+                ['아이언', '브론즈', '실버', '골드', '플래티넘', '다이아몬드', '어센던트', '이모탈', '레디언트']
+                    .forEach(tier => {
+                        const option = document.createElement('option');
+                        option.value = tier;
+                        option.textContent = tier;
+                        gameTierSelect.appendChild(option);
+                    });
+            } else if (selectedGame === '오버워치2') {
+                ['브론즈', '실버', '골드', '플래티넘', '다이아몬드', '마스터', '그랜드마스터', '탑500']
+                    .forEach(tier => {
+                        const option = document.createElement('option');
+                        option.value = tier;
+                        option.textContent = tier;
+                        gameTierSelect.appendChild(option);
+                    });
+            } else {
+                ['초급', '중급', '고급', '전문가']
+                    .forEach(tier => {
+                        const option = document.createElement('option');
+                        option.value = tier;
+                        option.textContent = tier;
+                        gameTierSelect.appendChild(option);
+                    });
+            }
+
+            // 값 복원
+            if (selectedValue) gameTierSelect.value = selectedValue;
+        }
+
+        function updatePositionOptions(selectedGame) {
+            const selectedValue = gamePositionSelect.value; // 현재 선택된 값 저장
+            gamePositionSelect.innerHTML = '<option value="">포지션을 선택해주세요</option>';
+
+            if (selectedGame === '리그 오브 레전드') {
+                ['탑', '정글', '미드', '원딜', '서포터']
+                    .forEach(position => {
+                        const option = document.createElement('option');
+                        option.value = position;
+                        option.textContent = position;
+                        gamePositionSelect.appendChild(option);
+                    });
+            } else if (selectedGame === '발로란트') {
+                ['듀얼리스트', '이니시에이터', '컨트롤러', '센티넬']
+                    .forEach(position => {
+                        const option = document.createElement('option');
+                        option.value = position;
+                        option.textContent = position;
+                        gamePositionSelect.appendChild(option);
+                    });
+            } else if (selectedGame === '오버워치2') {
+                ['탱크', '딜러', '힐러']
+                    .forEach(position => {
+                        const option = document.createElement('option');
+                        option.value = position;
+                        option.textContent = position;
+                        gamePositionSelect.appendChild(option);
+                    });
+            } else if (selectedGame === '배틀그라운드') {
+                ['스쿼드 IGL', '서포터', '스나이퍼', '프래거']
+                    .forEach(position => {
+                        const option = document.createElement('option');
+                        option.value = position;
+                        option.textContent = position;
+                        gamePositionSelect.appendChild(option);
+                    });
+            } else {
+                ['올라운더', '공격', '수비', '지원']
+                    .forEach(position => {
+                        const option = document.createElement('option');
+                        option.value = position;
+                        option.textContent = position;
+                        gamePositionSelect.appendChild(option);
+                    });
+            }
+            // 값 복원
+            if (selectedValue) gamePositionSelect.value = selectedValue;
+        }
+    });
+</script>
+</body>
+</html>

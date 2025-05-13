@@ -70,7 +70,7 @@
             <div class="flex flex-col items-center">
                 <img th:if="${member.profileImage}" th:src="${member.profileImage}" alt="프로필 이미지" class="profile-image mb-4">
                 <img th:unless="${member.profileImage}" src="/images/default-profile.png" alt="기본 프로필 이미지" class="profile-image mb-4">
-                <a href="/instructor/mypage/profile" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">프로필 수정</a>
+                <a href="/mypage/instructor/profile" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">프로필 수정</a>
             </div>
 
             <!-- 강사 정보 -->
@@ -95,16 +95,45 @@
                     </div>
                 </div>
 
-                <!-- description -->
+                <!-- career -->
                 <div class="mt-6">
                     <p class="text-gray-500 text-sm">경력</p>
                     <p class="font-medium" th:text="${instructor.career}">5년 경력의 다이아몬드 랭크 강사입니다.</p>
                 </div>
 
-                <!-- 소개글 -->
+                <!-- description -->
                 <div class="mt-4">
                     <p class="text-gray-500 text-sm">소개글</p>
                     <p class="font-medium" th:text="${instructor.description}">게임 실력 향상을 위한 맞춤형 코칭을 제공합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 게임 정보 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold">게임 정보</h3>
+        </div>
+
+        <div th:if="${game == null}" class="text-center py-8">
+            <p class="text-gray-500">등록된 게임 정보가 없습니다.</p>
+            <p class="text-sm text-gray-400 mt-2">프로필 수정에서 게임 정보를 등록해주세요.</p>
+        </div>
+
+        <div th:unless="${game == null}" class="border rounded-lg p-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <span class="text-gray-500 text-sm">게임 종류:</span>
+                    <p class="font-medium" th:text="${game.gameType}">리그 오브 레전드</p>
+                </div>
+                <div>
+                    <span class="text-gray-500 text-sm">티어:</span>
+                    <p class="font-medium" th:text="${game.gameTier}">다이아몬드</p>
+                </div>
+                <div>
+                    <span class="text-gray-500 text-sm">포지션:</span>
+                    <p class="font-medium" th:text="${game.gamePosition}">미드</p>
                 </div>
             </div>
         </div>
@@ -136,9 +165,33 @@
     </div>
 </main>
 
-<!-- 푸터 (기존 마이페이지와 동일) -->
+<!-- 푸터 -->
 <footer class="bg-gray-800 text-white py-8 mt-12">
-    <!-- 푸터 내용 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h4 class="text-lg font-bold mb-4">게임 코칭 매칭 플랫폼</h4>
+                <p class="text-gray-400">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold mb-4">바로가기</h4>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-400 hover:text-white">홈</a></li>
+                    <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
+                    <li><a href="/faq" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold mb-4">연락처</h4>
+                <p class="text-gray-400">서울특별시 강남구 포레스트로 123</p>
+                <p class="text-gray-400">이메일: 4rest@reboot.com</p>
+                <p class="text-gray-400">전화: 123-456-7890</p>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
+        </div>
+    </div>
 </footer>
 
 <script>
