@@ -1,8 +1,12 @@
+// import 섹션에 Game 엔티티 import 추가가 필요함
 package com.reboot.auth.service;
 
 import com.reboot.auth.dto.ProfileDTO;
+import com.reboot.auth.dto.GameDTO; // GameDTO import 추가
+import com.reboot.auth.entity.Game; // Game 엔티티 import 추가
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
+import com.reboot.auth.repository.GameRepository; // GameRepository import 추가
 import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
@@ -24,6 +28,15 @@ public class MypageService {
     private final ReservationMyRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileUploadService fileUploadService;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+    private InstructorRepository instructorRepository;
+
+    @Autowired
+    private GameRepository gameRepository; // GameRepository 추가
 
     public MypageService(MemberRepository memberRepository,
                          ReservationMyRepository reservationRepository,
@@ -80,7 +93,6 @@ public class MypageService {
         }
     }
 
-
     // 비밀번호 변경
     @Transactional
     public boolean changePassword(String username, String currentPassword, String newPassword) {
@@ -98,13 +110,10 @@ public class MypageService {
         return true;
     }
 
-    @Autowired
-    private PaymentRepository paymentRepository;
-
     // 결제 완료된 강의 목록 조회
     public List<Payment> getCompletedPayments(String username) {
         Member member = getCurrentMember(username);
-        return paymentRepository.findCompletedPaymentsByMember(member.getMemberId());
+        return paymentRepository.findCompletedPaymentsByMemberId(member.getMemberId());
     }
 
     // 강사 인증 확인
@@ -120,6 +129,68 @@ public class MypageService {
                 .orElseThrow(() -> new RuntimeException("강사 정보를 찾을 수 없습니다."));
     }
 
-    @Autowired
-    private InstructorRepository instructorRepository;
+    /**
+     * 사용자의 게임 정보 존재 여부 확인
+     * @param username 사용자명
+     * @return 게임 정보가 있으면 true, 없으면 false
+     */
+    public boolean hasGameInfo(String username) {
+        Member member = getCurrentMember(username);
+        return gameRepository.existsByMemberMemberId(member.getMemberId());
+    }
+
+    /**
+     * 사용자의 게임 정보 저장
+     * @param username 사용자명
+     * @param gameDTO 게임 정보 DTO
+     */
+    @Transactional
+    public void saveGameInfo(String username, GameDTO gameDTO) {
+        Member member = getCurrentMember(username);
+
+        Game game = new Game();
+        game.setMember(member);
+        game.setGameType(gameDTO.getGameType());
+        game.setGameTier(gameDTO.getGameTier());
+        game.setGamePosition(gameDTO.getGamePosition());
+
+        gameRepository.save(game);
+    }
+
+    /**
+     * 사용자의 현재 게임 정보 조회
+     * @param username 사용자명
+     * @return 게임 정보
+     */
+    public Game getCurrentGameByMember(String username) {
+        Member member = getCurrentMember(username);
+
+        List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());
+        if (games.isEmpty()) {
+            throw new RuntimeException("게임 정보를 찾을 수 없습니다.");
+        }
+        return games.get(0); // 첫 번째 게임 정보 반환
+    }
+
+    /**
+     * 사용자의 게임 정보 업데이트
+     * @param username 사용자명
+     * @param gameDTO 업데이트할 게임 정보
+     */
+    @Transactional
+    public void updateGameInfo(String username, GameDTO gameDTO) {
+        Member member = getCurrentMember(username);
+
+        List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());
+        if (games.isEmpty()) {
+            throw new RuntimeException("게임 정보를 찾을 수 없습니다.");
+        }
+
+        Game game = games.get(0); // 첫 번째 게임 정보 업데이트
+        game.setGameType(gameDTO.getGameType());
+        game.setGameTier(gameDTO.getGameTier());
+        game.setGamePosition(gameDTO.getGamePosition());
+
+        gameRepository.save(game);
+    }
 }

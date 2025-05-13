@@ -16,7 +16,7 @@ public class LectureFileService {
     @Value("${supabase.url}")
     private String supabaseUrl;
 
-    @Value("${supabase.key}")
+    @Value("${spring.supabase.access-key}")
     private String supabaseKey;
 
     @Value("${supabase.video-bucket-name:videos}")

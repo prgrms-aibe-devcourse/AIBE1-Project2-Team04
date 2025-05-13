@@ -70,11 +70,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/","/auth/login", "/auth/sign", "/reissue").permitAll()
                         // .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().permitAll())
+                        .anyRequest().permitAll());
 
-                .oauth2Login(oauth -> oauth
-                                .userInfoEndpoint(user -> user.userService(customOAuth2UserService()))
-                                .successHandler(oAuth2SuccessHandler()));
+        // OAuth2 로그인 임시 비활성화
+        // .oauth2Login(oauth -> oauth
+        //                 .userInfoEndpoint(user -> user.userService(customOAuth2UserService()))
+        //                 .successHandler(oAuth2SuccessHandler()));
 
         http
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, reissueService), LoginFilter.class)
@@ -90,13 +91,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
-        return new CustomOAuth2UserService(socialUserService);
-    }
+    // OAuth2 관련 빈도 일단 주석 처리
+    // @Bean
+    // public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
+    //     return new CustomOAuth2UserService(socialUserService);
+    // }
 
-    @Bean
-    public OAuth2LoginSuccessHandler oAuth2SuccessHandler() {
-        return new OAuth2LoginSuccessHandler(jwtTokenProvider, refreshTokenService, memberService);
-    }
+    // @Bean
+    // public OAuth2LoginSuccessHandler oAuth2SuccessHandler() {
+    //     return new OAuth2LoginSuccessHandler(jwtTokenProvider, refreshTokenService, memberService);
+    // }
 }
