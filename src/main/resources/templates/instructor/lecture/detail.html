@@ -70,7 +70,7 @@
             <!-- 강의 헤더 -->
             <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                 <div class="flex justify-between items-start">
-                    <div>
+                    <div class="flex-grow mr-6">
                         <h1 class="text-3xl font-bold mb-2" th:text="${lecture.title}">강의 제목</h1>
                         <p class="text-gray-600 text-lg mb-4" th:if="${lectureDetail != null}" th:text="${lectureDetail.overview}">강의 개요</p>
                         <div class="flex gap-2 mb-4">
@@ -92,15 +92,15 @@
                                   th:text="${lecture.lectureRank}">티어</span>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <h3 class="text-2xl font-bold text-primary mb-3"
+                    <div class="flex-shrink-0">
+                        <h3 class="text-2xl font-bold text-primary mb-3 text-right"
                             th:text="${#numbers.formatDecimal(lecture.price, 0, 'COMMA', 0, 'POINT')} + '원'">0원</h3>
-                        <div class="flex flex-col gap-2">
+                        <div class="inline-flex flex-col gap-2">
                             <a th:href="@{/instructor/lectures/{id}/edit(id=${lecture.rawId})}"
-                               class="bg-primary-action text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-purple-700 transition">수정</a>
+                               class="inline-flex items-center justify-center bg-primary-action text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-purple-700 transition min-w-min">수정</a>
                             <form th:action="@{/instructor/lectures/{id}/delete(id=${lecture.rawId})}"
-                                  method="post" class="inline">
-                                <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-red-600 transition"
+                                  method="post">
+                                <button type="submit" class="inline-flex items-center justify-center bg-red-500 text-white px-4 py-2 rounded-button text-sm font-medium hover:bg-red-600 transition min-w-min"
                                         onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
                             </form>
                         </div>
