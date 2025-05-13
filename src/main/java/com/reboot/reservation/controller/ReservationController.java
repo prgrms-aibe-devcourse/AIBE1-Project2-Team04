@@ -51,19 +51,6 @@ public class ReservationController {
                 null
         ));
 
-        // 기존 예약이 있는 경우 해당 예약의 리플레이 목록도 조회
-        try {
-            List<ReservationResponseDto> existingReservations = reservationService.getReservationsByMemberAndLecture(memberId, lectureId);
-            if (!existingReservations.isEmpty()) {
-                ReservationResponseDto existingReservation = existingReservations.get(0);
-                List<ReplayResponse> existingReplays = replayService.getReplaysByReservationId(existingReservation.getReservationId());
-                model.addAttribute("existingReplays", existingReplays);
-                model.addAttribute("existingReservation", existingReservation);
-            }
-        } catch (Exception e) {
-            // 기존 예약 정보 조회 실패 시 무시
-        }
-
         return "reservation/reservationForm";
     }
 
