@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none  # JPA가 테이블 구조를 변경하지 않도록 설정
+      ddl-auto: update  # JPA가 테이블 구조를 변경하지 않도록 설정
     defer-datasource-initialization: true  # SQL 스크립트가 JPA 이후에 실행되도록
     show-sql: false   # 운영 환경에서는 false로 설정하여 로그 최소화
     properties:
@@ -55,3 +55,11 @@ springdoc:
     path: /swagger-ui.html
     enabled: true
   packages-to-scan: com.reboot
+
+
+app:
+  server-Url: ${APP_SERVER_URL}
+
+
+toss:
+  apiKey: ${TOSS_API_KEY}
