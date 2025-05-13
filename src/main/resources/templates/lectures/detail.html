@@ -217,18 +217,7 @@
                 </p>
             </div>
 
-            <!-- 수강 신청 섹션 -->
-            <div id="enroll-section" class="text-center py-5 my-5 bg-light rounded">
-                <h2 class="mb-4">지금 바로 시작하세요!</h2>
-                <p class="lead mb-4">수강 기간: <span th:text="${lecture.duration}">120</span>분</p>
-                <a th:if="${currentMember != null}"
-                   th:href="@{/reservation/new(lectureId=${lecture.id}, memberId=${currentMember.memberId})}"
-                   class="btn btn-enroll">수강 신청</a>
-                <a th:unless="${currentMember != null}"
-                   th:href="@{/auth/login}"
-                   class="btn btn-enroll">로그인 후 수강 신청</a>
 
-            </div>
         </div>
         <!-- 오른쪽 사이드바: 강사 정보 및 부가 정보 -->
         <div class="col-lg-4">
@@ -285,6 +274,17 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+            <!-- 수강 신청 섹션 -->
+            <div id="enroll-section" class="text-center py-5 my-5 bg-light rounded">
+                <h2 class="mb-4">지금 바로 시작하세요!</h2>
+                <p class="lead mb-4">수강 기간: <span th:text="${lecture.duration}">120</span>분</p>
+                <a th:if="${currentMember != null}"
+                   th:href="@{/reservation/new(lectureId=${lecture.id}, memberId=${currentMember.memberId})}"
+                   class="btn btn-enroll">수강 신청</a>
+                <a th:unless="${currentMember != null}"
+                   th:href="@{/auth/login}"
+                   class="btn btn-enroll">로그인 후 수강 신청</a>
             </div>
         </div>
     </div>
