@@ -142,7 +142,7 @@
                 </div>
             </form>
 
-            <div class="mt-6" style="display: none">
+            <div class="mt-6">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-300"></div>
@@ -227,6 +227,21 @@
 
         loginForm.addEventListener('submit', async function(e) {
             // 폼 검증이 필요한 경우 여기에 구현
+        });
+
+        document.querySelectorAll('.social-login-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const text = btn.textContent.trim();
+
+                let provider = '';
+                if (text.includes('카카오')) provider = 'kakao';
+                else if (text.includes('네이버')) provider = 'naver';
+                else if (text.includes('구글')) provider = 'google';
+
+                if (provider) {
+                    window.location.href = `/oauth2/authorization/${provider}`;
+                }
+            });
         });
     });
 </script>
