@@ -4,17 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지 - 게임 코칭 매칭 플랫폼</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f5f5f7;
-        }
         .profile-image {
             width: 120px;
             height: 120px;
@@ -24,43 +16,8 @@
     </style>
 </head>
 <body>
-<!-- 헤더 -->
-<header class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center">
-            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
-            <nav class="hidden md:flex space-x-8">
-                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
-                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
-                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
-            </nav>
-        </div>
-
-        <div class="flex items-center space-x-4">
-            <div class="relative hidden md:block">
-                <form action="/lectures/search" method="GET">
-                    <div class="relative">
-                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
-                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
-                            <i class="ri-search-line"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- 기존 로그아웃 형태 유지 -->
-            <div class="flex items-center space-x-4">
-                <form id="logoutForm" action="/logout" method="post" class="inline">
-                    <button type="submit" class="text-gray-600 hover:text-primary bg-transparent border-0 cursor-pointer">로그아웃</button>
-                </form>
-            </div>
-
-            <button class="md:hidden w-10 h-10 flex items-center justify-center">
-                <i class="ri-menu-line text-xl"></i>
-            </button>
-        </div>
-    </div>
-</header>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
 
 <!-- 메인 컨텐츠 -->
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -231,36 +188,7 @@
 <!--            </table>-->
 <!--        </div>-->
 <!--    </div>-->
-<!--</main>-->
-
-<!-- 푸터 -->
-<footer class="bg-gray-800 text-white py-8 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <h4 class="text-lg font-bold mb-4">게임 코칭 매칭 플랫폼</h4>
-                <p class="text-gray-400">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
-            </div>
-            <div>
-                <h4 class="text-lg font-bold mb-4">바로가기</h4>
-                <ul class="space-y-2">
-                    <li><a href="/" class="text-gray-400 hover:text-white">홈</a></li>
-                    <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
-                    <li><a href="/faq" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-lg font-bold mb-4">연락처</h4>
-                <p class="text-gray-400">서울특별시 강남구 포레스트로 123</p>
-                <p class="text-gray-400">이메일: 4rest@reboot.com</p>
-                <p class="text-gray-400">전화: 123-456-7890</p>
-            </div>
-        </div>
-        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
+</main>
 
 <script>
     // 필요한 JavaScript 코드
@@ -269,5 +197,11 @@
         // 추가 스크립트 작성
     });
 </script>
+
+    <!-- 푸터 포함 -->
+    <div th:replace="fragments/footer :: footer"></div>
+
+    <!-- 공통 스크립트 포함 -->
+    <div th:replace="fragments/scripts :: scripts"></div>
 </body>
 </html>

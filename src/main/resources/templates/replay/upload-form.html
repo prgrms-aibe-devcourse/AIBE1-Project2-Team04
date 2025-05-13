@@ -6,6 +6,8 @@
     <title>영상 리플레이 업로드</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -177,6 +179,9 @@
     </style>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
 <div class="container">
     <h2 class="page-title">영상 리플레이 업로드</h2>
 
@@ -254,6 +259,11 @@
         </a>
     </div>
 </div>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
