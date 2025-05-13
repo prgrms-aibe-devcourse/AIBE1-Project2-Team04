@@ -57,12 +57,12 @@ public class MypageController {
 
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());//수정
+        List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());//수정
         List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
         List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
         model.addAttribute("member", member);
-        model.addAttribute("games", games);
+        model.addAttribute("game", game);
         model.addAttribute("reservations", reservationMIES);
         model.addAttribute("completedPayments", completedPayments);
 

@@ -65,26 +65,26 @@
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold">내 게임 정보</h3>
             <!-- 게임 정보가 있으면 수정 버튼, 없으면 등록 버튼 -->
-            <div th:if="${games != null and !#lists.isEmpty(games)}">
+            <div th:if="${game != null and !#lists.isEmpty(game)}">
                 <a href="/mypage/game/edit" class="text-primary text-sm hover:underline">수정하기</a>
             </div>
         </div>
 
-        <div th:if="${games == null or #lists.isEmpty(games)}" class="text-center py-8">
+        <div th:if="${game == null or #lists.isEmpty(game)}" class="text-center py-8">
             <p class="text-gray-500">등록된 게임 정보가 없습니다.</p>
             <a href="/mypage/game/register" class="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">게임 정보 등록하기</a>
         </div>
 
-        <div th:unless="${#lists.isEmpty(games)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div th:each="game : ${games}" class="border rounded-lg p-4">
-                <h4 class="font-bold mb-2" th:text="${game.gameType}">리그 오브 레전드</h4>
+        <div th:unless="${#lists.isEmpty(game)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div th:each="gameItem : ${game}" class="border rounded-lg p-4">
+                <h4 class="font-bold mb-2" th:text="${gameItem.gameType}">리그 오브 레전드</h4>
                 <div class="mb-2">
                     <span class="text-gray-500 text-sm">티어:</span>
-                    <span th:text="${game.gameTier}">다이아몬드</span>
+                    <span th:text="${gameItem.gameTier}">다이아몬드</span>
                 </div>
                 <div>
                     <span class="text-gray-500 text-sm">포지션:</span>
-                    <span th:text="${game.gamePosition}">미드</span>
+                    <span th:text="${gameItem.gamePosition}">미드</span>
                 </div>
             </div>
         </div>
