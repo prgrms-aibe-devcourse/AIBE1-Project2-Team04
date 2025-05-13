@@ -25,7 +25,7 @@ spring:
     url: ${SUPABASE_URL}
     access-key: ${SUPABASE_ACCESS_KEY}
     img-bucket-name: ${SUPABASE_IMG_BUCKET_NAME}
-    lecture-img-bucket-name: ${SUPABASE_IMG_BUCKET_NAME}
+    lecture-img-bucket-name: ${SUPABASE_LECTURE_IMG_BUCKET_NAME}
 
   servlet:
     multipart:

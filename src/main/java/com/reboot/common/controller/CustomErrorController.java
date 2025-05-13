@@ -21,4 +21,13 @@ public class CustomErrorController implements ErrorController {
 
         return "error"; // 'error.html' 템플릿 참조
     }
+
+    @RequestMapping("/500")
+    public String handleError500(HttpServletRequest request, Model model) {
+        Object status = request.getAttribute("javax.servlet.error.status_code");
+        Object message = request.getAttribute("javax.servlet.error.message");
+        model.addAttribute("status", status);
+        model.addAttribute("message", message);
+        return "error/500";
+    }
 }

@@ -5,21 +5,39 @@
     <title>예약 취소</title>
     <!--헤드 포함-->
     <th:block th:replace="fragments/config :: configFragment"></th:block>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 40px auto; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
+        h2 { margin-top: 0; color: #333; }
+        .form-label { display: block; margin: 16px 0 8px; font-weight: 500; }
+        .form-textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; resize: vertical; min-height: 60px; }
+        .btn-group { margin-top: 24px; display: flex; gap: 12px; }
+        .btn { padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+        .btn-cancel { background: #ff4757; color: #fff; border: none; }
+        .btn-back { background: #f1f2f6; color: #333; text-decoration: none; display: inline-block; text-align: center; }
+    </style>
 </head>
-<body>
+<body style="padding-top: 0px;">
 <!-- 헤더 포함 -->
 <div th:replace="fragments/header :: header"></div>
-<h2>예약 취소</h2>
-<form th:action="@{/reservation/{id}/cancel(id=${reservationId})}" method="post">
-    <p>정말로 예약을 취소하시겠습니까?</p>
-    <button type="submit">취소하기</button>
-    <a th:href="@{/reservation/{id}(id=${reservationId})}">돌아가기</a>
-</form>
+<div class="container">
+    <h1 style="font-weight: bold; font-family: Dialog; font-size: 20px">예약 취소</h1>
+    <form th:action="@{/reservation/{id}/cancel(id=${reservationCancelDto.reservationId})}" th:object="${reservationCancelDto}" method="post">
+        <input type="hidden" th:field="*{reservationId}" />
+
+        <label class="form-label">취소 사유</label>
+        <textarea th:field="*{cancelReason}" class="form-textarea" placeholder="취소 사유를 입력해주세요"></textarea>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-cancel">취소하기</button>
+            <a th:href="@{/reservation/{id}(id=${reservationCancelDto.reservationId})}" class="btn btn-back">돌아가기</a>
+        </div>
+    </form>
+</div>
 <!-- 푸터 포함 -->
 <div th:replace="fragments/footer :: footer"></div>
 
 <!-- 공통 스크립트 포함 -->
 <div th:replace="fragments/scripts :: scripts"></div>
-
 </body>
 </html>
