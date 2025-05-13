@@ -6,8 +6,8 @@
     <title th:text="${lecture.title}">강의 상세 정보</title>
     <!-- 부트스트랩 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!--헤드 포함-->
-    <th:block th:replace="fragments/config :: configFragment"></th:block>
+    <!-- RemixIcon 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <!-- 커스텀 CSS -->
     <style>
         body {
@@ -128,12 +128,27 @@
             vertical-align: baseline;
             border-radius: 0.25rem;
         }
+        /* 이미지 없을 때 스타일 */
+        .no-image-placeholder {
+            width: 100%;
+            height: 400px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #6c757d;
+        }
+        .no-image-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
 <!-- 상단 헤더 -->
-<!-- 헤더 포함 -->
-<div th:replace="fragments/header :: header"></div>
 <header class="lecture-header">
     <div class="container">
         <div class="row align-items-center">
@@ -165,8 +180,14 @@
     <div class="row">
         <!-- 왼쪽 섹션: 강의 상세 정보 -->
         <div class="col-lg-8">
-            <!-- 강의 이미지 -->
-            <img th:src="${lecture.imageUrl}" alt="강의 이미지" class="lecture-image mb-4">
+            <!-- 강의 이미지 - 수정된 부분 -->
+            <div th:if="${lecture.imageUrl}" class="mb-4">
+                <img th:src="${lecture.imageUrl}" alt="강의 이미지" class="lecture-image">
+            </div>
+            <div th:unless="${lecture.imageUrl}" class="no-image-placeholder mb-4">
+                <i class="ri-image-line"></i>
+                <span>No image available</span>
+            </div>
 
             <!-- 강의 설명 -->
             <div class="section-title">
@@ -269,12 +290,12 @@
     </div>
 </main>
 
-<!-- 푸터 포함 -->
-<div th:replace="fragments/footer :: footer"></div>
-
-<!-- 공통 스크립트 포함 -->
-<div th:replace="fragments/scripts :: scripts"></div>
-
+<!-- 푸터 -->
+<footer class="lecture-footer">
+    <div class="container text-center">
+        <p>© 2023 게이밍 코칭 플랫폼. All rights reserved.</p>
+    </div>
+</footer>
 
 <!-- 부트스트랩 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

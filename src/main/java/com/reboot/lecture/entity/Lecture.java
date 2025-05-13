@@ -13,6 +13,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Lecture {
+
+    // LectureDetail과의 관계 추가
+    @OneToOne(mappedBy = "lecture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private LectureDetail lectureDetail;
+
+    // getter/setter 추가
+    public LectureDetail getLectureDetail() {
+        return lectureDetail;
+    }
+
+    public void setLectureDetail(LectureDetail lectureDetail) {
+        this.lectureDetail = lectureDetail;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lecture_id")

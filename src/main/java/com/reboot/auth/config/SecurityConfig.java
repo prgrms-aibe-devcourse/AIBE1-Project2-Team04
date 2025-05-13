@@ -71,10 +71,10 @@ public class SecurityConfig {
                         .requestMatchers("/","/auth/login", "/auth/sign", "/reissue").permitAll()
                         // .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().permitAll())
-
                 .oauth2Login(oauth -> oauth
-                                .userInfoEndpoint(user -> user.userService(customOAuth2UserService()))
-                                .successHandler(oAuth2SuccessHandler()));
+                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService()))
+                        .successHandler(oAuth2SuccessHandler()));
+
 
         http
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, reissueService), LoginFilter.class)
@@ -90,6 +90,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // OAuth2 관련 빈도 일단 주석 처리
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserService() {
         return new CustomOAuth2UserService(socialUserService);
