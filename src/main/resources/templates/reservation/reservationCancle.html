@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>예약 취소</title>
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; padding: 20px; }
         .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
@@ -16,6 +18,8 @@
     </style>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
 <div class="container">
     <h2>예약 취소</h2>
     <form th:action="@{/reservation/{id}/cancel(id=${reservationCancelDto.reservationId})}" th:object="${reservationCancelDto}" method="post">
@@ -30,5 +34,10 @@
         </div>
     </form>
 </div>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
 </body>
 </html>

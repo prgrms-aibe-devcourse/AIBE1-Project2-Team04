@@ -5,6 +5,9 @@
   <title>결제 성공</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!--헤드 포함-->
+  <th:block th:replace="fragments/config :: configFragment"></th:block>
+
   <style>
     body { background: #f5f7fa; font-family: 'Noto Sans KR', sans-serif; }
     .success-card { max-width: 440px; margin: 80px auto; border-radius: 16px; box-shadow: 0 2px 12px #0002; background: #fff; padding: 36px 32px 28px 32px; }
@@ -27,6 +30,9 @@
   </style>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
 <div class="success-card text-center">
   <div class="success-icon">
     <i class="fas fa-check-circle"></i>
@@ -41,5 +47,11 @@
     <a th:if="${paymentId}" th:href="@{/refunds/form(paymentId=${paymentId})}" class="btn btn-danger">취소하기</a>
   </div>
 </div>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
 </body>
 </html>

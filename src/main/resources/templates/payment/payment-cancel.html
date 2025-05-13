@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>결제 취소</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body { background: #f5f7fa; }
         .cancel-card { max-width: 400px; margin: 100px auto; border-radius: 16px; box-shadow: 0 2px 12px #0002; }
@@ -11,9 +13,19 @@
     </style>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
+
 <div class="card cancel-card p-4 text-center">
     <div class="cancel-header mb-3">결제가 취소되었습니다.</div>
     <a href="/" class="btn btn-secondary w-100">메인으로 돌아가기</a>
 </div>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
 </body>
 </html>

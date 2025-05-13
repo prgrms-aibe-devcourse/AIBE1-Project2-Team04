@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>오류 발생</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -70,6 +72,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
 <div class="error-container">
     <div class="error-icon">
         <i class="fas fa-exclamation-circle"></i>
@@ -81,5 +86,12 @@
         <button onclick="history.back()" class="btn btn-outline-secondary">이전 페이지로</button>
     </div>
 </div>
+
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
 </body>
 </html>
