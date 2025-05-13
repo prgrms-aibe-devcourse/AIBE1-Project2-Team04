@@ -55,7 +55,7 @@
 
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-2xl font-bold mb-6">강사 프로필 수정</h2>
-        <form th:action="@{/mypage/profile}" th:object="${instructorProfileDTO}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/mypage/instructor/profile}" th:object="${instructorProfileDTO}" method="post" enctype="multipart/form-data">
             <!-- 프로필 이미지 섹션 -->
             <div class="mb-8">
                 <div class="flex flex-col items-center">

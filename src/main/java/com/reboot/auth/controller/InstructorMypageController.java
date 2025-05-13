@@ -48,7 +48,7 @@ public class InstructorMypageController {
     }
 
     //프로필 수정
-    @GetMapping("/profile")
+    @GetMapping("/instructor/profile")
     public String instructorProfileForm(Principal principal, Model model) {
         if (principal == null) {
             return "redirect:/auth/login";
@@ -89,7 +89,7 @@ public class InstructorMypageController {
         return "mypage/instructorProfile-edit";
     }
 
-    @PostMapping("/profile")
+    @PostMapping("/instructor/profile")
     public String updateInstructorProfile(@ModelAttribute @Valid InstructorProfileDTO dto,
                                           BindingResult bindingResult,
                                           @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
@@ -97,7 +97,7 @@ public class InstructorMypageController {
                                           RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("error", "입력 정보를 확인해주세요.");
-            return "redirect:/mypage/profile";
+            return "redirect:/mypage/instructor/profile";
         }
 
         try {
@@ -105,7 +105,7 @@ public class InstructorMypageController {
             redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 수정되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "프로필 수정 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/mypage/profile";
+            return "redirect:/mypage/instructor/profile";
         }
         return "redirect:/mypage/instructorMypage";
     }
