@@ -3,6 +3,7 @@ package com.reboot.auth.oauth2;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -52,10 +53,17 @@ public class OAuthAttributes {
         Map<String,Object> kakaoAcc = (Map<String,Object>) attrs.get("kakao_account");
         Map<String,Object> profile = (Map<String,Object>) kakaoAcc.get("profile");
 
+        String email = (String) kakaoAcc.get("email");
+        String name = (String) profile.get("nickname");
+
+        Map<String, Object> flatAttributes = new HashMap<>(attrs);
+        flatAttributes.put("email", email);
+        flatAttributes.put("name", name);
+
         return OAuthAttributes.builder()
-                .name((String) profile.get("nickname"))
-                .email((String) kakaoAcc.get("email"))
-                .attributes(attrs)
+                .name(name)
+                .email(email)
+                .attributes(flatAttributes)
                 .nameAttributeKey(key)
                 .providerId(String.valueOf(attrs.get(key)))
                 .provider("kakao")

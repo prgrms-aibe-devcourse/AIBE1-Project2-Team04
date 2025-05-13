@@ -608,7 +608,7 @@
 
     // 일반 유저 회원가입
     async function signProcess_User(dto) {
-        const response = await fetch(WEB_URL + '/auth/sign', {
+        const response = await fetch('/auth/sign', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"

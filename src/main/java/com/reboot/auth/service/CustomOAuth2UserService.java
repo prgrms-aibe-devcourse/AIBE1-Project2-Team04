@@ -29,7 +29,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuth2User oAuth2User = delegate.loadUser(request);
         String regId = request.getClientRegistration().getRegistrationId();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
         OAuthAttributes attr = OAuthAttributes.of(regId, oAuth2User.getAttributes());
 
         SocialUser user = socialUserService.findByProviderAndProviderId(
