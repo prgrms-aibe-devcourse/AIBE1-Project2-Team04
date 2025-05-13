@@ -10,9 +10,10 @@
 
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
+
 <!-- 헤더 포함 -->
 <div th:replace="fragments/header :: header"></div>
-
+  
 <!-- 메인 콘텐츠 -->
 <div class="flex-grow flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
     <div class="w-full max-w-md">
@@ -187,8 +188,6 @@
 </html>
 
 <script>
-    const WEB_URL = 'http://localhost:8080';
-
     document.addEventListener('DOMContentLoaded', function () {
         const profileImageInput = document.getElementById('profileImage');
         const profileImagePreview = document.getElementById('profileImagePreview');
@@ -235,7 +234,7 @@
 
             console.log(signupData);
 
-            const response = await fetch(WEB_URL + '/auth/sign_details', {
+            const response = await fetch('/auth/sign_details', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -51,6 +51,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
+
 <!-- 헤더 포함 -->
 <div th:replace="fragments/header :: header"></div>
 
@@ -332,8 +333,6 @@
 </html>
 
 <script>
-    const WEB_URL = 'http://localhost:8080';
-
     document.addEventListener('DOMContentLoaded', function () {
         // 비밀번호 표시/숨김 토글
         const togglePassword = document.getElementById('togglePassword');
@@ -491,6 +490,7 @@
 
         // 초기 폼 유효성 검사
         validateForm();
+        fillSocialUserInfoForm();
 
         // 회원가입 에러 영역
         const errorDiv = document.getElementById('errorDiv');
@@ -555,7 +555,7 @@
 
     // 일반 유저 회원가입
     async function signProcess_User(dto) {
-        const response = await fetch(WEB_URL + '/auth/sign', {
+        const response = await fetch('/auth/sign', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
@@ -564,6 +564,26 @@
         });
 
         return await response.json();
+    }
+
+    function fillSocialUserInfoForm(){
+        const params = new URLSearchParams(window.location.search);
+
+        const email = params.get("email");
+        const name = params.get("name");
+
+        const emailInput = document.getElementById("email");
+        const nameInput = document.getElementById("name");
+
+        if (email) {
+            emailInput.value = email;
+            emailInput.readOnly = true;
+        }
+
+        if (name) {
+            nameInput.value = name;
+            nameInput.readOnly = true;
+        }
     }
 </script>
 </body>

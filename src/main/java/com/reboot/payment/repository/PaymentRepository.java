@@ -15,5 +15,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT p FROM Payment p " +
             "WHERE p.reservation.member.memberId = :memberId " +
             "AND p.status = 'COMPLETED'")
-    List<Payment> findCompletedPaymentsByMember(@Param("memberId") Long memberId);
+    List<Payment> findCompletedPaymentsByMemberId(@Param("memberId") Long memberId);
 }
