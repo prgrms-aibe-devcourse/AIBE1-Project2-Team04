@@ -384,8 +384,6 @@
 </footer>
 
 <script>
-    const WEB_URL = 'http://localhost:8080';
-
     document.addEventListener('DOMContentLoaded', function () {
         // 비밀번호 표시/숨김 토글
         const togglePassword = document.getElementById('togglePassword');
@@ -607,7 +605,7 @@
 
     // 일반 유저 회원가입
     async function signProcess_User(dto) {
-        const response = await fetch(WEB_URL + '/auth/sign', {
+        const response = await fetch('/auth/sign', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
