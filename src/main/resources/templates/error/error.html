@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>오류 발생</title>
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; padding: 20px; }
         .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
@@ -12,6 +14,9 @@
     </style>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
 <div class="container">
     <h1>오류가 발생했습니다</h1>
     <p>애플리케이션에서 오류가 발생했습니다. 관리자에게 문의하세요.</p>
@@ -24,6 +29,14 @@
     </div>
 
     <a href="/" class="back-link">홈으로 돌아가기</a>
+
 </div>
+
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
 </body>
 </html>

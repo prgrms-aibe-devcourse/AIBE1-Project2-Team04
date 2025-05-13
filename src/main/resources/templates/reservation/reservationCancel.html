@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>예약 취소</title>
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
 <h2>예약 취소</h2>
 <form th:action="@{/reservation/{id}/cancel(id=${reservationId})}" method="post">
     <p>정말로 예약을 취소하시겠습니까?</p>
     <button type="submit">취소하기</button>
     <a th:href="@{/reservation/{id}(id=${reservationId})}">돌아가기</a>
 </form>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
 </body>
 </html>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>맞춤 강의 추천 결과</title>
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -136,6 +138,9 @@
     </style>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
 <div class="recommendation-container">
     <h1>맞춤 강의 추천 결과</h1>
 
@@ -183,5 +188,11 @@
         <a th:href="@{/}" class="btn btn-primary">홈으로 이동</a>
     </div>
 </div>
+
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
 </body>
 </html>

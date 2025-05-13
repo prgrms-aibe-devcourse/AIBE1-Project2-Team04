@@ -4,19 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문조사</title>
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
             background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .survey-container {
             background-color: white;
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 40px auto;
+            width: 90%;
         }
         h1, h2 {
             color: #333;
@@ -135,6 +142,9 @@
     </style>
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
 <!-- 로딩 오버레이 추가 -->
 <div class="loading-overlay" id="loadingOverlay">
     <div style="text-align: center;">
@@ -245,6 +255,11 @@
         <button type="submit" class="btn-submit">설문 완료 및 강의 추천 받기</button>
     </form>
 </div>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
 
 <script>
     // 게임별 티어 정보

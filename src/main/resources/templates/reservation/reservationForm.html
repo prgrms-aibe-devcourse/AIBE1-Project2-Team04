@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>강의 예약</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
+
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; }
         .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
@@ -91,6 +94,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
+
 <div id="loading-spinner" class="loading-spinner">
     <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -195,7 +202,11 @@
         <button type="button" class="submit-btn" id="submit-reservation">예약완료</button>
     </div>
 </div>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
 
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
 <script>
     $(function() {
             // 날짜 선택기 초기화

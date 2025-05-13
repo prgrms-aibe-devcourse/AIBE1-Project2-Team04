@@ -4,9 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>설문 오류</title>
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
 <div class="container">
     <h1>설문 처리 중 오류가 발생했습니다</h1>
 
@@ -19,5 +23,11 @@
         <a href="/" class="btn btn-secondary">홈으로 돌아가기</a>
     </div>
 </div>
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
 </body>
 </html>
