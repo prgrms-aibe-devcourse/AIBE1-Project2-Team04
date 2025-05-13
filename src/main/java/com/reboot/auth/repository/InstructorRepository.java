@@ -1,6 +1,7 @@
 package com.reboot.auth.repository;
 
 import com.reboot.auth.entity.Instructor;
+import com.reboot.auth.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,12 @@ import java.util.Optional;
 // 강사 엔티티에 접근하기 위한 레포지토리 인터페이스
 @Repository
 public interface InstructorRepository extends JpaRepository<Instructor, Long> {
+
+    // Member 엔티티로 강사 존재 여부 확인
+    boolean existsByMember(Member member);
+
+    // Member 엔티티로 강사 정보 조회
+    Optional<Instructor> findByMember(Member member);
 
     // 사용자 ID로 강사 정보 조회
     Optional<Instructor> findByMember_MemberId(Long memberId);
