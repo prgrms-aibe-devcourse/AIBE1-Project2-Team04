@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header" class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <!-- 헤더 내용 -->
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
+            </nav>
+        </div>
+
+        <!-- 네비게이션 바의 로그인/로그아웃 부분 -->
+        <div class="flex items-center space-x-4">
+            <!-- 네비게이션 바 검색창 -->
+            <div class="relative hidden md:block">
+                <form action="/search" method="get">
+                    <input type="text" name="query" placeholder="강의 검색..."
+                           class="pl-10 pr-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 w-64">
+                    <i class="ri-search-line absolute left-3 top-2.5 text-gray-500"></i>
+                </form>
+            </div>
+
+            <!-- 로그인 상태에 따라 다르게 표시 -->
+            <div th:if="${session.user != null}">
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm font-medium" th:text="${session.user.name}">사용자명</span>
+                    <a href="/logout" class="px-4 py-2 rounded-button bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium">로그아웃</a>
+                </div>
+            </div>
+            <div th:unless="${session.user != null}">
+                <div class="flex items-center space-x-3">
+                    <a href="/login" class="px-4 py-2 rounded-button bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium">로그인</a>
+                    <a href="/register" class="px-4 py-2 rounded-button bg-primary hover:bg-primary/90 text-white text-sm font-medium">회원가입</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+</body>
+</html>
