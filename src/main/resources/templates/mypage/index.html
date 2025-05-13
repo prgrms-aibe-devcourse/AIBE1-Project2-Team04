@@ -64,12 +64,15 @@
     <div class="bg-white rounded-lg shadow p-6 mb-8">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold">내 게임 정보</h3>
-            <a href="/mypage/game" class="text-primary text-sm hover:underline">자세히 보기</a>
+            <!-- 게임 정보가 있으면 수정 버튼, 없으면 등록 버튼 -->
+            <div th:if="${games != null and !#lists.isEmpty(games)}">
+                <a href="/mypage/game/edit" class="text-primary text-sm hover:underline">수정하기</a>
+            </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(games)}" class="text-center py-8">
+        <div th:if="${games == null or #lists.isEmpty(games)}" class="text-center py-8">
             <p class="text-gray-500">등록된 게임 정보가 없습니다.</p>
-            <a href="/game/register" class="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">게임 정보 등록하기</a>
+            <a href="/mypage/game/register" class="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">게임 정보 등록하기</a>
         </div>
 
         <div th:unless="${#lists.isEmpty(games)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
