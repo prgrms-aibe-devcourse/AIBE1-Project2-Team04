@@ -1,12 +1,12 @@
-// import 섹션에 Game 엔티티 import 추가가 필요함
 package com.reboot.auth.service;
 
 import com.reboot.auth.dto.ProfileDTO;
-import com.reboot.auth.dto.GameDTO; // GameDTO import 추가
-import com.reboot.auth.entity.Game; // Game 엔티티 import 추가
+import com.reboot.auth.dto.GameDTO;
+import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
-import com.reboot.auth.repository.GameRepository; // GameRepository import 추가
+import com.reboot.auth.entity.ReservationMy;
+import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.InstructorRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MypageService {
@@ -114,12 +116,32 @@ public class MypageService {
     public List<Payment> getCompletedPayments(String username) {
         Member member = getCurrentMember(username);
         return paymentRepository.findCompletedPaymentsByMemberId(member.getMemberId());
+
     }
 
-    // 강사 인증 확인
+    // 결제 대기 중인 예약 조회
+    public List<ReservationMy> getPendingMyReservations(String username) {
+        Member member = getCurrentMember(username);
+
+        // ReservationMyRepository 사용
+        List<ReservationMy> allReservations = reservationRepository.findByMemberId(member.getMemberId());
+
+        // 예약완료 상태인 것들만 필터링
+        return allReservations.stream()
+                .filter(reservation -> "예약완료".equals(reservation.getStatus()))
+                .filter(reservation -> !this.hasPayment(reservation.getId())) // 결제가 없는 것만
+                .collect(Collectors.toList());
+    }
+
+    public boolean hasPayment(Long reservationId) {
+        List<Payment> payments = paymentRepository.findAll().stream()
+                .filter(payment -> payment.getReservation().getReservationId().equals(reservationId))
+                .collect(Collectors.toList());
+        return !payments.isEmpty();
+    }
+        // 강사 인증 확인
     public boolean isInstructor(String username) {
         Member member = getCurrentMember(username);
-//        return "INSTRUCTOR".equals(member.getRole());
         return instructorRepository.existsByMember(member);
     }
 
@@ -129,21 +151,11 @@ public class MypageService {
                 .orElseThrow(() -> new RuntimeException("강사 정보를 찾을 수 없습니다."));
     }
 
-    /**
-     * 사용자의 게임 정보 존재 여부 확인
-     * @param username 사용자명
-     * @return 게임 정보가 있으면 true, 없으면 false
-     */
     public boolean hasGameInfo(String username) {
         Member member = getCurrentMember(username);
         return gameRepository.existsByMemberMemberId(member.getMemberId());
     }
 
-    /**
-     * 사용자의 게임 정보 저장
-     * @param username 사용자명
-     * @param gameDTO 게임 정보 DTO
-     */
     @Transactional
     public void saveGameInfo(String username, GameDTO gameDTO) {
         Member member = getCurrentMember(username);
@@ -157,11 +169,6 @@ public class MypageService {
         gameRepository.save(game);
     }
 
-    /**
-     * 사용자의 현재 게임 정보 조회
-     * @param username 사용자명
-     * @return 게임 정보
-     */
     public Game getCurrentGameByMember(String username) {
         Member member = getCurrentMember(username);
 
@@ -172,11 +179,6 @@ public class MypageService {
         return games.get(0); // 첫 번째 게임 정보 반환
     }
 
-    /**
-     * 사용자의 게임 정보 업데이트
-     * @param username 사용자명
-     * @param gameDTO 업데이트할 게임 정보
-     */
     @Transactional
     public void updateGameInfo(String username, GameDTO gameDTO) {
         Member member = getCurrentMember(username);
