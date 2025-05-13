@@ -54,22 +54,14 @@
 <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center">
-            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">logo</a>
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
             <nav class="hidden md:flex space-x-8">
-                <a href="#" class="text-gray-800 hover:text-primary font-medium">강의</a>
-                <a href="#" class="text-gray-800 hover:text-primary font-medium">코치찾기</a>
-                <a href="#" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
-                <a href="#" class="text-gray-800 hover:text-primary font-medium">커뮤니티</a>
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
             </nav>
         </div>
 
         <div class="flex items-center space-x-4">
-            <div class="relative hidden md:block">
-                <input type="text" placeholder="게임, 코치, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
-                <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
-                    <i class="ri-search-line"></i>
-                </div>
-            </div>
             <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
             <a th:href="@{/auth/select_signup_type}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
             <button class="md:hidden w-10 h-10 flex items-center justify-center">
