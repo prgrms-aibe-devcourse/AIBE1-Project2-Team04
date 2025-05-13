@@ -3,206 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>강의 수정</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <title>강의 수정 - Re:Boot</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
   <style>
     body {
-      background-color: #f8f9fa;
-      color: #333;
       font-family: 'Noto Sans KR', sans-serif;
     }
-
-    .navbar {
-      background-color: white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .navbar-brand {
-      font-weight: bold;
-      color: #333;
-    }
-
-    .nav-link {
-      color: #666;
-      transition: color 0.3s;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      color: #0d6efd;
-    }
-
-    .form-header {
-      background-color: #343a40;
-      color: white;
-      padding: 2rem 0;
-      margin-bottom: 3rem;
-      margin-top: 0;
-    }
-
-    .section-title {
-      border-bottom: 2px solid #0d6efd;
-      padding-bottom: 0.5rem;
-      margin: 2rem 0 1rem 0;
-      font-weight: bold;
-    }
-
-    .form-control, .form-select {
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
-      padding: 0.75rem 1rem;
-    }
-
-    .form-control:focus, .form-select:focus {
-      border-color: #0d6efd;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    .form-label {
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 0.5rem;
-    }
-
-    .required {
-      color: #dc3545;
-    }
-
-    .info-box {
-      background-color: #e9f7fe;
-      border-radius: 8px;
-      padding: 1rem;
-      margin: 1rem 0;
-      font-size: 0.9rem;
-    }
-
-    .btn-submit {
-      background-color: #0d6efd;
-      color: white;
-      padding: 0.8rem 2rem;
-      font-size: 1.2rem;
-      border-radius: 30px;
-      transition: all 0.3s;
-    }
-
-    .btn-submit:hover {
-      background-color: #0b5ed7;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .card {
-      border: none;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      border-radius: 12px;
-      margin-bottom: 2rem;
-    }
-
-    .card-header {
-      background-color: #f8f9fa;
-      border-bottom: 2px solid #0d6efd;
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-
-    /* 이미지 업로드 스타일 */
     .image-upload-area {
-      border: 2px dashed #dee2e6;
-      border-radius: 8px;
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      background-color: #f8f9fa;
+      border: 2px dashed #e5e7eb;
+      transition: all 0.3s ease;
     }
-
     .image-upload-area:hover {
-      border-color: #0d6efd;
-      background-color: #e9f7fe;
+      border-color: #4F46E5;
+      background-color: #f9fafb;
     }
-
-    .image-preview {
+    .image-container {
+      position: relative;
+      width: 100%;
       max-width: 300px;
-      max-height: 200px;
-      margin: 1rem auto;
+      margin: 0 auto;
+    }
+    .current-image {
+      width: 100%;
+      border-radius: 8px;
       display: block;
     }
-
-    .current-image {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+    .preview-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #4F46E5;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      z-index: 10;
     }
   </style>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen flex flex-col">
 <!-- 네비게이션 바 -->
-<nav class="navbar navbar-expand-lg navbar-light">
-  <div class="container">
-    <a class="navbar-brand" href="/">게임 코칭 플랫폼</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/">홈</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/lectures">강의 둘러보기</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/instructor/mypage">강사 마이페이지</a>
-        </li>
-        <li class="nav-item">
-          <form action="/logout" method="post" class="d-inline">
-            <button type="submit" class="nav-link btn btn-link">로그아웃</button>
-          </form>
-        </li>
-      </ul>
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center">
+      <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+      <nav class="hidden md:flex space-x-8">
+        <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+        <a href="/instructor/mypage" class="text-gray-800 hover:text-primary font-medium">강사 마이페이지</a>
+      </nav>
     </div>
-  </div>
-</nav>
 
-<!-- 상단 헤더 -->
-<header class="form-header">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <h1>강의 수정</h1>
-        <p class="lead" th:text="${lecture.title}">강의 제목</p>
+    <div class="flex items-center space-x-4">
+      <div class="relative hidden md:block">
+        <form action="/lectures/search" method="GET">
+          <div class="relative">
+            <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+            <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+              <i class="ri-search-line"></i>
+            </button>
+          </div>
+        </form>
       </div>
+
+      <div class="flex items-center space-x-4">
+        <form action="/logout" method="post" class="inline">
+          <button type="submit" class="text-gray-600 hover:text-primary">로그아웃</button>
+        </form>
+      </div>
+
+      <button class="md:hidden w-10 h-10 flex items-center justify-center">
+        <i class="ri-menu-line text-xl"></i>
+      </button>
     </div>
   </div>
 </header>
 
+<!-- 상단 헤더 -->
+<section class="bg-gradient-to-r from-primary to-indigo-700 text-white py-12">
+  <div class="container mx-auto px-4">
+    <h1 class="text-3xl font-bold mb-2">강의 수정</h1>
+    <p class="text-lg text-indigo-100" th:text="${lecture.title}">강의 제목</p>
+  </div>
+</section>
+
 <!-- 메인 폼 -->
-<main class="container mb-5">
+<main class="flex-grow container mx-auto px-4 py-8">
   <form th:action="@{/instructor/lectures/{id}(id=${lecture.rawId})}" method="post" enctype="multipart/form-data">
-    <div class="row">
-      <div class="col-lg-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
         <!-- 기본 정보 카드 -->
-        <div class="card">
-          <div class="card-header">
-            기본 정보
+        <div class="bg-white rounded-lg shadow-sm mb-6">
+          <div class="border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-bold">기본 정보</h3>
           </div>
-          <div class="card-body">
-            <div class="mb-4">
-              <label for="title" class="form-label">강의명 <span class="required">*</span></label>
-              <input type="text" class="form-control" id="title" name="title"
+          <div class="p-6">
+            <div class="mb-6">
+              <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                강의명 <span class="text-red-500">*</span>
+              </label>
+              <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                     id="title" name="title"
                      th:value="${lectureRequest.title}" required>
             </div>
 
-            <div class="mb-4">
-              <label for="description" class="form-label">강의 소개 <span class="required">*</span></label>
-              <textarea class="form-control" id="description" name="description" rows="6"
+            <div class="mb-6">
+              <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                강의 소개 <span class="text-red-500">*</span>
+              </label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="description" name="description" rows="6"
                         required th:text="${lectureRequest.description}"></textarea>
             </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-4">
-                <label for="gameType" class="form-label">게임 타입 <span class="required">*</span></label>
-                <select class="form-select" id="gameType" name="gameType" required>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="mb-6">
+                <label for="gameType" class="block text-sm font-medium text-gray-700 mb-2">
+                  게임 타입 <span class="text-red-500">*</span>
+                </label>
+                <select class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="gameType" name="gameType" required>
                   <option value="">선택하세요</option>
                   <option value="LOL" th:selected="${lectureRequest.gameType == 'LOL'}">LOL</option>
                   <option value="VALORANT" th:selected="${lectureRequest.gameType == 'VALORANT'}">VALORANT</option>
@@ -210,76 +136,94 @@
                 </select>
               </div>
 
-              <div class="col-md-6 mb-4">
-                <label for="position" class="form-label">포지션 <span class="required">*</span></label>
-                <input type="text" class="form-control" id="position" name="position"
+              <div class="mb-6">
+                <label for="position" class="block text-sm font-medium text-gray-700 mb-2">
+                  포지션 <span class="text-red-500">*</span>
+                </label>
+                <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                       id="position" name="position"
                        th:value="${lectureRequest.position}" required>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-4">
-                <label for="price" class="form-label">가격 (원) <span class="required">*</span></label>
-                <input type="number" class="form-control" id="price" name="price"
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="mb-6">
+                <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
+                  가격 (원) <span class="text-red-500">*</span>
+                </label>
+                <input type="number" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                       id="price" name="price"
                        th:value="${lectureRequest.price}" required>
               </div>
 
-              <div class="col-md-6 mb-4">
-                <label for="duration" class="form-label">강의 시간 (분) <span class="required">*</span></label>
-                <input type="number" class="form-control" id="duration" name="duration"
+              <div class="mb-6">
+                <label for="duration" class="block text-sm font-medium text-gray-700 mb-2">
+                  강의 시간 (분) <span class="text-red-500">*</span>
+                </label>
+                <input type="number" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                       id="duration" name="duration"
                        th:value="${lectureRequest.duration}" min="30" max="480" required>
               </div>
             </div>
 
-            <div class="mb-4">
-              <label for="lectureRank" class="form-label">추천 티어 <span class="required">*</span></label>
-              <input type="text" class="form-control" id="lectureRank" name="lectureRank"
+            <div class="mb-6">
+              <label for="lectureRank" class="block text-sm font-medium text-gray-700 mb-2">
+                추천 티어 <span class="text-red-500">*</span>
+              </label>
+              <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                     id="lectureRank" name="lectureRank"
                      th:value="${lectureRequest.lectureRank}" required>
             </div>
           </div>
         </div>
 
         <!-- 상세 정보 카드 -->
-        <div class="card">
-          <div class="card-header">
-            상세 정보
+        <div class="bg-white rounded-lg shadow-sm">
+          <div class="border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-bold">상세 정보</h3>
           </div>
-          <div class="card-body">
-            <div class="mb-4">
-              <label for="overview" class="form-label">강의 개요</label>
-              <textarea class="form-control" id="overview" name="overview" rows="3"
+          <div class="p-6">
+            <div class="mb-6">
+              <label for="overview" class="block text-sm font-medium text-gray-700 mb-2">강의 개요</label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="overview" name="overview" rows="3"
                         th:text="${lectureRequest.overview}"></textarea>
             </div>
 
-            <div class="mb-4">
-              <label for="learningObjectives" class="form-label">학습 목표</label>
-              <textarea class="form-control" id="learningObjectives" name="learningObjectives" rows="5"
+            <div class="mb-6">
+              <label for="learningObjectives" class="block text-sm font-medium text-gray-700 mb-2">학습 목표</label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="learningObjectives" name="learningObjectives" rows="5"
                         th:text="${lectureRequest.learningObjectives}"></textarea>
-              <small class="text-muted">각 목표를 새로운 줄에 작성하면 보기 좋게 표시됩니다</small>
+              <small class="text-gray-500">각 목표를 새로운 줄에 작성하면 보기 좋게 표시됩니다</small>
             </div>
 
-            <div class="mb-4">
-              <label for="curriculum" class="form-label">커리큘럼</label>
-              <textarea class="form-control" id="curriculum" name="curriculum" rows="6"
+            <div class="mb-6">
+              <label for="curriculum" class="block text-sm font-medium text-gray-700 mb-2">커리큘럼</label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="curriculum" name="curriculum" rows="6"
                         th:text="${lectureRequest.curriculum}"></textarea>
-              <small class="text-muted">각 항목을 새로운 줄에 작성하면 보기 좋게 표시됩니다</small>
+              <small class="text-gray-500">각 항목을 새로운 줄에 작성하면 보기 좋게 표시됩니다</small>
             </div>
 
-            <div class="mb-4">
-              <label for="targetAudience" class="form-label">수강 대상</label>
-              <textarea class="form-control" id="targetAudience" name="targetAudience" rows="3"
+            <div class="mb-6">
+              <label for="targetAudience" class="block text-sm font-medium text-gray-700 mb-2">수강 대상</label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="targetAudience" name="targetAudience" rows="3"
                         th:text="${lectureRequest.targetAudience}"></textarea>
             </div>
 
-            <div class="mb-4">
-              <label for="prerequisites" class="form-label">필요한 사전 지식</label>
-              <textarea class="form-control" id="prerequisites" name="prerequisites" rows="3"
+            <div class="mb-6">
+              <label for="prerequisites" class="block text-sm font-medium text-gray-700 mb-2">필요한 사전 지식</label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="prerequisites" name="prerequisites" rows="3"
                         th:text="${lectureRequest.prerequisites}"></textarea>
             </div>
 
-            <div class="mb-4">
-              <label for="instructorBio" class="form-label">강사 소개</label>
-              <textarea class="form-control" id="instructorBio" name="instructorBio" rows="3"
+            <div class="mb-6">
+              <label for="instructorBio" class="block text-sm font-medium text-gray-700 mb-2">강사 소개</label>
+              <textarea class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        id="instructorBio" name="instructorBio" rows="3"
                         th:text="${lectureRequest.instructorBio}"></textarea>
             </div>
           </div>
@@ -287,54 +231,72 @@
       </div>
 
       <!-- 오른쪽 사이드바 -->
-      <div class="col-lg-4">
+      <div>
         <!-- 이미지 업로드 카드 -->
-        <div class="card">
-          <div class="card-header">
-            강의 이미지
+        <div class="bg-white rounded-lg shadow-sm mb-6">
+          <div class="border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-bold">강의 이미지</h3>
           </div>
-          <div class="card-body">
-            <!-- 현재 이미지 표시 -->
-            <div th:if="${lecture.imageUrl}" class="mb-3">
-              <p class="text-muted mb-2">현재 이미지</p>
-              <img th:src="${lecture.imageUrl}" alt="현재 강의 이미지" class="current-image">
+          <div class="p-6">
+            <!-- 이미지 표시 영역 -->
+            <div id="imageDisplay" class="mb-4">
+              <!-- 현재 이미지가 있는 경우 -->
+              <div th:if="${lecture.imageUrl}" id="currentImageContainer" class="image-container">
+                <img th:src="${lecture.imageUrl}" alt="현재 강의 이미지" class="current-image">
+              </div>
+              <!-- 미리보기 이미지 (초기에는 숨김) -->
+              <div id="previewImageContainer" class="image-container" style="display: none;">
+                <span class="preview-badge">새 이미지</span>
+                <img id="imagePreview" alt="새 이미지 미리보기" class="current-image">
+              </div>
             </div>
 
-            <div class="image-upload-area" onclick="document.getElementById('imageFile').click();">
-              <i class="bi bi-cloud-upload" style="font-size: 3rem; color: #6c757d;"></i>
-              <p class="mt-2">클릭하여 새 이미지를 업로드하세요</p>
-              <small class="text-muted">권장 크기: 16:9 비율</small>
+            <!-- 업로드 영역 -->
+            <div class="image-upload-area rounded-lg p-6 text-center cursor-pointer" onclick="document.getElementById('imageFile').click();">
+              <i class="ri-upload-cloud-2-line text-3xl text-gray-400 mb-2"></i>
+              <p class="text-gray-600 mb-1">클릭하여 새 이미지를 선택하세요</p>
+              <small class="text-gray-500">권장 크기: 16:9 비율</small>
             </div>
             <input type="file" id="imageFile" name="imageFile" accept="image/*"
                    style="display: none;" onchange="previewImage(this);">
-            <img id="imagePreview" class="image-preview" style="display: none;" alt="미리보기">
+
+            <!-- 이미지 변경 정보 -->
+            <div id="imageChangeInfo" class="mt-3 text-sm text-gray-500 text-center" style="display: none;">
+              <i class="ri-information-line"></i>
+              저장 버튼을 누르면 새 이미지로 변경됩니다.
+            </div>
           </div>
         </div>
 
         <!-- 수정 정보 카드 -->
-        <div class="card">
-          <div class="card-header">
-            수정 정보
+        <div class="bg-white rounded-lg shadow-sm">
+          <div class="border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-bold">수정 정보</h3>
           </div>
-          <div class="card-body">
-            <dl>
-              <dt>등록일</dt>
-              <dd th:text="${lecture.createdAt != null ? #temporals.format(lecture.createdAt, 'yyyy-MM-dd HH:mm') : ''}">
-                2024-01-15 14:00
-              </dd>
-
-              <dt>현재 상태</dt>
-              <dd>
-                <span class="badge bg-secondary">활성</span>
-              </dd>
-
-              <dt>평균 평점</dt>
-              <dd>
-                <span th:text="${lecture.averageRating}">0.0</span> / 5.0
-              </dd>
-
-              <dt>수강생 수</dt>
-              <dd th:text="${lecture.totalMembers}">0</dd>
+          <div class="p-6">
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-600">등록일</dt>
+                <dd class="text-gray-900" th:text="${lecture.createdAt != null ? #temporals.format(lecture.createdAt, 'yyyy-MM-dd HH:mm') : ''}">
+                  2024-01-15 14:00
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-600">현재 상태</dt>
+                <dd>
+                  <span class="inline-block px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">활성</span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-600">평균 평점</dt>
+                <dd class="text-gray-900">
+                  <span th:text="${lecture.averageRating}">0.0</span> / 5.0
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-600">수강생 수</dt>
+                <dd class="text-gray-900" th:text="${lecture.totalMembers}">0</dd>
+              </div>
             </dl>
           </div>
         </div>
@@ -342,29 +304,115 @@
     </div>
 
     <!-- 제출 버튼 -->
-    <div class="text-center mt-4">
-      <button type="submit" class="btn btn-submit">수정 완료</button>
-      <a th:href="@{/instructor/lectures/{id}(id=${lecture.rawId})}" class="btn btn-secondary btn-lg">취소</a>
+    <div class="text-center mt-8">
+      <button type="submit" class="bg-primary text-white px-8 py-3 rounded-button font-medium text-lg hover:bg-indigo-700 transition">수정 완료</button>
+      <a th:href="@{/instructor/lectures/{id}(id=${lecture.rawId})}" class="inline-block ml-4 px-8 py-3 bg-gray-200 text-gray-700 rounded-button font-medium text-lg hover:bg-gray-300 transition">취소</a>
     </div>
   </form>
 </main>
 
+<!-- 푸터 -->
+<footer class="bg-gray-900 text-white py-12">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- 회사 정보 -->
+      <div>
+        <a href="/" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">Re:Boot</a>
+        <p class="text-gray-400 mb-4">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="ri-facebook-fill text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="ri-twitter-fill text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="ri-instagram-fill text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="ri-youtube-fill text-xl"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- 서비스 -->
+      <div>
+        <h3 class="text-lg font-bold mb-4">서비스</h3>
+        <ul class="space-y-2">
+          <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
+          <li><a href="/survey/survey-form" class="text-gray-400 hover:text-white">설문조사</a></li>
+        </ul>
+      </div>
+
+      <!-- 게임 -->
+      <div>
+        <h3 class="text-lg font-bold mb-4">게임</h3>
+        <ul class="space-y-2">
+          <li><a href="/lectures?game=LOL" class="text-gray-400 hover:text-white">리그 오브 레전드</a></li>
+          <li><a href="/lectures?game=VALORANT" class="text-gray-400 hover:text-white">발로란트</a></li>
+          <li><a href="/lectures?game=TFT" class="text-gray-400 hover:text-white">전략적 팀 전투</a></li>
+        </ul>
+      </div>
+
+      <!-- 고객 지원 -->
+      <div>
+        <h3 class="text-lg font-bold mb-4">고객 지원</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">이용 약관</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">개인정보 처리방침</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">문의하기</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+      <p>&copy; 2025 Re:Boot - 게이밍 코칭 매칭 플랫폼. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
 <script>
   function previewImage(input) {
-    const preview = document.getElementById('imagePreview');
-
     if (input.files && input.files[0]) {
       const reader = new FileReader();
 
       reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = 'block';
+        // 현재 이미지 컨테이너 숨기기
+        const currentContainer = document.getElementById('currentImageContainer');
+        if (currentContainer) {
+          currentContainer.style.display = 'none';
+        }
+
+        // 미리보기 컨테이너 표시
+        const previewContainer = document.getElementById('previewImageContainer');
+        const previewImage = document.getElementById('imagePreview');
+
+        previewImage.src = e.target.result;
+        previewContainer.style.display = 'block';
+
+        // 변경 정보 표시
+        document.getElementById('imageChangeInfo').style.display = 'block';
       }
 
       reader.readAsDataURL(input.files[0]);
     }
   }
+
+  // 파일 선택 취소 처리
+  document.getElementById('imageFile').addEventListener('change', function() {
+    if (!this.files || !this.files[0]) {
+      // 파일이 선택되지 않았으면 원래 상태로 복구
+      const currentContainer = document.getElementById('currentImageContainer');
+      const previewContainer = document.getElementById('previewImageContainer');
+
+      if (currentContainer) {
+        currentContainer.style.display = 'block';
+      }
+      previewContainer.style.display = 'none';
+      document.getElementById('imageChangeInfo').style.display = 'none';
+    }
+  });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

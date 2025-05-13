@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -114,11 +115,56 @@
     <div class="bg-white rounded-lg shadow p-6 mb-8">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold">내가 등록한 강의</h3>
-            <a href="/instructor/lectures/register" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">새 강의 등록</a>
+            <a href="/instructor/lectures/new" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">새 강의 등록</a>
         </div>
 
-        <!-- 강의 목록 표시 예정 -->
-        <div class="text-center py-8">
+        <!-- 강의 목록 표시 -->
+        <div th:if="${lectures != null and !lectures.isEmpty()}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div th:each="lecture : ${lectures}"
+                 class="border rounded-lg p-4 hover:shadow-lg transition cursor-pointer"
+                 th:onclick="|location.href='@{/instructor/lectures/{id}(id=${lecture.rawId})}'|">
+
+                <!-- 강의 이미지 - 수정된 부분 -->
+                <div class="mb-3 relative overflow-hidden rounded bg-gray-200" style="padding-bottom: 56.25%;">
+                    <img th:if="${lecture.imageUrl}"
+                         th:src="${lecture.imageUrl}"
+                         alt="강의 이미지"
+                         class="absolute inset-0 w-full h-full object-cover">
+                    <div th:unless="${lecture.imageUrl}"
+                         class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                        <i class="ri-image-line text-4xl mb-2"></i>
+                        <span class="text-sm">No image available</span>
+                    </div>
+                </div>
+
+                <!-- 강의 제목 -->
+                <h4 class="font-semibold text-lg mb-2 text-gray-800" th:text="${lecture.title}">강의 제목</h4>
+
+                <!-- 게임 정보 -->
+                <div class="flex gap-2 mb-2">
+                <span class="text-xs px-2 py-1 rounded text-white"
+                      th:classappend="${lecture.gameType == 'LOL' ? 'bg-blue-600' :
+                                      lecture.gameType == 'VALORANT' ? 'bg-red-600' :
+                                      'bg-purple-600'}"
+                      th:text="${lecture.gameType}">게임</span>
+                    <span class="text-xs px-2 py-1 bg-gray-500 text-white rounded"
+                          th:text="${lecture.position}">포지션</span>
+                </div>
+
+                <!-- 가격과 평점 -->
+                <div class="flex justify-between items-center mt-4">
+                <span class="text-primary font-semibold"
+                      th:text="${#numbers.formatDecimal(lecture.price, 0, 'COMMA', 0, 'POINT')} + '원'">0원</span>
+                    <div class="text-sm text-gray-600">
+                        <span>★</span>
+                        <span th:text="${lecture.averageRating}">0.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 강의가 없을 때 -->
+        <div th:unless="${lectures != null and !lectures.isEmpty()}" class="text-center py-8">
             <p class="text-gray-500">등록된 강의가 없습니다.</p>
         </div>
     </div>

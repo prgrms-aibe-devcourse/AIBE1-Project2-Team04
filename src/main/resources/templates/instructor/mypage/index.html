@@ -1,478 +1,196 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org" lang="ko">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>마이페이지 - 게임 코칭 매칭 플랫폼</title>-->
-<!--    <script src="https://cdn.tailwindcss.com/3.4.16"></script>-->
-<!--    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>-->
-<!--    <link rel="preconnect" href="https://fonts.googleapis.com">-->
-<!--    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
-<!--    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">-->
-<!--    <style>-->
-<!--        body {-->
-<!--            font-family: 'Noto Sans KR', sans-serif;-->
-<!--            background-color: #f5f5f7;-->
-<!--        }-->
-<!--        .profile-image {-->
-<!--            width: 120px;-->
-<!--            height: 120px;-->
-<!--            border-radius: 50%;-->
-<!--            object-fit: cover;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-<!--&lt;!&ndash; 헤더 &ndash;&gt;-->
-<!--<header class="bg-white shadow">-->
-<!--    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">-->
-<!--        <h1 class="text-2xl font-bold text-gray-800">게임 코칭 매칭 플랫폼</h1>-->
-<!--        <nav>-->
-<!--            <ul class="flex space-x-4">-->
-<!--                <li><a href="/" class="text-gray-600 hover:text-primary">홈</a></li>-->
-<!--                <li><a href="/lectures" class="text-gray-600 hover:text-primary">강의</a></li>-->
-<!--                <li><a href="/mypage" class="text-primary font-bold">마이페이지</a></li>-->
-<!--                <li>-->
-<!--                    <form id="logoutForm" action="/logout" method="post" class="inline">-->
-<!--                        <button type="submit" class="text-gray-600 hover:text-primary bg-transparent border-0 cursor-pointer">로그아웃</button>-->
-<!--                    </form>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </nav>-->
-<!--    </div>-->
-<!--</header>-->
-
-<!--&lt;!&ndash; 메인 컨텐츠 &ndash;&gt;-->
-<!--<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">-->
-<!--    <div class="bg-white rounded-lg shadow p-6 mb-8">-->
-<!--        &lt;!&ndash; 프로필 정보 &ndash;&gt;-->
-<!--        <div class="flex flex-col md:flex-row items-center md:items-start gap-8">-->
-<!--            &lt;!&ndash; 프로필 이미지 &ndash;&gt;-->
-<!--            <div class="flex flex-col items-center">-->
-<!--                <img th:if="${member.profileImage}" th:src="${member.profileImage}" alt="프로필 이미지" class="profile-image mb-4">-->
-<!--                <img th:unless="${member.profileImage}" src="/images/default-profile.png" alt="기본 프로필 이미지" class="profile-image mb-4">-->
-<!--                <a href="/mypage/profile" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">프로필 수정</a>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; 사용자 정보 &ndash;&gt;-->
-<!--            <div class="flex-1">-->
-<!--                <h2 class="text-2xl font-bold mb-4" th:text="${member.nickname}">사용자닉네임</h2>-->
-<!--                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">-->
-<!--                    <div>-->
-<!--                        <p class="text-gray-500 text-sm">이름</p>-->
-<!--                        <p class="font-medium" th:text="${member.name}">홍길동</p>-->
-<!--                    </div>-->
-<!--                    <div>-->
-<!--                        <p class="text-gray-500 text-sm">이메일</p>-->
-<!--                        <p class="font-medium" th:text="${member.email}">user@example.com</p>-->
-<!--                    </div>-->
-<!--                    <div>-->
-<!--                        <p class="text-gray-500 text-sm">전화번호</p>-->
-<!--                        <p class="font-medium" th:text="${member.phone}">010-1234-5678</p>-->
-<!--                    </div>-->
-<!--                    &lt;!&ndash;                    <div>&ndash;&gt;-->
-<!--                    &lt;!&ndash;                        <p class="text-gray-500 text-sm">회원 가입일</p>&ndash;&gt;-->
-<!--                    &lt;!&ndash;                        <p class="font-medium" th:text="${#temporals.format(member.createdAt, 'yyyy년 MM월 dd일')}">2023년 5월 1일</p>&ndash;&gt;-->
-<!--                    &lt;!&ndash;                    </div>&ndash;&gt;-->
-<!--                </div>-->
-
-<!--                <div class="mt-6 flex flex-wrap gap-3">-->
-<!--                    <a href="/mypage/password" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-button text-sm hover:bg-gray-200 transition">비밀번호 변경</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 게임 정보 섹션 &ndash;&gt;-->
-<!--    <div class="bg-white rounded-lg shadow p-6 mb-8">-->
-<!--        <div class="flex justify-between items-center mb-6">-->
-<!--            <h3 class="text-xl font-bold">내 게임 정보</h3>-->
-<!--            <a href="/mypage/game" class="text-primary text-sm hover:underline">자세히 보기</a>-->
-<!--        </div>-->
-
-<!--        <div th:if="${#lists.isEmpty(games)}" class="text-center py-8">-->
-<!--            <p class="text-gray-500">등록된 게임 정보가 없습니다.</p>-->
-<!--            <a href="/game/register" class="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">게임 정보 등록하기</a>-->
-<!--        </div>-->
-
-<!--        <div th:unless="${#lists.isEmpty(games)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">-->
-<!--            <div th:each="game : ${games}" class="border rounded-lg p-4">-->
-<!--                <h4 class="font-bold mb-2" th:text="${game.gameType}">리그 오브 레전드</h4>-->
-<!--                <div class="mb-2">-->
-<!--                    <span class="text-gray-500 text-sm">티어:</span>-->
-<!--                    <span th:text="${game.gameTier}">다이아몬드</span>-->
-<!--                </div>-->
-<!--                <div>-->
-<!--                    <span class="text-gray-500 text-sm">포지션:</span>-->
-<!--                    <span th:text="${game.gamePosition}">미드</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; 예약 내역 섹션 &ndash;&gt;-->
-<!--    <div class="bg-white rounded-lg shadow p-6">-->
-<!--        <div class="flex justify-between items-center mb-6">-->
-<!--            <h3 class="text-xl font-bold">수강 내역</h3>-->
-<!--            <a href="/mypage/reservationMIES" class="text-primary text-sm hover:underline">전체 내역 보기</a>-->
-<!--        </div>-->
-
-<!--        <div th:if="${#lists.isEmpty(reservationMIES)}" class="text-center py-8">-->
-<!--            <p class="text-gray-500">예약 내역이 없습니다.</p>-->
-<!--            <a href="/lectures" class="inline-block mt-4 bg-secondary text-white px-4 py-2 rounded-button text-sm hover:bg-green-700 transition">강의 찾아보기</a>-->
-<!--        </div>-->
-
-<!--        <div th:unless="${#lists.isEmpty(reservationMIES)}" class="overflow-x-auto">-->
-<!--            <table class="min-w-full divide-y divide-gray-200">-->
-<!--                <thead class="bg-gray-50">-->
-<!--                <tr>-->
-<!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">강의명</th>-->
-<!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">코치</th>-->
-<!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수강 날짜</th>-->
-<!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>-->
-<!--                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상세</th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody class="bg-white divide-y divide-gray-200">-->
-<!--                <tr th:each="reservation : ${reservationMIES}">-->
-<!--                    <td class="px-6 py-4 whitespace-nowrap">-->
-<!--                        <div class="text-sm font-medium text-gray-900" th:text="${reservation.lectureName}">게임 실력 향상 코칭</div>-->
-<!--                    </td>-->
-<!--                    <td class="px-6 py-4 whitespace-nowrap">-->
-<!--                        <div class="text-sm text-gray-900" th:text="${reservation.instructorName}">김코치</div>-->
-<!--                    </td>-->
-<!--                    <td class="px-6 py-4 whitespace-nowrap">-->
-<!--                        <div class="text-sm text-gray-900" th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}">2023-05-10 14:00</div>-->
-<!--                    </td>-->
-<!--                    <td class="px-6 py-4 whitespace-nowrap">-->
-<!--                        <span th:if="${reservation.status == 'COMPLETED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">완료</span>-->
-<!--                        <span th:if="${reservation.status == 'PENDING'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">예약중</span>-->
-<!--                        <span th:if="${reservation.status == 'CANCELED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">취소</span>-->
-<!--                    </td>-->
-<!--                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-->
-<!--                        <a th:href="@{/mypage/reservationMIES/{id}(id=${reservation.id})}" class="text-primary hover:underline">상세보기</a>-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--            </table>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</main>-->
-
-<!--&lt;!&ndash; 푸터 &ndash;&gt;-->
-<!--<footer class="bg-gray-800 text-white py-8 mt-12">-->
-<!--    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">-->
-<!--        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">-->
-<!--            <div>-->
-<!--                <h4 class="text-lg font-bold mb-4">게임 코칭 매칭 플랫폼</h4>-->
-<!--                <p class="text-gray-400">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h4 class="text-lg font-bold mb-4">바로가기</h4>-->
-<!--                <ul class="space-y-2">-->
-<!--                    <li><a href="/" class="text-gray-400 hover:text-white">홈</a></li>-->
-<!--                    <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>-->
-<!--                    <li><a href="/faq" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <h4 class="text-lg font-bold mb-4">연락처</h4>-->
-<!--                <p class="text-gray-400">대전광역시 유성구 엑스포로 123</p>-->
-<!--                <p class="text-gray-400">이메일: info@gamecoaching.com</p>-->
-<!--                <p class="text-gray-400">전화: 042-123-4567</p>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">-->
-<!--            <p>&copy; 2025 게임 코칭 매칭 플랫폼. All rights reserved.</p>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</footer>-->
-
-<!--<script>-->
-<!--    // 필요한 JavaScript 코드-->
-<!--    document.addEventListener('DOMContentLoaded', function() {-->
-<!--        console.log('마이페이지가 로드되었습니다.');-->
-<!--        // 추가 스크립트 작성-->
-<!--    });-->
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>강사 마이페이지</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <title>강사 마이페이지 - 게임 코칭 매칭 플랫폼</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <style>
         body {
-            background-color: #f8f9fa;
-            color: #333;
             font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f5f5f7;
         }
-
-        .navbar {
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .nav-link {
-            color: #666;
-            transition: color 0.3s;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: #0d6efd;
-        }
-
-        .page-header {
-            background-color: #343a40;
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 3rem;
-            margin-top: 0;
-        }
-
-        .profile-card {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
         .profile-image {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 2rem;
-        }
-
-        .lecture-card {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .lecture-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .lecture-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .game-badge {
-            display: inline-block;
-            padding: 0.35em 0.65em;
-            font-size: 0.85em;
-            font-weight: 700;
-            color: #fff;
-            border-radius: 0.25rem;
-            margin-right: 0.5rem;
-        }
-
-        .game-badge.LOL { background-color: #1f78b4; }
-        .game-badge.VALORANT { background-color: #e31c45; }
-        .game-badge.TFT { background-color: #6a3da3; }
-
-        .lecture-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-
-        .btn-create {
-            background-color: #0d6efd;
-            color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 30px;
-            transition: all 0.3s;
-        }
-
-        .btn-create:hover {
-            background-color: #0b5ed7;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 4rem 0;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            color: #dee2e6;
-            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
-<!-- 네비게이션 바 -->
-<nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container">
-        <a class="navbar-brand" href="/">게임 코칭 플랫폼</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">홈</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/lectures">강의 둘러보기</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/instructor/mypage">
-                        <i class="bi bi-person-circle"></i> 강사 마이페이지
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <form action="/logout" method="post" class="d-inline">
-                        <button type="submit" class="nav-link btn btn-link">로그아웃</button>
-                    </form>
-                </li>
-            </ul>
+<!-- 헤더 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
+                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
+            </nav>
         </div>
-    </div>
-</nav>
 
-<!-- 상단 헤더 -->
-<header class="page-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h1>강사 마이페이지</h1>
-                <p class="lead">나의 강의 관리</p>
+        <div class="flex items-center space-x-4">
+            <div class="relative hidden md:block">
+                <form action="/lectures/search" method="GET">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
+
+            <!-- 기존 로그아웃 형태 유지 -->
+            <div class="flex items-center space-x-4">
+                <form id="logoutForm" action="/logout" method="post" class="inline">
+                    <button type="submit" class="text-gray-600 hover:text-primary bg-transparent border-0 cursor-pointer">로그아웃</button>
+                </form>
+            </div>
+
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
         </div>
     </div>
 </header>
 
-<!-- 메인 콘텐츠 -->
-<main class="container mb-5">
-    <!-- 프로필 카드 -->
-    <div class="profile-card" th:if="${instructor}">
-        <div class="d-flex align-items-center">
-            <div class="flex-grow-1">
-                <h2 th:text="${instructor.nickname}">강사 닉네임</h2>
-                <p th:text="${instructor.description}" class="text-muted mb-0">강사 소개</p>
-                <div class="mt-3">
-                    <span class="badge bg-primary me-2">
-                        총 강의: <span th:text="${#lists.size(lectures)}">0</span>개
-                    </span>
-                    <span class="badge bg-success me-2">
-                        평균 평점: <span th:text="${instructor.averageRating}">0.0</span>/5.0
-                    </span>
-                    <span class="badge bg-info">
-                        총 수강생: <span th:text="${instructor.totalMembers}">0</span>명
-                    </span>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- 강사 프로필 정보 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+            <!-- 프로필 이미지 -->
+            <div class="flex flex-col items-center">
+                <img th:if="${member.profileImage}" th:src="${member.profileImage}" alt="프로필 이미지" class="profile-image mb-4">
+                <img th:unless="${member.profileImage}" src="/images/default-profile.png" alt="기본 프로필 이미지" class="profile-image mb-4">
+                <a href="/instructor/mypage/profile" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">프로필 수정</a>
+            </div>
+
+            <!-- 강사 정보 -->
+            <div class="flex-1">
+                <h2 class="text-2xl font-bold mb-4 text-blue-600">강사 프로필</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-500 text-sm">이름</p>
+                        <p class="font-medium" th:text="${member.name}">홍길동</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">닉네임</p>
+                        <p class="font-medium" th:text="${member.nickname}">강사닉네임</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">평점</p>
+                        <p class="font-medium" th:text="${instructor.averageRating}">4.5</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">총 수강생 수</p>
+                        <p class="font-medium" th:text="${instructor.totalMembers}">24명</p>
+                    </div>
+                </div>
+
+                <!-- description -->
+                <div class="mt-6">
+                    <p class="text-gray-500 text-sm">경력</p>
+                    <p class="font-medium" th:text="${instructor.career}">5년 경력의 다이아몬드 랭크 강사입니다.</p>
+                </div>
+
+                <!-- 소개글 -->
+                <div class="mt-4">
+                    <p class="text-gray-500 text-sm">소개글</p>
+                    <p class="font-medium" th:text="${instructor.description}">게임 실력 향상을 위한 맞춤형 코칭을 제공합니다.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 강의 목록 헤더 -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>내 강의 목록</h3>
-        <a href="/instructor/lectures/new" class="btn btn-create">
-            <i class="bi bi-plus-circle me-2"></i>새 강의 생성
-        </a>
-    </div>
+    <!-- 내 강의 목록 -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold">내가 등록한 강의</h3>
+            <a href="/instructor/lectures/new" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">새 강의 등록</a>
+        </div>
 
-    <!-- 강의 목록 -->
-    <div class="row" th:if="${!#lists.isEmpty(lectures)}">
-        <div class="col-md-6 col-lg-4" th:each="lecture : ${lectures}">
-            <div class="lecture-card">
-                <a th:href="@{/instructor/lectures/{id}(id=${lecture.rawId})}" style="text-decoration: none; color: inherit;">
+        <!-- 강의 목록 표시 -->
+        <div th:if="${lectures != null and !lectures.isEmpty()}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div th:each="lecture : ${lectures}"
+                 class="border rounded-lg p-4 hover:shadow-lg transition cursor-pointer"
+                 th:onclick="|location.href='@{/instructor/lectures/{id}(id=${lecture.rawId})}'|">
+
+                <!-- 강의 이미지 - 수정된 부분 -->
+                <div class="mb-3 relative overflow-hidden rounded bg-gray-200" style="padding-bottom: 56.25%;">
                     <img th:if="${lecture.imageUrl}"
                          th:src="${lecture.imageUrl}"
                          alt="강의 이미지"
-                         class="lecture-image">
-                    <img th:unless="${lecture.imageUrl}"
-                         src="/images/default-lecture.jpg"
-                         alt="기본 강의 이미지"
-                         class="lecture-image">
-
-                    <div class="p-3">
-                        <h5 th:text="${lecture.title}" class="mb-2">강의 제목</h5>
-                        <div class="mb-2">
-                            <span class="game-badge" th:classappend="${lecture.gameType}"
-                                  th:text="${lecture.gameType}">게임</span>
-                            <span class="badge bg-secondary" th:text="${lecture.position}">포지션</span>
-                            <span class="badge bg-info" th:text="${lecture.lectureRank}">티어</span>
-                        </div>
-                        <p class="text-muted small mb-3" th:text="${lecture.description}">강의 설명</p>
-                        <div class="text-primary fw-bold mb-3">
-                            <span th:text="${#numbers.formatDecimal(lecture.price, 0, 'COMMA', 0, 'POINT')} + '원'">0원</span>
-                        </div>
-
-                        <div class="lecture-stats">
-                            <div class="stat-item">
-                                <div class="stat-value" th:text="${lecture.averageRating}">0.0</div>
-                                <div class="stat-label">평점</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" th:text="${lecture.totalMembers}">0</div>
-                                <div class="stat-label">수강생</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" th:text="${lecture.reviewCount}">0</div>
-                                <div class="stat-label">리뷰</div>
-                            </div>
-                        </div>
+                         class="absolute inset-0 w-full h-full object-cover">
+                    <div th:unless="${lecture.imageUrl}"
+                         class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                        <i class="ri-image-line text-4xl mb-2"></i>
+                        <span class="text-sm">No image available</span>
                     </div>
-                </a>
+                </div>
+
+                <!-- 강의 제목 -->
+                <h4 class="font-semibold text-lg mb-2 text-gray-800" th:text="${lecture.title}">강의 제목</h4>
+
+                <!-- 게임 정보 -->
+                <div class="flex gap-2 mb-2">
+                <span class="text-xs px-2 py-1 rounded text-white"
+                      th:classappend="${lecture.gameType == 'LOL' ? 'bg-blue-600' :
+                                      lecture.gameType == 'VALORANT' ? 'bg-red-600' :
+                                      'bg-purple-600'}"
+                      th:text="${lecture.gameType}">게임</span>
+                    <span class="text-xs px-2 py-1 bg-gray-500 text-white rounded"
+                          th:text="${lecture.position}">포지션</span>
+                </div>
+
+                <!-- 가격과 평점 -->
+                <div class="flex justify-between items-center mt-4">
+                <span class="text-primary font-semibold"
+                      th:text="${#numbers.formatDecimal(lecture.price, 0, 'COMMA', 0, 'POINT')} + '원'">0원</span>
+                    <div class="text-sm text-gray-600">
+                        <span>★</span>
+                        <span th:text="${lecture.averageRating}">0.0</span>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <!-- 강의가 없을 때 -->
+        <div th:unless="${lectures != null and !lectures.isEmpty()}" class="text-center py-8">
+            <p class="text-gray-500">등록된 강의가 없습니다.</p>
         </div>
     </div>
 
-    <!-- 빈 상태 -->
-    <div th:if="${#lists.isEmpty(lectures)}" class="empty-state">
-        <div class="empty-state-icon">
-            <i class="bi bi-journal-x"></i>
+    <!-- 수강생 관리 -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold">수강생 관리</h3>
         </div>
-        <h4>아직 생성한 강의가 없습니다</h4>
-        <p class="text-muted mb-4">첫 강의를 만들어 학생들과 만나보세요!</p>
-        <a href="/instructor/lectures/new" class="btn btn-create">
-            <i class="bi bi-plus-circle me-2"></i>첫 강의 생성하기
-        </a>
+
+        <!-- 수강생 목록 표시 예정 -->
+        <div class="text-center py-8">
+            <p class="text-gray-500">수강생이 없습니다.</p>
+        </div>
     </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 푸터 (기존 마이페이지와 동일) -->
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <!-- 푸터 내용 -->
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('강사 마이페이지가 로드되었습니다.');
+    });
+</script>
 </body>
 </html>

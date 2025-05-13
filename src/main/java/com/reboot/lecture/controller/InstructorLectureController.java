@@ -45,6 +45,7 @@ public class InstructorLectureController {
         List<LectureResponseDto> lectures = instructorLectureService.getLecturesByInstructor(instructor.getInstructorId());
 
         model.addAttribute("instructor", instructor);
+        model.addAttribute("member", instructor.getMember());  // member 추가
         model.addAttribute("lectures", lectures);
         return "instructor/mypage/index";
     }
@@ -136,6 +137,7 @@ public class InstructorLectureController {
             LectureResponseDto createdLecture = instructorLectureService.createLecture(request, instructor);
 
             redirectAttributes.addFlashAttribute("message", "강의가 성공적으로 생성되었습니다.");
+
             return "redirect:/instructor/lectures/" + createdLecture.getRawId();
 
         } catch (Exception e) {
