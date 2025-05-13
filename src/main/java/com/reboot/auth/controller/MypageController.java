@@ -56,13 +56,24 @@ public class MypageController {
             return "redirect:/mypage/instructorMypage";
         }
 
+        // 결제 대기 중인 예약 동기화
+        List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
+
+        // 결제가 완료된 예약들 상태 업데이트
+        for (ReservationMy reservation : pendingReservations) {
+            if (mypageService.hasPayment(reservation.getId())) {
+                updateReservationMyStatusToCompleted(reservation.getId());
+            }
+        }
+
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
         List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());//수정
         List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
-        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
-        List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
+        // 업데이트 후 다시 조회
+        pendingReservations = mypageService.getPendingMyReservations(principal.getName());
+        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
         model.addAttribute("member", member);
         model.addAttribute("game", game);
@@ -70,9 +81,9 @@ public class MypageController {
         model.addAttribute("completedPayments", completedPayments);
         model.addAttribute("pendingReservations", pendingReservations);
 
-        // 강사 인증 확인
-        boolean isInstructor = mypageService.isInstructor(principal.getName());
-        model.addAttribute("isInstructor", isInstructor);
+//        // 강사 인증 확인
+//        boolean isInstructor = mypageService.isInstructor(principal.getName());
+//        model.addAttribute("isInstructor", isInstructor);
 
         return "mypage/index";
     }
@@ -284,6 +295,20 @@ public class MypageController {
             return "mypage/reservation-detail";
         } else {
             return "redirect:/mypage/reservations";
+        }
+    }
+
+    // 예약 상태 업데이트 헬퍼 메서드
+    private void updateReservationMyStatusToCompleted(Long reservationId) {
+        try {
+            Optional<ReservationMy> reservationMyOpt = reservationMyRepository.findById(reservationId);
+            if (reservationMyOpt.isPresent()) {
+                ReservationMy reservationMy = reservationMyOpt.get();
+                reservationMy.setStatus("결제완료");
+                reservationMyRepository.save(reservationMy);
+            }
+        } catch (Exception e) {
+            System.err.println("예약 상태 업데이트 실패: " + e.getMessage());
         }
     }
 }

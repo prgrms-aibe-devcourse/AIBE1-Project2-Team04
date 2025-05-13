@@ -6,10 +6,7 @@ import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.entity.ReservationMy;
-import com.reboot.auth.repository.GameRepository;
-import com.reboot.auth.repository.InstructorRepository;
-import com.reboot.auth.repository.MemberRepository;
-import com.reboot.auth.repository.ReservationMyRepository;
+import com.reboot.auth.repository.*;
 import com.reboot.payment.entity.Payment;
 import com.reboot.payment.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
@@ -112,11 +109,17 @@ public class MypageService {
         return true;
     }
 
-    // 결제 완료된 강의 목록 조회
+    // 커스텀 결제 완료 조회 메서드
     public List<Payment> getCompletedPayments(String username) {
         Member member = getCurrentMember(username);
-        return paymentRepository.findCompletedPaymentsByMemberId(member.getMemberId());
 
+        // 전체 조회 후 필터링
+        return paymentRepository.findAll().stream()
+                .filter(payment -> payment.getReservation() != null)
+                .filter(payment -> payment.getReservation().getMember() != null)
+                .filter(payment -> payment.getReservation().getMember().getMemberId().equals(member.getMemberId()))
+                .filter(payment -> "결제완료".equals(payment.getStatus())) // '결제완료'로 필터링
+                .collect(Collectors.toList());
     }
 
     // 결제 대기 중인 예약 조회
@@ -134,11 +137,13 @@ public class MypageService {
     }
 
     public boolean hasPayment(Long reservationId) {
-        List<Payment> payments = paymentRepository.findAll().stream()
-                .filter(payment -> payment.getReservation().getReservationId().equals(reservationId))
-                .collect(Collectors.toList());
-        return !payments.isEmpty();
+        // 특정 예약에 대한 결제가 있는지 확인
+        return paymentRepository.findAll().stream()
+                .anyMatch(payment -> payment.getReservation() != null &&
+                        payment.getReservation().getReservationId().equals(reservationId) &&
+                        "결제완료".equals(payment.getStatus()));
     }
+
         // 강사 인증 확인
     public boolean isInstructor(String username) {
         Member member = getCurrentMember(username);
