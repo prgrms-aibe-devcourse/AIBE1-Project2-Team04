@@ -543,6 +543,7 @@
 
         // 초기 폼 유효성 검사
         validateForm();
+        fillSocialUserInfoForm();
 
         // 회원가입 에러 영역
         const errorDiv = document.getElementById('errorDiv');
@@ -616,6 +617,26 @@
         });
 
         return await response.json();
+    }
+
+    function fillSocialUserInfoForm(){
+        const params = new URLSearchParams(window.location.search);
+
+        const email = params.get("email");
+        const name = params.get("name");
+
+        const emailInput = document.getElementById("email");
+        const nameInput = document.getElementById("name");
+
+        if (email) {
+            emailInput.value = email;
+            emailInput.readOnly = true;
+        }
+
+        if (name) {
+            nameInput.value = name;
+            nameInput.readOnly = true;
+        }
     }
 </script>
 </body>
