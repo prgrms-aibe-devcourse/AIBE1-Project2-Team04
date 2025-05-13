@@ -49,4 +49,7 @@ public interface LectureService {
     Lecture getLecture(Long id);
 
     LectureDetailResponseDto getLectureDetailById(Long id);
+
+    // 강의 ID와 강사 ID로 강의 엔티티 조회
+    Lecture getLectureEntityByIdAndInstructor(String lectureId, Long instructorId);
 }
