@@ -21,6 +21,13 @@ spring:
     init:
       mode: never
 
+  # 파일 업로드 설정 추가
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      file-size-threshold: 2KB
+
   supabase:
     url: ${SUPABASE_URL}
     access-key: ${SUPABASE_ACCESS_KEY}

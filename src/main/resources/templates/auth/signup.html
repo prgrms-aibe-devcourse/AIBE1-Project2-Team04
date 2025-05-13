@@ -282,7 +282,7 @@
                     <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">휴대폰 번호</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                            <i class="ri-user-line"></i>
+                            <i class="ri-phone-line"></i>
                         </div>
                         <input
                                 id="phone"
@@ -609,7 +609,7 @@
 
             if(result.success) {
                 if(signupData.role === 'instructor') {
-                    window.location.href = '/auth/sign_details?username=' + signupData.username;
+                    window.location.href = '/auth/signup_instructor_details?username=' + signupData.username;
                 }
                 else{
                     window.location.href = '/auth/login';

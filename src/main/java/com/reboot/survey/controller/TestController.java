@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/test")
+@RequestMapping("/survey")
 @Slf4j
 public class TestController {
 
@@ -65,26 +65,31 @@ public class TestController {
     }
 
     @GetMapping("/survey-form")
-    public String showSurveyForm(Model model) {
-        // 테스트용 고정 회원 ID 사용
-        Long defaultMemberId = 1L;
-        String memberName = "테스트 사용자";
+    public String showSurveyForm(
+            @RequestParam(value = "memberId", required = false) Long memberId,
+            Model model) {
 
-        // 데이터베이스에 회원이 있으면 첫 번째 회원 사용
-        List<Member> members = memberRepository.findAll();
-        if (!members.isEmpty()) {
-            Member defaultMember = members.get(0);
-            defaultMemberId = defaultMember.getMemberId();
-            memberName = defaultMember.getName();
-            log.info("DB에서 회원 정보 가져옴 - ID: {}, 이름: {}", defaultMemberId, memberName);
+        // 기본값 설정
+        Long defaultMemberId = 0L;
+        String memberName = "홍길동";
+
+        if (memberId != null && memberId > 0) {
+            // memberId가 전달되면 해당 회원 정보 조회
+            Member member = memberRepository.findById(memberId).orElse(null);
+            if (member != null) {
+                defaultMemberId = member.getMemberId();
+                memberName = member.getName();
+                log.info("회원 정보 조회 성공 - ID: {}, 이름: {}", defaultMemberId, memberName);
+            } else {
+                log.warn("회원 ID {}를 찾을 수 없음. 기본값 사용", memberId);
+            }
         } else {
-            log.info("DB에 회원이 없어 기본값 사용 - ID: {}, 이름: {}", defaultMemberId, memberName);
+            log.info("memberId가 없거나 유효하지 않음. 기본값 사용 - ID: {}, 이름: {}", defaultMemberId, memberName);
         }
 
         // 모델에 회원 정보 추가
         model.addAttribute("memberId", defaultMemberId);
         model.addAttribute("memberName", memberName);
-        model.addAttribute("members", members);
 
         // Enum 값들을 모델에 추가
         model.addAttribute("gameTypes", GameType.values());
@@ -109,7 +114,7 @@ public class TestController {
         ));
         model.addAttribute("gameInfo", gameInfo);
 
-        return "test/survey-form";
+        return "survey/survey-form";
     }
 
     @PostMapping("/submit-survey")
@@ -124,8 +129,8 @@ public class TestController {
             @RequestParam(value = "memberId", required = false) Long requestMemberId,
             Model model) {
 
-        // 테스트용 고정 회원 ID 사용 (폼에서 전달된 ID가 있으면 사용)
-        Long memberId = (requestMemberId != null) ? requestMemberId : 1L;
+        // memberId 처리 - 전달된 값이 null이거나 0보다 작으면 기본값 0 사용
+        Long memberId = (requestMemberId != null && requestMemberId > 0) ? requestMemberId : 0L;
 
         try {
             log.info("설문 제출 시작 - memberId: {}, 게임: {}", memberId, gameType);
@@ -155,11 +160,22 @@ public class TestController {
             // 모델에 결과 추가 (명시적으로 각 필드 추가)
             model.addAttribute("recommendation", response);
 
-            return "test/recommendation-result";
+            return "survey/recommendation-result";
         } catch (Exception e) {
             log.error("설문 처리 중 오류 발생", e);
             model.addAttribute("error", "설문 처리 중 오류가 발생했습니다: " + e.getMessage());
             return "survey/error";
+        }
+    }
+
+    @GetMapping("/start")
+    public String startSurvey(@RequestParam(value = "memberId", required = false) Long memberId) {
+        // memberId가 있으면 파라미터로 전달하여 설문 폼으로 이동
+        if (memberId != null && memberId > 0) {
+            return "redirect:/survey/survey-form?memberId=" + memberId;
+        } else {
+            // memberId가 없으면 기본값으로 이동
+            return "redirect:/survey/survey-form";
         }
     }
 

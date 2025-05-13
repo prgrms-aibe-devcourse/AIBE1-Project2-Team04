@@ -47,7 +47,6 @@
             <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
             <nav class="hidden md:flex space-x-8">
                 <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
-                <a href="/replays/upload" class="text-gray-800 hover:text-primary font-medium">리플레이</a>
                 <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
             </nav>
         </div>
@@ -85,7 +84,6 @@
                     <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden">
                         <a th:href="@{/mypage}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">마이페이지</a>
                         <a th:href="@{/mypage/lectures}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">내 강의</a>
-                        <a th:href="@{/mypage/replays}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">내 리플레이</a>
                         <form th:action="@{/logout}" method="post" class="block">
                             <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">로그아웃</button>
                         </form>
@@ -108,7 +106,7 @@
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">게임 실력 향상을 위한<br>최고의 코칭 플랫폼</h1>
                 <p class="text-lg md:text-xl mb-8 text-indigo-100">다양한 게임 전문가들의 맞춤형 코칭을 통해<br>당신의 게임 실력을 한 단계 업그레이드하세요!</p>
                 <div class="flex flex-wrap gap-4">
-                    <a th:href="@{/survey/start}" class="bg-white text-primary hover:bg-gray-100 px-6 py-3 rounded-button font-medium">맞춤 강의 찾기</a>
+                    <a th:href="@{/survey/survey-form}" class="bg-white text-primary hover:bg-gray-100 px-6 py-3 rounded-button font-medium">맞춤 강의 찾기</a>
                     <a href="#games" class="bg-transparent border border-white text-white hover:bg-white/10 px-6 py-3 rounded-button font-medium">게임 살펴보기</a>
                 </div>
             </div>
@@ -193,8 +191,8 @@
                 <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
                     <i class="ri-vidicon-line text-2xl text-primary"></i>
                 </div>
-                <h3 class="text-xl font-bold mb-2">리플레이 관리</h3>
-                <p class="text-gray-600">게임 리플레이 URL을 저장하고 관리하여 수업 자료로 활용할 수 있습니다.</p>
+                <h3 class="text-xl font-bold mb-2">리플레이 등록</h3>
+                <p class="text-gray-600">게임 리플레이 URL을 수강 신청 폼에 등록하여 수업 자료로 활용할 수 있습니다.</p>
             </div>
 
             <!-- 특징 3 -->
@@ -327,8 +325,7 @@
                         </li>
                     </ul>
                     <div class="flex flex-wrap gap-4">
-                        <a href="/survey/start" class="inline-block bg-primary text-white rounded-button px-6 py-3 font-medium hover:bg-primary/90">설문 시작하기</a>
-                        <a href="/test/survey-form" class="inline-block bg-secondary text-white rounded-button px-6 py-3 font-medium hover:bg-secondary/90">테스트 설문 시작</a>
+                        <a href="/survey/survey-form" class="inline-block bg-primary text-white rounded-button px-6 py-3 font-medium hover:bg-primary/90">설문 시작하기</a>
                     </div>
                 </div>
 
@@ -378,7 +375,7 @@
             <div class="text-center">
                 <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-primary text-2xl mx-auto mb-4">2</div>
                 <h3 class="text-lg font-bold mb-2">일정 선택</h3>
-                <p class="text-gray-600">가능한 날짜와 시간을 선택하세요.</p>
+                <p class="text-gray-600">가능한 날짜를 선택하세요.</p>
             </div>
 
             <!-- 과정 3 -->
@@ -404,7 +401,7 @@
         <h2 class="text-3xl font-bold mb-6">지금 바로 시작하세요!</h2>
         <p class="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">Re:Boot와 함께 게임 실력을 향상시키고<br>더 나은 게이머로 성장하세요.</p>
         <div class="flex flex-wrap justify-center gap-4">
-            <a href="/survey/start" class="bg-white text-primary hover:bg-gray-100 px-6 py-3 rounded-button font-medium">맞춤 강의 찾기</a>
+            <a href="/survey/survey-form" class="bg-white text-primary hover:bg-gray-100 px-6 py-3 rounded-button font-medium">맞춤 강의 찾기</a>
             <a href="/auth/sign" class="bg-transparent border border-white text-white hover:bg-white/10 px-6 py-3 rounded-button font-medium">회원가입</a>
         </div>
     </div>
@@ -439,8 +436,7 @@
                 <h3 class="text-lg font-bold mb-4">서비스</h3>
                 <ul class="space-y-2">
                     <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
-                    <li><a href="/replays/upload" class="text-gray-400 hover:text-white">리플레이 업로드</a></li>
-                    <li><a href="/survey/start" class="text-gray-400 hover:text-white">설문조사</a></li>
+                    <li><a href="/survey/survey-form" class="text-gray-400 hover:text-white">설문조사</a></li>
                 </ul>
             </div>
 

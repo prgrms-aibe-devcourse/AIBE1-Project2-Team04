@@ -8,6 +8,7 @@ import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
+import com.reboot.payment.entity.Payment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +31,9 @@ public class MypageController {
     private final MypageService mypageService;
 
     public MypageController(MemberRepository memberRepository,
-                             GameRepository gameRepository,
-                             ReservationMyRepository reservationRepository,
-                             MypageService mypageService) {
+                            GameRepository gameRepository,
+                            ReservationMyRepository reservationRepository,
+                            MypageService mypageService) {
         this.memberRepository = memberRepository;
         this.gameRepository = gameRepository;
         this.reservationRepository = reservationRepository;
@@ -48,14 +49,25 @@ public class MypageController {
             return "redirect:/auth/login";  // 로그인 페이지로 리다이렉트
         }
 
+        // 강사인 경우 강사 페이지로 자동 리다이렉트
+        if (mypageService.isInstructor(principal.getName())) {
+            return "redirect:/mypage/instructorMypage";
+        }
+
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
         List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());//수정
         List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
+        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
         model.addAttribute("member", member);
         model.addAttribute("games", games);
         model.addAttribute("reservations", reservationMIES);
+        model.addAttribute("completedPayments", completedPayments);
+
+        // 강사 인증 확인
+        boolean isInstructor = mypageService.isInstructor(principal.getName());
+        model.addAttribute("isInstructor", isInstructor);
 
         return "mypage/index";
     }
@@ -88,17 +100,33 @@ public class MypageController {
                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
                                 Principal principal,
                                 RedirectAttributes redirectAttributes) {
-        // 간단한 유효성 검사
-        if (profileDTO.getNickname() == null || profileDTO.getNickname().trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "닉네임은 필수 입력 항목입니다.");
-            return "redirect:/mypage/profile";
+        // 파일 크기 사전 검증 추가
+        if (profileImage != null && !profileImage.isEmpty()) {
+            // 5MB 제한
+            if (profileImage.getSize() > 5 * 1024 * 1024) {
+                redirectAttributes.addFlashAttribute("error", "프로필 이미지는 5MB 이하여야 합니다.");
+                return "redirect:/mypage/profile";
+            }
+
+            // 파일 형식 검증
+            String contentType = profileImage.getContentType();
+            if (contentType == null || !(contentType.equals("image/jpeg") ||
+                    contentType.equals("image/png") ||
+                    contentType.equals("image/gif"))) {
+                redirectAttributes.addFlashAttribute("error", "JPG, PNG, GIF 형식의 이미지만 허용됩니다.");
+                return "redirect:/mypage/profile";
+            }
         }
 
         try {
             mypageService.updateProfile(principal.getName(), profileDTO, profileImage);
             redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/mypage/profile";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "프로필 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/mypage/profile";
         }
         return "redirect:/mypage";
     }
