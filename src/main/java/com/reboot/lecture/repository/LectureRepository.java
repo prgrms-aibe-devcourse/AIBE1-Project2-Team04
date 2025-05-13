@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -127,9 +128,23 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> { // ID 
     @Query("SELECT l FROM Lecture l JOIN FETCH l.instructor WHERE l.id = :id")
     Optional<Lecture> findByIdWithInstructor(@Param("id") Long id);
 
+    // 새로 추가된 메소드 - 모든 연관 엔티티 함께 로딩
+    @Query("SELECT l FROM Lecture l " +
+            "LEFT JOIN FETCH l.instructor i " +
+            "LEFT JOIN FETCH i.member " +
+            "LEFT JOIN FETCH l.lectureDetail " +
+            "WHERE l.id = :id")
+    Optional<Lecture> findByIdWithFullDetails(@Param("id") Long id);
+
 
     // 강사 ID로 강의 목록 조회
     List<Lecture> findByInstructorInstructorId(Long instructorId);
+
+    // 정렬 지원 메소드 추가
+    List<Lecture> findByInstructorInstructorId(Long instructorId, Sort sort);
+
+    // 수정 - metadata.createdAt을 사용
+    List<Lecture> findByInstructorInstructorIdOrderByMetadataCreatedAtDesc(Long instructorId);
 
 
     // 강의 ID와 강사 ID로 강의 조회
