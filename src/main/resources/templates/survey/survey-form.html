@@ -1,254 +1,431 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>테스트 설문 양식</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설문조사</title>
     <style>
-        .container {
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
             max-width: 800px;
-            margin-top: 30px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .survey-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .member-info {
+            background-color: #eef1f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .option-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option-item {
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-item:hover {
+            background-color: #f0f4ff;
+            border-color: #4F46E5;
+        }
+        .option-item.selected {
+            background-color: #4F46E5;
+            color: white;
+            border-color: #4F46E5;
+        }
+        .position-container {
+            display: none;
+        }
+        .position-container.show {
+            display: block;
+        }
+        .tier-container {
+            display: none;
+        }
+        .tier-container.show {
+            display: block;
         }
         .btn-submit {
+            background-color: #4F46E5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
             margin-top: 20px;
+            width: 100%;
         }
-        h1 {
-            margin-bottom: 30px;
-            color: #007bff;
+        .btn-submit:hover {
+            background-color: #3730a3;
         }
-        .card {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+        /* 스피너 CSS 추가 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
-        .card-header {
-            background-color: #f8f9fa;
-            font-weight: bold;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4F46E5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        .game-info {
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .loading-progress {
+            color: white;
             margin-top: 10px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
             font-size: 14px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1 class="text-center">테스트 설문 양식</h1>
-    <div class="card">
-        <div class="card-header">
-            강의 추천 테스트
-        </div>
-        <div class="card-body">
-            <form th:action="@{/test/submit-survey}" method="post">
-                <!-- 회원 선택 -->
-                <div class="form-group">
-                    <label for="memberId"><strong>테스트할 회원 선택:</strong></label>
-                    <select id="memberId" name="memberId" class="form-control" required onchange="updateMemberGameInfo()">
-                        <option value="">-- 회원 선택 --</option>
-                        <option th:each="member : ${members}"
-                                th:value="${member.memberId}"
-                                th:text="${member.name} + ' (' + ${member.nickname} + ')'"
-                                th:attr="data-game-type=${member.game != null ? member.game.gameType : ''},
-                                             data-game-tier=${member.game != null ? member.game.gameTier : ''},
-                                             data-game-position=${member.game != null ? member.game.gamePosition : ''}"></option>
-                    </select>
-                    <div id="memberGameInfo" class="game-info" style="display: none;">
-                        <strong>회원 게임 정보:</strong>
-                        <div id="gameTypeInfo"></div>
-                        <div id="gameTierInfo"></div>
-                        <div id="gamePositionInfo"></div>
-                    </div>
-                </div>
-
-                <!-- 게임 타입 선택 -->
-                <div class="form-group">
-                    <label for="gameType"><strong>게임 타입:</strong></label>
-                    <select id="gameType" name="gameType" class="form-control" required onchange="updateGameOptions()">
-                        <option value="">-- 게임 선택 --</option>
-                        <option th:each="type : ${gameTypes}"
-                                th:value="${type}"
-                                th:text="${type.name() == 'LOL' ? '리그 오브 레전드' :
-                                             (type.name() == 'VALORANT' ? '발로란트' :
-                                             (type.name() == 'TFT' ? '전략적 팀 전투' : type.name()))}"></option>
-                    </select>
-                </div>
-
-                <!-- 게임 티어 선택 -->
-                <div class="form-group">
-                    <label for="gameTier"><strong>게임 티어:</strong></label>
-                    <select id="gameTier" name="gameTier" class="form-control">
-                        <option value="">-- 티어 선택 --</option>
-                        <!-- 자바스크립트로 동적 업데이트 -->
-                    </select>
-                </div>
-
-                <!-- 게임 포지션 선택 -->
-                <div class="form-group">
-                    <label for="gamePosition"><strong>게임 포지션:</strong></label>
-                    <select id="gamePosition" name="gamePosition" class="form-control">
-                        <option value="">-- 포지션 선택 --</option>
-                        <!-- 자바스크립트로 동적 업데이트 -->
-                    </select>
-                </div>
-
-                <!-- 실력 수준 -->
-                <div class="form-group">
-                    <label><strong>실력 수준:</strong></label>
-                    <div class="form-check">
-                        <input type="radio" name="skillLevel" id="skillBeginner" value="BEGINNER" class="form-check-input" required>
-                        <label class="form-check-label" for="skillBeginner">초보자 (BEGINNER)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" name="skillLevel" id="skillIntermediate" value="INTERMEDIATE" class="form-check-input">
-                        <label class="form-check-label" for="skillIntermediate">중급자 (INTERMEDIATE)</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" name="skillLevel" id="skillAdvanced" value="ADVANCED" class="form-check-input">
-                        <label class="form-check-label" for="skillAdvanced">고급자 (ADVANCED)</label>
-                    </div>
-                </div>
-
-                <!-- 학습 목표 -->
-                <div class="form-group">
-                    <label><strong>학습 목표:</strong></label>
-                    <select name="learningGoal" class="form-control" required>
-                        <option value="">-- 학습 목표 선택 --</option>
-                        <option th:each="goal : ${learningGoals}" th:value="${goal}" th:text="${goal}"></option>
-                    </select>
-                </div>
-
-                <!-- 가능 시간 -->
-                <div class="form-group">
-                    <label><strong>가능 시간:</strong></label>
-                    <select name="availableTime" class="form-control" required>
-                        <option value="">-- 가능 시간 선택 --</option>
-                        <option th:each="time : ${availableTimes}" th:value="${time}" th:text="${time}"></option>
-                    </select>
-                </div>
-
-                <!-- 강의 선호도 -->
-                <div class="form-group">
-                    <label><strong>강의 선호도:</strong></label>
-                    <select name="lecturePreference" class="form-control" required>
-                        <option value="">-- 강의 선호도 선택 --</option>
-                        <option th:each="pref : ${lecturePreferences}" th:value="${pref}" th:text="${pref}"></option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-lg btn-block btn-submit">설문 제출</button>
-            </form>
-        </div>
+<!-- 로딩 오버레이 추가 -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div style="text-align: center;">
+        <div class="spinner"></div>
+        <div class="loading-text">맞춤 강의를 추천 중입니다...</div>
+        <div class="loading-progress" id="loadingProgress">강의 정보를 분석하고 있습니다</div>
     </div>
 </div>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    const gameInfo = /*[[${gameInfo}]]*/ {};
+<div class="survey-container">
+    <h1>설문조사</h1>
+    <p>이 설문은 학습자들이 강의 추천을 받을 수 있게 해줍니다.</p>
 
-    function updateMemberGameInfo() {
-        const memberSelect = document.getElementById('memberId');
-        const selectedOption = memberSelect.options[memberSelect.selectedIndex];
-        const gameTypeInfo = document.getElementById('gameTypeInfo');
-        const gameTierInfo = document.getElementById('gameTierInfo');
-        const gamePositionInfo = document.getElementById('gamePositionInfo');
-        const memberGameInfo = document.getElementById('memberGameInfo');
+    <div class="member-info">
+        <h2>회원 정보</h2>
+        <p><strong>회원 ID:</strong> <span th:text="${memberId}">1</span></p>
+        <p><strong>이름:</strong> <span th:text="${memberName}">테스트 사용자</span></p>
+    </div>
 
-        // 회원의 게임 정보 표시
-        if (selectedOption && selectedOption.value) {
-            const gameType = selectedOption.getAttribute('data-game-type');
-            const gameTier = selectedOption.getAttribute('data-game-tier');
-            const gamePosition = selectedOption.getAttribute('data-game-position');
+    <form id="surveyForm" th:action="@{/survey/submit-survey}" method="post">
+        <!-- 고정된 memberId 값 사용 -->
+        <input type="hidden" name="memberId" th:value="${memberId}" value="1">
 
-            if (gameType || gameTier || gamePosition) {
-                gameTypeInfo.textContent = gameType ? `게임 타입: ${gameType}` : '게임 타입: 없음';
-                gameTierInfo.textContent = gameTier ? `티어: ${gameTier}` : '티어: 없음';
-                gamePositionInfo.textContent = gamePosition ? `포지션: ${gamePosition}` : '포지션: 없음';
-                memberGameInfo.style.display = 'block';
+        <div class="form-group">
+            <label for="gameType">게임 선택</label>
+            <select id="gameType" name="gameType" required onchange="handleGameTypeChange()">
+                <option value="" disabled selected>게임을 선택하세요</option>
+                <option th:each="type : ${gameTypes}" th:value="${type}" th:text="${type.displayName}"></option>
+            </select>
+        </div>
 
-                // 게임 타입이 있으면 자동 선택
-                if (gameType) {
-                    const gameTypeSelect = document.getElementById('gameType');
-                    for (let i = 0; i < gameTypeSelect.options.length; i++) {
-                        if (gameTypeSelect.options[i].value === gameType) {
-                            gameTypeSelect.selectedIndex = i;
-                            updateGameOptions(); // 티어와 포지션 옵션 업데이트
-                            break;
-                        }
-                    }
-                }
+        <div class="form-group tier-container" id="tierContainer">
+            <label for="gameTier">게임 티어</label>
+            <select id="gameTier" name="gameTier">
+                <option value="">티어를 선택하세요 (선택사항)</option>
+                <!-- 티어 옵션은 자바스크립트로 동적 변경됩니다 -->
+            </select>
+        </div>
 
-                // 티어가 있으면 자동 선택 (옵션 업데이트 후)
-                setTimeout(() => {
-                    if (gameTier) {
-                        const gameTierSelect = document.getElementById('gameTier');
-                        for (let i = 0; i < gameTierSelect.options.length; i++) {
-                            if (gameTierSelect.options[i].value === gameTier) {
-                                gameTierSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
+        <div class="form-group position-container" id="lolPositionContainer">
+            <label for="lolPosition">LOL 포지션</label>
+            <select id="lolPosition" name="gamePosition">
+                <option value="">포지션을 선택하세요 (선택사항)</option>
+                <option value="TOP">탑</option>
+                <option value="JUNGLE">정글</option>
+                <option value="MID">미드</option>
+                <option value="ADC">원딜(ADC)</option>
+                <option value="SUPPORT">서포터</option>
+            </select>
+        </div>
 
-                    // 포지션이 있으면 자동 선택
-                    if (gamePosition) {
-                        const gamePositionSelect = document.getElementById('gamePosition');
-                        for (let i = 0; i < gamePositionSelect.options.length; i++) {
-                            if (gamePositionSelect.options[i].value === gamePosition) {
-                                gamePositionSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
-                }, 100);
-            } else {
-                memberGameInfo.style.display = 'none';
-            }
-        } else {
-            memberGameInfo.style.display = 'none';
+        <div class="form-group position-container" id="valorantPositionContainer">
+            <label for="valorantPosition">발로란트 포지션</label>
+            <select id="valorantPosition" name="gamePosition">
+                <option value="">포지션을 선택하세요 (선택사항)</option>
+                <option value="DUELIST">듀얼리스트</option>
+                <option value="SENTINEL">센티널</option>
+                <option value="INITIATOR">이니시에이터</option>
+                <option value="CONTROLLER">컨트롤러</option>
+            </select>
+        </div>
+
+        <div class="form-group position-container" id="tftPositionContainer">
+            <p><strong>TFT 포지션:</strong> 포지션 없음</p>
+            <input type="hidden" id="tftPosition" name="gamePosition" value="ALL">
+        </div>
+
+        <div class="form-group">
+            <label>실력 수준</label>
+            <div class="option-container" id="skillLevelContainer">
+                <div th:each="level : ${skillLevels}" class="option-item"
+                     th:data-value="${level}" th:text="${level.label}"
+                     onclick="selectOption('skillLevel', this)"></div>
+            </div>
+            <input type="hidden" id="skillLevel" name="skillLevel" required>
+        </div>
+
+        <div class="form-group">
+            <label>학습 목표</label>
+            <div class="option-container" id="learningGoalContainer">
+                <div th:each="goal : ${learningGoals}" class="option-item"
+                     th:data-value="${goal}" th:text="${goal.label}"
+                     onclick="selectOption('learningGoal', this)"></div>
+            </div>
+            <input type="hidden" id="learningGoal" name="learningGoal" required>
+        </div>
+
+        <div class="form-group">
+            <label>가능 시간</label>
+            <div class="option-container" id="availableTimeContainer">
+                <div th:each="time : ${availableTimes}" class="option-item"
+                     th:data-value="${time}" th:text="${time.label}"
+                     onclick="selectOption('availableTime', this)"></div>
+            </div>
+            <input type="hidden" id="availableTime" name="availableTime" required>
+        </div>
+
+        <div class="form-group">
+            <label>강의 선호도</label>
+            <div class="option-container" id="lecturePreferenceContainer">
+                <div th:each="pref : ${lecturePreferences}" class="option-item"
+                     th:data-value="${pref}" th:text="${pref.label}"
+                     onclick="selectOption('lecturePreference', this)"></div>
+            </div>
+            <input type="hidden" id="lecturePreference" name="lecturePreference" required>
+        </div>
+
+        <button type="submit" class="btn-submit">설문 완료 및 강의 추천 받기</button>
+    </form>
+</div>
+
+<script>
+    // 게임별 티어 정보
+    const gameTiers = {
+        'LOL': ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER'],
+        'VALORANT': ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'ASCENDANT', 'IMMORTAL', 'RADIANT'],
+        'TFT': ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER']
+    };
+
+    // 티어 표시 텍스트
+    const tierDisplayNames = {
+        'IRON': '아이언',
+        'BRONZE': '브론즈',
+        'SILVER': '실버',
+        'GOLD': '골드',
+        'PLATINUM': '플래티넘',
+        'DIAMOND': '다이아몬드',
+        'MASTER': '마스터',
+        'GRANDMASTER': '그랜드마스터',
+        'CHALLENGER': '챌린저',
+        'ASCENDANT': '어센던트',
+        'IMMORTAL': '이모탈',
+        'RADIANT': '레디언트'
+    };
+
+    // 스피너 관련 함수
+    let progressMessages = [
+        "강의 정보를 분석하고 있습니다...",
+        "회원님의 선호도와 비교 중입니다...",
+        "AI가 최적의 강의를 찾고 있습니다...",
+        "추천 결과를 생성하고 있습니다..."
+    ];
+    let progressIndex = 0;
+
+    function showLoadingOverlay() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+
+        // 3초마다 진행 상황 메시지 변경
+        progressIndex = 0;
+        let progressInterval = setInterval(() => {
+            progressIndex = (progressIndex + 1) % progressMessages.length;
+            document.getElementById('loadingProgress').textContent = progressMessages[progressIndex];
+        }, 3000);
+
+        // 인터벌 ID를 저장하여 나중에 정리
+        window.progressInterval = progressInterval;
+    }
+
+    function hideLoadingOverlay() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        if (window.progressInterval) {
+            clearInterval(window.progressInterval);
         }
     }
 
-    function updateGameOptions() {
-        const gameType = document.getElementById('gameType').value;
-        const tierSelect = document.getElementById('gameTier');
-        const positionSelect = document.getElementById('gamePosition');
+    function selectOption(fieldName, element) {
+        // 같은 필드의 다른 옵션들의 선택 상태를 해제
+        document.querySelectorAll(`#${fieldName}Container .option-item`).forEach(item => {
+            item.classList.remove('selected');
+        });
 
-        // 티어 옵션 업데이트
-        tierSelect.innerHTML = '<option value="">-- 티어 선택 --</option>';
-        if (gameInfo[gameType] && gameInfo[gameType].tiers) {
-            gameInfo[gameType].tiers.forEach(tier => {
+        // 선택한 옵션에 선택 상태 클래스 추가
+        element.classList.add('selected');
+
+        // 숨겨진 입력 필드에 선택한 값 설정
+        document.getElementById(fieldName).value = element.getAttribute('data-value');
+    }
+
+    function handleGameTypeChange() {
+        const gameType = document.getElementById('gameType').value;
+        const tierContainer = document.getElementById('tierContainer');
+        const lolPositionContainer = document.getElementById('lolPositionContainer');
+        const valorantPositionContainer = document.getElementById('valorantPositionContainer');
+        const tftPositionContainer = document.getElementById('tftPositionContainer');
+
+        // 티어 선택 업데이트
+        updateTierOptions(gameType);
+
+        // 티어 선택 보이기
+        if (gameType) {
+            tierContainer.classList.add('show');
+        } else {
+            tierContainer.classList.remove('show');
+        }
+
+        // 게임 유형에 따라 적절한 포지션 선택 표시
+        if (gameType === 'LOL') {
+            lolPositionContainer.classList.add('show');
+            valorantPositionContainer.classList.remove('show');
+            tftPositionContainer.classList.remove('show');
+            // 다른 게임 포지션 값 초기화
+            document.getElementById('valorantPosition').value = '';
+            document.getElementById('tftPosition').value = '';
+        } else if (gameType === 'VALORANT') {
+            lolPositionContainer.classList.remove('show');
+            valorantPositionContainer.classList.add('show');
+            tftPositionContainer.classList.remove('show');
+            // 다른 게임 포지션 값 초기화
+            document.getElementById('lolPosition').value = '';
+            document.getElementById('tftPosition').value = '';
+        } else if (gameType === 'TFT') {
+            lolPositionContainer.classList.remove('show');
+            valorantPositionContainer.classList.remove('show');
+            tftPositionContainer.classList.add('show');
+            // 다른 게임 포지션 값 초기화
+            document.getElementById('lolPosition').value = '';
+            document.getElementById('valorantPosition').value = '';
+            document.getElementById('tftPosition').value = 'ALL';
+        } else {
+            lolPositionContainer.classList.remove('show');
+            valorantPositionContainer.classList.remove('show');
+            tftPositionContainer.classList.remove('show');
+            // 모든 포지션 값 초기화
+            document.getElementById('lolPosition').value = '';
+            document.getElementById('valorantPosition').value = '';
+            document.getElementById('tftPosition').value = '';
+        }
+    }
+
+    function updateTierOptions(gameType) {
+        const tierSelect = document.getElementById('gameTier');
+        tierSelect.innerHTML = '<option value="">티어를 선택하세요 (선택사항)</option>';
+
+        if (gameType && gameTiers[gameType]) {
+            gameTiers[gameType].forEach(tier => {
                 const option = document.createElement('option');
                 option.value = tier;
-                option.textContent = tier;
+                option.textContent = tierDisplayNames[tier] || tier;
                 tierSelect.appendChild(option);
             });
         }
-
-        // 포지션 옵션 업데이트
-        positionSelect.innerHTML = '<option value="">-- 포지션 선택 --</option>';
-        if (gameInfo[gameType] && gameInfo[gameType].positions) {
-            gameInfo[gameType].positions.forEach(position => {
-                const option = document.createElement('option');
-                option.value = position;
-                option.textContent = position;
-                positionSelect.appendChild(option);
-            });
-        }
     }
+
+    // 폼 제출 전 유효성 검사 및 스피너 표시
+    document.getElementById('surveyForm').addEventListener('submit', function(event) {
+        const gameType = document.getElementById('gameType').value;
+        const skillLevel = document.getElementById('skillLevel').value;
+        const learningGoal = document.getElementById('learningGoal').value;
+        const availableTime = document.getElementById('availableTime').value;
+        const lecturePreference = document.getElementById('lecturePreference').value;
+        const memberId = document.querySelector('input[name="memberId"]').value;
+
+        // 디버깅 정보 출력
+        console.log('폼 제출 데이터:', {
+            memberId, gameType, skillLevel, learningGoal, availableTime, lecturePreference
+        });
+
+        if (!gameType || !skillLevel || !learningGoal || !availableTime || !lecturePreference) {
+            event.preventDefault();
+            alert('모든 필수 항목을 선택해주세요.');
+            return;
+        }
+
+        // 로딩 오버레이 표시
+        showLoadingOverlay();
+    });
 
     // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
-        // gameType이 이미 선택되어 있다면 옵션 업데이트
-        if (document.getElementById('gameType').value) {
-            updateGameOptions();
+        // 페이지 로드 시 로딩 오버레이 숨기기
+        hideLoadingOverlay();
+
+        // memberId 값 확인 및 로깅
+        const memberIdField = document.querySelector('input[name="memberId"]');
+        console.log('로드 시 memberId 값:', memberIdField ? memberIdField.value : '필드 없음');
+
+        // memberId가 없거나 빈 값이면 기본값 설정
+        if (!memberIdField || !memberIdField.value) {
+            if (memberIdField) {
+                memberIdField.value = '1'; // 기본값 설정
+                console.log('memberId 기본값 설정: 1');
+            } else {
+                console.error('memberId 필드를 찾을 수 없습니다!');
+            }
+        }
+
+        const gameTypeSelect = document.getElementById('gameType');
+        if (gameTypeSelect.value) {
+            handleGameTypeChange();
         }
     });
-    /*]]>*/
 </script>
 </body>
 </html>

@@ -104,7 +104,7 @@ public class MypageService {
     // 결제 완료된 강의 목록 조회
     public List<Payment> getCompletedPayments(String username) {
         Member member = getCurrentMember(username);
-        return paymentRepository.findCompletedPaymentsByMember(member.getMemberId());
+        return paymentRepository.findCompletedPaymentsByMemberId(member.getMemberId());
     }
 
     // 강사 인증 확인

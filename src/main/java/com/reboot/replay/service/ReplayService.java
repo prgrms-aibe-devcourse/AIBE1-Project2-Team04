@@ -9,6 +9,7 @@ import com.reboot.reservation.repository.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,14 +79,12 @@ public class ReplayService {
         return convertToResponseDto(updatedReplay);
     }
 
+    @Transactional
     public void deleteReplay(Long replayId) {
-        // 리플레이 존재 여부 확인
-        if (!replayRepository.existsById(replayId)) {
-            throw new EntityNotFoundException("해당 리플레이가 존재하지 않습니다: " + replayId);
-        }
+        Replay replay = replayRepository.findById(replayId)
+                .orElseThrow(() -> new IllegalArgumentException("리플레이를 찾을 수 없습니다: " + replayId));
 
-        // 리플레이 삭제
-        replayRepository.deleteById(replayId);
+        replayRepository.delete(replay);
     }
 
     // 예약 ID로 리플레이 목록 조회
