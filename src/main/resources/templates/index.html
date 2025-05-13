@@ -66,13 +66,13 @@
                 </form>
             </div>
             <!-- 로그인하지 않은 경우 -->
-            <div th:if="${#authentication == null || !#authentication.isAuthenticated()}" class="flex items-center space-x-4">
+            <div th:if="${#authentication.name == 'anonymousUser'}" class="flex items-center space-x-4">
                 <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
                 <a th:href="@{/auth/sign}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
             </div>
 
             <!-- 로그인한 경우 -->
-            <div th:if="${#authentication != null && #authentication.isAuthenticated()}" class="flex items-center space-x-4">
+            <div th:if="${#authentication.name != 'anonymousUser'}" class="flex items-center space-x-4">
                 <a th:href="@{/notifications}" class="text-gray-600 hover:text-primary">
                     <i class="ri-notification-3-line text-xl"></i>
                 </a>
@@ -580,6 +580,7 @@
             }
         }
     });
+
 </script>
 </body>
 </html>
