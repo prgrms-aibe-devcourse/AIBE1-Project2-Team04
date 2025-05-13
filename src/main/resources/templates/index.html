@@ -40,8 +40,63 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-<!-- 헤더 포함 -->
-<div th:replace="fragments/header :: header"></div>
+<!-- 네비게이션 바 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="/" class="text-2xl font-['Pacifico'] text-primary mr-10">Re:Boot</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/lectures" class="text-gray-800 hover:text-primary font-medium">강의</a>
+                <a href="/mypage" class="text-gray-800 hover:text-primary font-medium">마이페이지</a>
+            </nav>
+        </div>
+
+        <!-- 네비게이션 바의 로그인/로그아웃 부분 수정 -->
+        <div class="flex items-center space-x-4">
+            <!-- 네비게이션 바 검색창 수정 -->
+            <div class="relative hidden md:block">
+                <form action="/lectures/search" method="GET">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="게임, 강의 검색" class="pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                        <button type="submit" class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-primary">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- 로그인하지 않은 경우 -->
+            <div th:if="${#authentication.name == 'anonymousUser'}" class="flex items-center space-x-4">
+                <a th:href="@{/auth/login}" class="bg-primary text-white border border-primary hover:bg-primary/90 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">로그인</a>
+                <a th:href="@{/auth/select_signup_type}" class="bg-white text-primary border border-primary hover:bg-gray-50 px-4 py-2 !rounded-button text-sm font-medium whitespace-nowrap">회원가입</a>
+            </div>
+
+            <!-- 로그인한 경우 -->
+            <div th:if="${#authentication.name != 'anonymousUser'}" class="flex items-center space-x-4">
+                <a th:href="@{/notifications}" class="text-gray-600 hover:text-primary">
+                    <i class="ri-notification-3-line text-xl"></i>
+                </a>
+                <div class="relative">
+                    <button id="profileDropdownButton" class="flex items-center space-x-2">
+                        <img src="/images/default-avatar.png" alt="프로필" class="w-8 h-8 rounded-full">
+                        <span th:text="${#authentication.name}" class="text-sm font-medium">사용자명</span>
+                    </button>
+                    <!-- 드롭다운 메뉴 -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden">
+                        <a th:href="@{/mypage}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">마이페이지</a>
+                        <a th:href="@{/mypage/lectures}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">내 강의</a>
+                        <form th:action="@{/logout}" method="post" class="block">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">로그아웃</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <button class="md:hidden w-10 h-10 flex items-center justify-center">
+                <i class="ri-menu-line text-xl"></i>
+            </button>
+        </div>
+    </div>
+</header>
 
 <!-- 히어로 섹션 -->
 <section class="hero-gradient text-white py-20">
@@ -352,8 +407,66 @@
     </div>
 </section>
 
-<!-- 푸터 포함 -->
-<div th:replace="fragments/footer :: footer"></div>
+<!-- 푸터 -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- 회사 정보 -->
+            <div>
+                <a href="/" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">Re:Boot</a>
+                <p class="text-gray-400 mb-4">게이머들을 위한 최고의 코칭 서비스를 제공합니다.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-facebook-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-twitter-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-instagram-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="ri-youtube-fill text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 서비스 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">서비스</h3>
+                <ul class="space-y-2">
+                    <li><a href="/lectures" class="text-gray-400 hover:text-white">강의</a></li>
+                    <li><a href="/survey/survey-form" class="text-gray-400 hover:text-white">설문조사</a></li>
+                </ul>
+            </div>
+
+            <!-- 게임 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">게임</h3>
+                <ul class="space-y-2">
+                    <li><a href="/lectures?game=LOL" class="text-gray-400 hover:text-white">리그 오브 레전드</a></li>
+                    <li><a href="/lectures?game=VALORANT" class="text-gray-400 hover:text-white">발로란트</a></li>
+                    <li><a href="/lectures?game=TFT" class="text-gray-400 hover:text-white">전략적 팀 전투</a></li>
+                </ul>
+            </div>
+
+            <!-- 고객 지원 -->
+            <div>
+                <h3 class="text-lg font-bold mb-4">고객 지원</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">자주 묻는 질문</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">이용 약관</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">개인정보 처리방침</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">문의하기</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Re:Boot - 게이밍 코칭 매칭 플랫폼. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -463,6 +576,7 @@
             }
         }
     });
+
 </script>
 </body>
 </html>
