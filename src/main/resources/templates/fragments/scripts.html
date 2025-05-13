@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 모바일 메뉴 토글
+            const menuButton = document.querySelector('.md\\:hidden');
+            const mobileNav = document.querySelector('.md\\:flex');
+
+            if (menuButton && mobileNav) {
+                menuButton.addEventListener('click', function() {
+                    // 모바일 메뉴 토글 구현
+                    if (mobileNav.classList.contains('hidden')) {
+                        mobileNav.classList.remove('hidden');
+                        mobileNav.classList.add('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
+                    } else {
+                        mobileNav.classList.add('hidden');
+                        mobileNav.classList.remove('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4');
+                    }
+                });
+            }
+
+            // 프로필 드롭다운 메뉴 토글 기능
+            const profileDropdownButton = document.getElementById('profileDropdownButton');
+            const profileDropdown = document.getElementById('profileDropdown');
+
+            if (profileDropdownButton && profileDropdown) {
+                profileDropdownButton.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 이벤트 전파 중지
+                    profileDropdown.classList.toggle('hidden');
+                });
+
+                // 드롭다운 외부 클릭 시 닫기
+                document.addEventListener('click', function(e) {
+                    if (!profileDropdownButton.contains(e.target) && !profileDropdown.contains(e.target)) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // 부드러운 스크롤
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // 스크롤 시 네비게이션 바 스타일 변경
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('shadow-md');
+                    header.classList.remove('shadow-sm');
+                } else {
+                    header.classList.remove('shadow-md');
+                    header.classList.add('shadow-sm');
+                }
+            });
+
+            // 이미지 로드 에러 처리
+            document.querySelectorAll('img').forEach(img => {
+                img.addEventListener('error', function() {
+                    this.src = '/images/default-placeholder.png';
+                });
+            });
+
+            // 검색 기능 구현
+            const searchInput = document.querySelector('input[placeholder="게임, 강의 검색"]');
+            if (searchInput) {
+                // 폼이 있는지 확인하고, 없으면 부모 요소 사용
+                const searchForm = searchInput.closest('form');
+
+                if (searchForm) {
+                    // 폼이 있으면 기본 제출 기능 사용
+                    // 추가 기능이 필요하면 여기에 코드 추가
+                } else {
+                    // 폼이 없는 경우 수동으로 검색 기능 구현
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            performSearch();
+                        }
+                    });
+
+                    // 검색 아이콘 클릭 이벤트 처리
+                    const searchIcon = searchInput.parentElement.querySelector('.ri-search-line');
+                    if (searchIcon) {
+                        const iconParent = searchIcon.parentElement;
+                        iconParent.addEventListener('click', function() {
+                            performSearch();
+                        });
+                    }
+                }
+            }
+
+            function performSearch() {
+                const keyword = searchInput.value.trim();
+                if (keyword) {
+                    window.location.href = `/api/lectures/search?keyword=${encodeURIComponent(keyword)}`;
+                }
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

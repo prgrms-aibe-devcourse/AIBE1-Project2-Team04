@@ -6,8 +6,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <!--헤드 포함-->
+    <th:block th:replace="fragments/config :: configFragment"></th:block>
+
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #fafbfc; margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
@@ -108,6 +112,9 @@
     </style>
 </head>
 <body class="fade-in">
+<!-- 헤더 포함 -->
+<div th:replace="fragments/header :: header"></div>
+
 <div id="loading-spinner" class="loading-spinner">
     <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -222,6 +229,13 @@
     </div>
 
 </div>
+
+<!-- 푸터 포함 -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- 공통 스크립트 포함 -->
+<div th:replace="fragments/scripts :: scripts"></div>
+
 
 <script>
     $(function() {

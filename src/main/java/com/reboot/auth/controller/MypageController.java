@@ -1,5 +1,6 @@
 package com.reboot.auth.controller;
 
+import com.reboot.auth.dto.GameDTO;
 import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Member;
@@ -179,9 +180,7 @@ public class MypageController {
         }
     }
 
-    //개인정보 관리
-
-    //게임정보 (읽기전용)
+    //게임정보
     @GetMapping("/game")
     public String myGames(Principal principal, Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
@@ -190,6 +189,69 @@ public class MypageController {
         model.addAttribute("member", member);
         model.addAttribute("game", game);
         return "mypage/game";
+    }
+    
+    @GetMapping("/game/register")
+    public String gameRegisterForm(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/auth/login";
+        }
+
+        // 이미 게임 정보가 있으면 수정 페이지로 리다이렉트
+        if (mypageService.hasGameInfo(principal.getName())) {
+            return "redirect:/mypage/game/edit";
+        }
+
+        model.addAttribute("gameDTO", new GameDTO());
+        return "mypage/game-register";
+    }
+
+    @PostMapping("/game/register")
+    public String gameRegister(@ModelAttribute GameDTO gameDTO,
+                               Principal principal,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            mypageService.saveGameInfo(principal.getName(), gameDTO);
+            redirectAttributes.addFlashAttribute("message", "게임 정보가 성공적으로 등록되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "게임 정보 등록 중 오류가 발생했습니다.");
+        }
+        return "redirect:/mypage";
+    }
+
+    @GetMapping("/game/edit")
+    public String gameEditForm(Principal principal, Model model) {
+        if (principal == null) {
+            return "redirect:/auth/login";
+        }
+
+        // 게임 정보가 없으면 등록 페이지로 리다이렉트
+        if (!mypageService.hasGameInfo(principal.getName())) {
+            return "redirect:/mypage/game/register";
+        }
+
+        Game game = mypageService.getCurrentGameByMember(principal.getName());
+        GameDTO gameDTO = GameDTO.builder()
+                .gameType(game.getGameType())
+                .gameTier(game.getGameTier())
+                .gamePosition(game.getGamePosition())
+                .build();
+
+        model.addAttribute("gameDTO", gameDTO);
+        return "mypage/game-edit";
+    }
+
+    @PostMapping("/game/edit")
+    public String gameEdit(@ModelAttribute GameDTO gameDTO,
+                           Principal principal,
+                           RedirectAttributes redirectAttributes) {
+        try {
+            mypageService.updateGameInfo(principal.getName(), gameDTO);
+            redirectAttributes.addFlashAttribute("message", "게임 정보가 성공적으로 수정되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "게임 정보 수정 중 오류가 발생했습니다.");
+        }
+        return "redirect:/mypage";
     }
 
     //수강신청 내역 페이지

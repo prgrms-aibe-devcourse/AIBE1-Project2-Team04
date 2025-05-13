@@ -16,4 +16,14 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
+
+    public String getUsernameByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .map(Member::getUsername)
+                .orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 없습니다: " + email));
+    }
+
+    public boolean existsByEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
 }
