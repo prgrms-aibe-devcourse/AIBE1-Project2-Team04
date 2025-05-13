@@ -8,6 +8,7 @@ import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
+import com.reboot.payment.entity.Payment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,14 +49,25 @@ public class MypageController {
             return "redirect:/auth/login";  // 로그인 페이지로 리다이렉트
         }
 
+        // 강사인 경우 강사 페이지로 자동 리다이렉트
+        if (mypageService.isInstructor(principal.getName())) {
+            return "redirect:/mypage/instructorMypage";
+        }
+
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
         List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());//수정
         List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
+        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
         model.addAttribute("member", member);
         model.addAttribute("games", games);
         model.addAttribute("reservations", reservationMIES);
+        model.addAttribute("completedPayments", completedPayments);
+
+        // 강사 인증 확인
+        boolean isInstructor = mypageService.isInstructor(principal.getName());
+        model.addAttribute("isInstructor", isInstructor);
 
         return "mypage/index";
     }
