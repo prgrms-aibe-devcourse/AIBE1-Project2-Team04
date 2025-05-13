@@ -1,6 +1,8 @@
 package com.reboot.auth.service;
 
+import com.reboot.auth.dto.GameDTO;
 import com.reboot.auth.dto.ProfileDTO;
+import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.repository.InstructorRepository;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.reboot.auth.repository.GameRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,15 +27,25 @@ public class MypageService {
     private final ReservationMyRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
     private final FileUploadService fileUploadService;
+    private final GameRepository gameRepository;
+    private final InstructorRepository instructorRepository;
+    private final PaymentRepository paymentRepository;
 
     public MypageService(MemberRepository memberRepository,
                          ReservationMyRepository reservationRepository,
                          PasswordEncoder passwordEncoder,
-                         FileUploadService fileUploadService) {
+                         FileUploadService fileUploadService,
+                         GameRepository gameRepository,
+                         InstructorRepository instructorRepository,
+                         PaymentRepository paymentRepository
+    ) {
         this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.passwordEncoder = passwordEncoder;
         this.fileUploadService = fileUploadService;
+        this.gameRepository = gameRepository;
+        this.instructorRepository = instructorRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     public Member getCurrentMember(String username) {
@@ -98,9 +111,6 @@ public class MypageService {
         return true;
     }
 
-    @Autowired
-    private PaymentRepository paymentRepository;
-
     // 결제 완료된 강의 목록 조회
     public List<Payment> getCompletedPayments(String username) {
         Member member = getCurrentMember(username);
@@ -110,7 +120,7 @@ public class MypageService {
     // 강사 인증 확인
     public boolean isInstructor(String username) {
         Member member = getCurrentMember(username);
-        return "INSTRUCTOR".equals(member.getRole());
+        return instructorRepository.existsByMember(member);
     }
 
     public Instructor getInstructorByMember(String username) {
@@ -119,6 +129,44 @@ public class MypageService {
                 .orElseThrow(() -> new RuntimeException("강사 정보를 찾을 수 없습니다."));
     }
 
-    @Autowired
-    private InstructorRepository instructorRepository;
+    // 게임 정보
+    public Game getCurrentGameByMember(String username) {
+        Member member = getCurrentMember(username);
+        return member.getGame();
+    }
+
+    public boolean hasGameInfo(String username) {
+        Member member = getCurrentMember(username);
+        return member.getGame() != null;
+    }
+
+    @Transactional
+    public void saveGameInfo(String username, GameDTO gameDTO) {
+        Member member = getCurrentMember(username);
+
+        Game game = member.getGame();
+        if (game == null) {
+            game = new Game();
+            game.setMember(member);
+        }
+
+        game.setGameType(gameDTO.getGameType());
+        game.setGameTier(gameDTO.getGameTier());
+        game.setGamePosition(gameDTO.getGamePosition());
+
+        gameRepository.save(game);
+    }
+
+    @Transactional
+    public void updateGameInfo(String username, GameDTO gameDTO) {
+        Member member = getCurrentMember(username);
+        Game game = member.getGame();
+
+        if (game != null) {
+            game.setGameType(gameDTO.getGameType());
+            game.setGameTier(gameDTO.getGameTier());
+            game.setGamePosition(gameDTO.getGamePosition());
+            gameRepository.save(game);
+        }
+    }
 }
