@@ -91,7 +91,6 @@ public class LectureServiceImpl implements LectureService {
         return lectureRepository.findAllActiveGameTypes();
     }
 
-
     // 특정 강의 ID의 상세 정보 조회
     @Override
     public LectureResponseDto getLectureById(Long id) {
@@ -114,5 +113,38 @@ public class LectureServiceImpl implements LectureService {
         return lectureDetailRepository.findByLectureId(id)
                 .map(LectureDetailResponseDto::fromEntity)
                 .orElseThrow(() -> new LectureNotFoundException("강의 상세 정보를 찾을 수 없습니다: " + id));
+    }
+
+    // 강의 ID와 강사 ID로 강의 엔티티 조회 (성능 개선 버전)
+    @Override
+    @Transactional(readOnly = true)
+    public Lecture getLectureEntityByIdAndInstructor(String lectureId, Long instructorId) {
+        Long id = extractLectureId(lectureId);
+
+        // 모든 연관 엔티티를 한 번에 로딩
+        Lecture lecture = lectureRepository.findByIdWithFullDetails(id)
+                .orElseThrow(() -> new LectureNotFoundException("강의를 찾을 수 없습니다: " + lectureId));
+
+        // 권한 검증
+        validateLectureOwnership(lecture, instructorId);
+
+        // 프록시 강제 초기화 코드 제거됨 - FETCH JOIN으로 이미 로드됨
+        return lecture;
+    }
+
+    // 강의 ID 추출 메소드
+    private Long extractLectureId(String lectureId) {
+        try {
+            return Long.parseLong(lectureId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("유효하지 않은 강의 ID 형식입니다: " + lectureId);
+        }
+    }
+
+    // 강의 소유권 검증 메소드
+    private void validateLectureOwnership(Lecture lecture, Long instructorId) {
+        if (!lecture.getInstructor().getInstructorId().equals(instructorId)) {
+            throw new SecurityException("해당 강의에 대한 권한이 없습니다.");
+        }
     }
 }

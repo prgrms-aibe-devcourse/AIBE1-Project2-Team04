@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새 강의 생성</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav-link {
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #0d6efd;
+        }
+
+        .form-header {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+            margin-top: 0;
+        }
+
+        .section-title {
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 0.5rem;
+            margin: 2rem 0 1rem 0;
+            font-weight: bold;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 0.75rem 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .info-box {
+            background-color: #e9f7fe;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .btn-submit {
+            background-color: #0d6efd;
+            color: white;
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #0d6efd;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* 이미지 업로드 스타일 */
+        .image-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+        }
+
+        .image-upload-area:hover {
+            border-color: #0d6efd;
+            background-color: #e9f7fe;
+        }
+
+        .image-preview {
+            max-width: 300px;
+            max-height: 200px;
+            margin: 1rem auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!-- 네비게이션 바 -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">게임 코칭 플랫폼</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">홈</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/lectures">강의 둘러보기</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/instructor/mypage">강사 마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    <form action="/logout" method="post" class="d-inline">
+                        <button type="submit" class="nav-link btn btn-link">로그아웃</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 상단 헤더 -->
+<header class="form-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1>새 강의 생성</h1>
+                <p class="lead">나만의 특별한 게임 코칭 강의를 만들어보세요</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 폼 -->
+<main class="container mb-5">
+    <form th:action="@{/instructor/lectures}" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- 기본 정보 카드 -->
+                <div class="card">
+                    <div class="card-header">
+                        기본 정보
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label for="title" class="form-label">강의명 <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title"
+                                   placeholder="예: LOL 미드라이너를 위한 실전 코칭" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label">강의 소개 <span class="required">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="6"
+                                      placeholder="강의에 대한 간단한 소개를 작성해주세요" required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="gameType" class="form-label">게임 타입 <span class="required">*</span></label>
+                                <select class="form-select" id="gameType" name="gameType" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="LOL">LOL</option>
+                                    <option value="VALORANT">VALORANT</option>
+                                    <option value="TFT">TFT</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="position" class="form-label">포지션 <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="position" name="position"
+                                       placeholder="예: TOP, MID, ADC" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="price" class="form-label">가격 (원) <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="price" name="price"
+                                       placeholder="0" required>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="duration" class="form-label">강의 시간 (분) <span class="required">*</span></label>
+                                <input type="number" class="form-control" id="duration" name="duration"
+                                       value="120" min="30" max="480" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="lectureRank" class="form-label">추천 티어 <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="lectureRank" name="lectureRank"
+                                   placeholder="예: SILVER-DIAMOND, GOLD-MASTER" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 상세 정보 카드 -->
+                <div class="card">
+                    <div class="card-header">
+                        상세 정보
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label for="overview" class="form-label">강의 개요</label>
+                            <textarea class="form-control" id="overview" name="overview" rows="3"
+                                      placeholder="강의의 전체적인 개요를 작성해주세요"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="learningObjectives" class="form-label">학습 목표</label>
+                            <textarea class="form-control" id="learningObjectives" name="learningObjectives" rows="5"
+                                      placeholder="이 강의를 통해 배울 수 있는 것들을 한 줄씩 작성해주세요"></textarea>
+                            <small class="text-muted">각 목표를 새로운 줄에 작성하면 보기 좋게 표시됩니다</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="curriculum" class="form-label">커리큘럼</label>
+                            <textarea class="form-control" id="curriculum" name="curriculum" rows="6"
+                                      placeholder="강의 커리큘럼을 순서대로 작성해주세요"></textarea>
+                            <small class="text-muted">각 항목을 새로운 줄에 작성하면 보기 좋게 표시됩니다</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="targetAudience" class="form-label">수강 대상</label>
+                            <textarea class="form-control" id="targetAudience" name="targetAudience" rows="3"
+                                      placeholder="이 강의를 추천하는 대상을 작성해주세요"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="prerequisites" class="form-label">필요한 사전 지식</label>
+                            <textarea class="form-control" id="prerequisites" name="prerequisites" rows="3"
+                                      placeholder="수강 전 알아야 할 사전 지식을 작성해주세요"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="instructorBio" class="form-label">강사 소개</label>
+                            <textarea class="form-control" id="instructorBio" name="instructorBio" rows="3"
+                                      placeholder="강사로서의 경력과 전문성을 소개해주세요"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오른쪽 사이드바 -->
+            <div class="col-lg-4">
+                <!-- 이미지 업로드 카드 -->
+                <div class="card">
+                    <div class="card-header">
+                        강의 이미지
+                    </div>
+                    <div class="card-body">
+                        <div class="image-upload-area" onclick="document.getElementById('imageFile').click();">
+                            <i class="bi bi-cloud-upload" style="font-size: 3rem; color: #6c757d;"></i>
+                            <p class="mt-2">클릭하여 이미지를 업로드하세요</p>
+                            <small class="text-muted">권장 크기: 16:9 비율</small>
+                        </div>
+                        <input type="file" id="imageFile" name="imageFile" accept="image/*"
+                               style="display: none;" onchange="previewImage(this);">
+                        <img id="imagePreview" class="image-preview" alt="미리보기">
+                    </div>
+                </div>
+
+                <!-- 도움말 카드 -->
+                <div class="card">
+                    <div class="card-header">
+                        작성 가이드
+                    </div>
+                    <div class="card-body">
+                        <div class="info-box">
+                            <h6>📌 좋은 강의 제목 작성법</h6>
+                            <ul class="mb-0">
+                                <li>구체적인 목표를 명시하세요</li>
+                                <li>대상 티어나 포지션을 포함하세요</li>
+                                <li>핵심 키워드를 사용하세요</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-box">
+                            <h6>📌 커리큘럼 작성 팁</h6>
+                            <ul class="mb-0">
+                                <li>단계별로 구분해서 작성하세요</li>
+                                <li>구체적인 실습 내용을 포함하세요</li>
+                                <li>예상 소요 시간을 명시하세요</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-box">
+                            <h6>📌 가격 책정 가이드</h6>
+                            <ul class="mb-0">
+                                <li>기본: 30,000 ~ 50,000원</li>
+                                <li>심화: 50,000 ~ 80,000원</li>
+                                <li>프리미엄: 80,000원 이상</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제출 버튼 -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-submit">강의 생성</button>
+            <a href="/instructor/mypage" class="btn btn-secondary btn-lg">취소</a>
+        </div>
+    </form>
+</main>
+
+<script>
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        const uploadArea = document.querySelector('.image-upload-area');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                uploadArea.style.padding = '1rem';
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

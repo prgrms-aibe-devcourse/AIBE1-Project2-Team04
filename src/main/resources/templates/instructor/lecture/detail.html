@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강의 상세 정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav-link {
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #0d6efd;
+        }
+
+        .lecture-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .game-badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 0.25rem;
+        }
+        .game-badge.LOL { background-color: #1f78b4; }
+        .game-badge.VALORANT { background-color: #e31c45; }
+        .game-badge.TFT { background-color: #6a3da3; }
+        .info-box {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+<!-- 네비게이션 바 -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">게임 코칭 플랫폼</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">홈</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/lectures">강의 둘러보기</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/instructor/mypage">강사 마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    <form action="/logout" method="post" class="d-inline">
+                        <button type="submit" class="nav-link btn btn-link">로그아웃</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- 뒤로가기 버튼 -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/instructor/mypage">마이페이지</a></li>
+            <li class="breadcrumb-item active" aria-current="page">강의 상세</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- 강의 헤더 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h1 th:text="${lecture.title}">강의 제목</h1>
+                            <p class="lead" th:if="${lectureDetail != null}" th:text="${lectureDetail.overview}">강의 개요</p>
+                            <div class="mb-3">
+                                <span th:class="${'game-badge ' + lecture.gameType}"
+                                      th:text="${lecture.gameType}">게임</span>
+                                <span class="badge bg-secondary" th:text="${lecture.position}">포지션</span>
+                                <span class="badge bg-info" th:text="${lecture.lectureRank}">티어</span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <h3 class="text-primary mb-2"
+                                th:text="${#numbers.formatDecimal(lecture.price, 0, 'COMMA', 0, 'POINT')} + '원'">0원</h3>
+                            <div class="btn-group-vertical">
+                                <a th:href="@{/instructor/lectures/{id}/edit(id=${lecture.rawId})}"
+                                   class="btn btn-warning">수정</a>
+                                <form th:action="@{/instructor/lectures/{id}/delete(id=${lecture.rawId})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger w-100"
+                                            onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 강의 이미지 -->
+            <div class="mb-4" th:if="${lecture.imageUrl}">
+                <img th:src="${lecture.imageUrl}" alt="강의 이미지" class="lecture-image">
+            </div>
+
+            <!-- 강의 설명 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>강의 소개</h3>
+                </div>
+                <div class="card-body">
+                    <p th:text="${lecture.description}">강의 설명</p>
+                </div>
+            </div>
+
+            <!-- 학습 목표 -->
+            <div class="card mb-4" th:if="${lectureDetail != null and lectureDetail.learningObjectives != null and !lectureDetail.learningObjectives.isEmpty()}">
+                <div class="card-header">
+                    <h3>학습 목표</h3>
+                </div>
+                <div class="card-body">
+                    <p style="white-space: pre-line;" th:text="${lectureDetail.learningObjectives}">학습 목표</p>
+                </div>
+            </div>
+
+            <!-- 커리큘럼 -->
+            <div class="card mb-4" th:if="${lectureDetail != null and lectureDetail.curriculum != null and !lectureDetail.curriculum.isEmpty()}">
+                <div class="card-header">
+                    <h3>커리큘럼</h3>
+                </div>
+                <div class="card-body">
+                    <p style="white-space: pre-line;" th:text="${lectureDetail.curriculum}">커리큘럼</p>
+                </div>
+            </div>
+
+            <!-- 수강 대상 -->
+            <div class="card mb-4" th:if="${lectureDetail != null and lectureDetail.targetAudience != null and !lectureDetail.targetAudience.isEmpty()}">
+                <div class="card-header">
+                    <h3>수강 대상</h3>
+                </div>
+                <div class="card-body">
+                    <p th:text="${lectureDetail.targetAudience}">수강 대상</p>
+                </div>
+            </div>
+
+            <!-- 선수 지식 -->
+            <div class="card mb-4" th:if="${lectureDetail != null and lectureDetail.prerequisites != null and !lectureDetail.prerequisites.isEmpty()}">
+                <div class="card-header">
+                    <h3>필요한 사전 지식</h3>
+                </div>
+                <div class="card-body">
+                    <p th:text="${lectureDetail.prerequisites}">선수 지식</p>
+                </div>
+            </div>
+
+            <!-- 강사 소개 -->
+            <div class="card mb-4" th:if="${lectureDetail != null and lectureDetail.instructorBio != null and !lectureDetail.instructorBio.isEmpty()}">
+                <div class="card-header">
+                    <h3>강사 소개</h3>
+                </div>
+                <div class="card-body">
+                    <p th:text="${lectureDetail.instructorBio}">강사 소개</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- 강의 통계 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>강의 통계</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-box">
+                        <h5>평점</h5>
+                        <div class="d-flex align-items-center">
+                            <span class="fs-1 fw-bold text-warning me-2"
+                                  th:text="${lecture.averageRating}">0.0</span>
+                            <span>/ 5.0</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="info-box text-center">
+                                <h5>수강생</h5>
+                                <p class="fs-3 fw-bold mb-0" th:text="${lecture.totalMembers}">0</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-box text-center">
+                                <h5>리뷰</h5>
+                                <p class="fs-3 fw-bold mb-0" th:text="${lecture.reviewCount}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 강의 정보 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>강의 정보</h4>
+                </div>
+                <div class="card-body">
+                    <dl>
+                        <dt>강의 시간</dt>
+                        <dd th:text="${lecture.duration} + '분'">0분</dd>
+
+                        <dt>게임</dt>
+                        <dd th:text="${lecture.gameType}">게임</dd>
+
+                        <dt>포지션</dt>
+                        <dd th:text="${lecture.position}">포지션</dd>
+
+                        <dt>추천 티어</dt>
+                        <dd th:text="${lecture.lectureRank}">티어</dd>
+
+                        <dt>등록일</dt>
+                        <dd th:text="${lecture.createdAt != null ? #temporals.format(lecture.createdAt, 'yyyy-MM-dd') : ''}">날짜</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- 관리 메뉴 -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>관리 메뉴</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/instructor/lectures/{id}/edit(id=${lecture.rawId})}"
+                           class="btn btn-warning">강의 수정</a>
+                        <a href="/instructor/mypage" class="btn btn-secondary">목록으로</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

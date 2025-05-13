@@ -4,11 +4,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
@@ -22,35 +23,14 @@ public class FileUploadService {
     private String supabaseAccessKey;
 
     @Value("${spring.supabase.img-bucket-name}")
-    private String imgBucketName;  // 기존 프로필 이미지용 버킷
+    private String imgBucketName;
 
-    // 강의 이미지 전용 버킷
     @Value("${spring.supabase.lecture-img-bucket-name:instructor-lecture-images}")
     private String lectureBucketName;
 
-    // 기존 프로필 이미지 업로드
-    public String uploadImageToSupabase(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return null;
-        }
+    private final RestTemplate restTemplate = new RestTemplate();
 
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String filename = UUID.randomUUID().toString() + extension;
-
-        // TODO: 실제 Supabase API 구현 필요
-        Path uploadPath = Paths.get("uploads", "profiles");
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        Path filePath = uploadPath.resolve(filename);
-        Files.copy(file.getInputStream(), filePath);
-
-        return supabaseUrl + "/storage/v1/object/public/" + imgBucketName + "/" + filename;
-    }
-
-    // 강의 이미지 업로드 (전용 버킷 사용)
+    // 강의 이미지 업로드 (실제 Supabase API 사용)
     public String uploadLectureImage(MultipartFile file, Long instructorId) throws IOException {
         if (file.isEmpty()) {
             return null;
@@ -72,56 +52,84 @@ public class FileUploadService {
 
         // 강사별 폴더 구조
         String folderPath = String.format("instructor-%d", instructorId);
+        String fullPath = folderPath + "/" + filename;
 
-        // TODO: 실제 Supabase API 구현 필요
-        Path uploadPath = Paths.get("uploads", lectureBucketName, folderPath);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        try {
+            // Supabase Storage API URL
+            String uploadUrl = String.format("%s/storage/v1/object/%s/%s",
+                    supabaseUrl, lectureBucketName, fullPath);
+
+            // HTTP 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(file.getContentType()));
+            headers.setBearerAuth(supabaseAccessKey);
+
+            // 요청 생성
+            HttpEntity<byte[]> request = new HttpEntity<>(file.getBytes(), headers);
+
+            // 파일 업로드
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uploadUrl,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // 업로드 성공 시 공개 URL 반환
+                return String.format("%s/storage/v1/object/public/%s/%s",
+                        supabaseUrl, lectureBucketName, fullPath);
+            } else {
+                throw new IOException("Supabase 업로드 실패: " + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            log.error("Supabase 업로드 중 오류 발생: ", e);
+            throw new IOException("파일 업로드 실패", e);
         }
-
-        Path filePath = uploadPath.resolve(filename);
-        Files.copy(file.getInputStream(), filePath);
-
-        // 강의 이미지 버킷 URL
-        return String.format("%s/storage/v1/object/public/%s/%s/%s",
-                supabaseUrl, lectureBucketName, folderPath, filename);
     }
 
-    // 이미지 삭제 메서드
+    // 이미지 삭제 메서드 (실제 Supabase API 사용)
     public void deleteImage(String imageUrl) {
         if (imageUrl == null || imageUrl.isEmpty()) {
             return;
         }
 
         try {
-            // 어느 버킷인지 확인
-            String profileBucketUrl = String.format("%s/storage/v1/object/public/%s/",
-                    supabaseUrl, imgBucketName);
             String lectureBucketUrl = String.format("%s/storage/v1/object/public/%s/",
                     supabaseUrl, lectureBucketName);
 
-            String path = null;
-            String bucketName = null;
+            if (imageUrl.startsWith(lectureBucketUrl)) {
+                String path = imageUrl.substring(lectureBucketUrl.length());
 
-            if (imageUrl.startsWith(profileBucketUrl)) {
-                path = imageUrl.substring(profileBucketUrl.length());
-                bucketName = imgBucketName;
-            } else if (imageUrl.startsWith(lectureBucketUrl)) {
-                path = imageUrl.substring(lectureBucketUrl.length());
-                bucketName = lectureBucketName;
-            }
+                // Supabase Storage API URL
+                String deleteUrl = String.format("%s/storage/v1/object/%s/%s",
+                        supabaseUrl, lectureBucketName, path);
 
-            if (path != null) {
-                // TODO: 실제 Supabase API를 사용한 삭제 구현 필요
-                log.info("이미지 삭제 - 버킷: {}, 경로: {}", bucketName, path);
+                // HTTP 헤더 설정
+                HttpHeaders headers = new HttpHeaders();
+                headers.setBearerAuth(supabaseAccessKey);
 
-                // 임시 로컬 삭제
-                Path filePath = Paths.get("uploads", bucketName, path);
-                Files.deleteIfExists(filePath);
+                // 요청 생성
+                HttpEntity<Void> request = new HttpEntity<>(headers);
+
+                // 파일 삭제
+                ResponseEntity<String> response = restTemplate.exchange(
+                        deleteUrl,
+                        HttpMethod.DELETE,
+                        request,
+                        String.class
+                );
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    log.info("이미지 삭제 성공: {}", path);
+                } else {
+                    log.error("이미지 삭제 실패: {}", response.getStatusCode());
+                }
             }
 
         } catch (Exception e) {
-            log.error("이미지 삭제 실패: ", e);
+            log.error("이미지 삭제 중 오류 발생: ", e);
         }
     }
 
@@ -129,5 +137,49 @@ public class FileUploadService {
     private boolean isImageFile(MultipartFile file) {
         String contentType = file.getContentType();
         return contentType != null && contentType.startsWith("image/");
+    }
+
+    // 기존 프로필 이미지 업로드
+    public String uploadImageToSupabase(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            return null;
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String filename = UUID.randomUUID().toString() + extension;
+
+        try {
+            // Supabase Storage API URL
+            String uploadUrl = String.format("%s/storage/v1/object/%s/%s",
+                    supabaseUrl, imgBucketName, filename);
+
+            // HTTP 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(file.getContentType()));
+            headers.setBearerAuth(supabaseAccessKey);
+
+            // 요청 생성
+            HttpEntity<byte[]> request = new HttpEntity<>(file.getBytes(), headers);
+
+            // 파일 업로드
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uploadUrl,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return String.format("%s/storage/v1/object/public/%s/%s",
+                        supabaseUrl, imgBucketName, filename);
+            } else {
+                throw new IOException("Supabase 업로드 실패: " + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            log.error("Supabase 업로드 중 오류 발생: ", e);
+            throw new IOException("파일 업로드 실패", e);
+        }
     }
 }

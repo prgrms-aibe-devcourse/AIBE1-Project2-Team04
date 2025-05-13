@@ -17,6 +17,8 @@ import com.reboot.lecture.repository.LectureDetailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Sort;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +36,16 @@ public class InstructorLectureServiceImpl implements InstructorLectureService {
     @Override
     @Transactional(readOnly = true)
     public List<LectureResponseDto> getLecturesByInstructor(Long instructorId) {
-        List<Lecture> lectures = lectureRepository.findByInstructorInstructorId(instructorId);
+        // 최신순 정렬 추가
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+
+        // 1. 수정된 메소드 이름 사용
+        List<Lecture> lectures = lectureRepository.findByInstructorInstructorIdOrderByMetadataCreatedAtDesc(instructorId);
+
+//        // 또는 이미 정렬된 메소드를 사용한다면
+//         List<Lecture> lectures = lectureRepository.findByInstructorInstructorIdOrderByCreatedAtDesc(instructorId);
+
+
         return lectures.stream()
                 .map(LectureResponseDto::fromEntity)
                 .collect(Collectors.toList());

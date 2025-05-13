@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,24 +58,62 @@ public class InstructorLectureController {
     // 강의 상세 조회 페이지
     @GetMapping("/lectures/{lectureId}")
     public String getLecture(@PathVariable String lectureId, Model model) {
-        Instructor instructor = instructorAuthService.getCurrentInstructor();
-        LectureResponseDto lecture = instructorLectureService.getLectureByIdAndInstructor(
-                lectureId, instructor.getInstructorId());
+        System.out.println("=== 강의 상세 조회 시작 ===");
+        System.out.println("Lecture ID: " + lectureId);
 
-        // 상세 정보도 조회
-        LectureDetailResponseDto lectureDetail = instructorLectureService.getLectureDetailByIdAndInstructor(
-                lectureId, instructor.getInstructorId());
+        try {
+            Instructor instructor = instructorAuthService.getCurrentInstructor();
+            System.out.println("Instructor ID: " + instructor.getInstructorId());
 
-        model.addAttribute("lecture", lecture);
-        model.addAttribute("lectureDetail", lectureDetail);
-        return "instructor/lecture/detail";
+            LectureResponseDto lecture = instructorLectureService.getLectureByIdAndInstructor(
+                    lectureId, instructor.getInstructorId());
+            System.out.println("Lecture 조회 완료: " + lecture.getTitle());
+
+            // 상세 정보도 조회
+            try {
+                LectureDetailResponseDto lectureDetail = instructorLectureService.getLectureDetailByIdAndInstructor(
+                        lectureId, instructor.getInstructorId());
+                System.out.println("LectureDetail 조회 완료");
+                model.addAttribute("lectureDetail", lectureDetail);
+            } catch (Exception e) {
+                System.out.println("LectureDetail 조회 실패: " + e.getMessage());
+                // lectureDetail이 없어도 계속 진행
+            }
+
+            model.addAttribute("lecture", lecture);
+
+            System.out.println("=== 강의 상세 조회 완료 ===");
+            return "instructor/lecture/detail";
+
+        } catch (Exception e) {
+            System.out.println("강의 조회 중 에러: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    // 새 강의 생성 폼
     @GetMapping("/lectures/new")
     public String createLectureForm(Model model) {
-        model.addAttribute("lectureRequest", new LectureRequestDto());
-        return "instructor/lecture/form";
+        System.out.println("=== 강의 생성 폼 표시 ===");
+
+        try {
+            // 빈 객체 생성 (null 값 방지)
+            LectureRequestDto lectureRequest = new LectureRequestDto();
+
+            // 기본값 설정
+            lectureRequest.setDuration(120);  // 기본 2시간
+            lectureRequest.setPrice(0);       // 기본 가격
+
+            model.addAttribute("lectureRequest", lectureRequest);
+
+            System.out.println("강의 생성 폼 준비 완료");
+            return "instructor/lecture/form";
+
+        } catch (Exception e) {
+            System.out.println("강의 생성 폼 에러: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     // 새 강의 생성 처리
@@ -107,16 +146,29 @@ public class InstructorLectureController {
 
     // 강의 수정 폼
     @GetMapping("/lectures/{lectureId}/edit")
+    @Transactional(readOnly = true)  // 트랜잭션 추가
     public String updateLectureForm(@PathVariable String lectureId, Model model) {
-        Instructor instructor = instructorAuthService.getCurrentInstructor();
+        try {
+            Instructor instructor = instructorAuthService.getCurrentInstructor();
 
-        // 엔티티로 직접 조회
-        Lecture lecture = instructorLectureService.getLectureEntityByIdAndInstructor(
-                lectureId, instructor.getInstructorId());
+            // 엔티티로 직접 조회 시 fetch join 사용
+            Lecture lecture = instructorLectureService.getLectureEntityByIdAndInstructor(
+                    lectureId, instructor.getInstructorId());
 
-        model.addAttribute("lecture", LectureResponseDto.fromEntity(lecture));
-        model.addAttribute("lectureRequest", LectureRequestDto.fromEntity(lecture));
-        return "instructor/lecture/edit";
+            // 트랜잭션 내에서 프록시 초기화를 위해 명시적으로 접근
+            if (lecture.getInstructor() != null) {
+                lecture.getInstructor().getNickname(); // 프록시 초기화
+            }
+
+            model.addAttribute("lecture", LectureResponseDto.fromEntity(lecture));
+            model.addAttribute("lectureRequest", LectureRequestDto.fromEntity(lecture));
+            return "instructor/lecture/edit";
+
+        } catch (Exception e) {
+            System.out.println("강의 수정 폼 로드 중 에러: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     // 강의 수정 처리

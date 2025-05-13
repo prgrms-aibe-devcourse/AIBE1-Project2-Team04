@@ -42,7 +42,11 @@ public class InstructorAuthService {
     @Transactional(readOnly = true)
     public Instructor getCurrentInstructor() {
         Member member = getCurrentMember();
-        return instructorRepository.findById(member.getMemberId())
+        System.out.println("=== getCurrentInstructor 디버깅 ===");
+        System.out.println("Member ID: " + member.getMemberId());
+
+        // findById 대신 findByMember_MemberId 사용
+        return instructorRepository.findByMember_MemberId(member.getMemberId())
                 .orElseThrow(() -> new InstructorNotFoundException("강사 정보를 찾을 수 없습니다: " + member.getMemberId()));
     }
 
