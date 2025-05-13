@@ -239,8 +239,6 @@
 </footer>
 
 <script>
-    const WEB_URL = 'http://localhost:8080';
-
     document.addEventListener('DOMContentLoaded', function () {
         const profileImageInput = document.getElementById('profileImage');
         const profileImagePreview = document.getElementById('profileImagePreview');
@@ -287,7 +285,7 @@
 
             console.log(signupData);
 
-            const response = await fetch(WEB_URL + '/auth/sign_details', {
+            const response = await fetch('/auth/sign_details', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
