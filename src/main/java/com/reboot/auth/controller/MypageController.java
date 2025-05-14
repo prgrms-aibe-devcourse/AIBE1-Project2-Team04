@@ -3,6 +3,7 @@ package com.reboot.auth.controller;
 import com.reboot.auth.dto.GameDTO;
 import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Game;
+import com.reboot.auth.entity.Instructor;
 import com.reboot.auth.entity.Member;
 import com.reboot.auth.entity.ReservationMy;
 import com.reboot.auth.repository.GameRepository;
@@ -15,11 +16,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/mypage")
@@ -40,7 +41,7 @@ public class MypageController {
         this.mypageService = mypageService;
     }
 
-    // 메인화면
+    // 메인 마이페이지 (일반 사용자)
     @GetMapping
     public String mypage(Principal principal, Model model) {
         try {
@@ -54,37 +55,79 @@ public class MypageController {
                 return "redirect:/mypage/instructorMypage";
             }
 
-            // 로그인 사용자 정보 조회
+            // 기본 정보 조회
             Member member = mypageService.getCurrentMember(principal.getName());
             List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());
-            List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
 
-            // 기본 모델 속성 설정
+            // 1. 강제 동기화 실행 (결제 완료 후 반영 확인)
+            mypageService.forceSync(principal.getName());
+
+            // 2. 동기화 후 데이터 재조회
+            List<ReservationMy> reservations = reservationMyRepository.findByMemberId(member.getMemberId());
+
+            // 3. 결제 대기 중인 예약 조회
+            List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
+
+            // 4. 결제 완료된 Payment 목록 조회
+            List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
+
+            // 5. 결제 완료된 강의(ReservationMy) 목록 조회
+            List<ReservationMy> completedCourses = mypageService.getCompletedCourses(principal.getName());
+
+            // 모델에 데이터 설정 (HTML 템플릿 변수명과 정확히 일치)
             model.addAttribute("member", member);
             model.addAttribute("game", game);
-            model.addAttribute("reservations", reservationMIES);
-            model.addAttribute("completedPayments", List.of()); // 기본값
-            model.addAttribute("pendingReservations", List.of()); // 기본값
+            model.addAttribute("reservations", reservations); // 전체 예약 (미사용이지만 유지)
+            model.addAttribute("pendingReservations", pendingReservations); // 결제 대기
+            model.addAttribute("completedPayments", completedPayments); // 결제 완료
+            model.addAttribute("completedCourses", completedCourses); // 수강 완료
 
-            try {
-                // 동기화를 포함한 결제 관련 로직
-                List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
-                List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
-
-                // 성공적으로 조회된 경우에만 업데이트
-                model.addAttribute("completedPayments", completedPayments);
-                model.addAttribute("pendingReservations", pendingReservations);
-
-            } catch (Exception e) {
-                System.err.println("결제 정보 조회 중 오류: " + e.getMessage());
-                e.printStackTrace();
-                // 오류가 있어도 기본 페이지는 보여줌
-            }
+            // 디버깅 로그
+            System.out.println("=== 마이페이지 데이터 확인 ===");
+            System.out.println("전체 예약 수: " + reservations.size());
+            System.out.println("결제 대기 예약 수: " + pendingReservations.size());
+            System.out.println("결제 완료 Payment 수: " + completedPayments.size());
+            System.out.println("수강 완료 강의 수: " + completedCourses.size());
 
             return "mypage/index";
 
         } catch (Exception e) {
             System.err.println("마이페이지 접속 오류: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/error";
+        }
+    }
+
+    // 강사 마이페이지
+    @GetMapping("/instructorMypage")
+    public String instructorMypage(Principal principal, Model model) {
+        try {
+            // 인증 확인
+            if (principal == null) {
+                return "redirect:/auth/login";
+            }
+
+            // 강사인지 확인
+            if (!mypageService.isInstructor(principal.getName())) {
+                return "redirect:/mypage"; // 일반 사용자 페이지로 리다이렉트
+            }
+
+            // 기본 정보 조회
+            Member member = mypageService.getCurrentMember(principal.getName());
+            Instructor instructor = mypageService.getInstructorByMember(principal.getName());
+
+            // 모델에 데이터 설정
+            model.addAttribute("member", member);
+            model.addAttribute("instructor", instructor);
+
+            // 강사 관련 추가 데이터 (나중에 구현)
+            // model.addAttribute("lectures", instructorLectures);
+            // model.addAttribute("students", instructorStudents);
+
+            return "mypage/instructorMypage";
+
+        } catch (Exception e) {
+            System.err.println("강사 마이페이지 접속 오류: " + e.getMessage());
             e.printStackTrace();
             return "redirect:/error";
         }
@@ -102,13 +145,13 @@ public class MypageController {
         ProfileDTO profileDTO = ProfileDTO.builder()
                 .username(member.getUsername()) // 읽기 전용
                 .name(member.getName())         // 읽기 전용
-                .email(member.getEmail())       // 일기 전용
+                .email(member.getEmail())       // 읽기 전용
                 .nickname(member.getNickname()) // 변경 가능
                 .phone(member.getPhone())       // 변경 가능
                 .build();
 
         model.addAttribute("profileDTO", profileDTO);
-        model.addAttribute("member",member);
+        model.addAttribute("member", member);
         return "mypage/profile-edit";
     }
 
@@ -207,7 +250,7 @@ public class MypageController {
         model.addAttribute("game", game);
         return "mypage/game";
     }
-    
+
     @GetMapping("/game/register")
     public String gameRegisterForm(Principal principal, Model model) {
         if (principal == null) {
@@ -275,10 +318,10 @@ public class MypageController {
     @GetMapping("/reservations")
     public String myReservations(Principal principal, Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
+        List<ReservationMy> reservations = reservationMyRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
-        model.addAttribute("reservations", reservationMIES);
+        model.addAttribute("reservations", reservations);
 
         return "mypage/reservations";
     }
@@ -300,17 +343,35 @@ public class MypageController {
         }
     }
 
-    // 예약 상태 업데이트 헬퍼 메서드
-    private void updateReservationMyStatusToCompleted(Long reservationId) {
+    // 강제 동기화 API (디버깅용)
+    @PostMapping("/sync")
+    @ResponseBody
+    public String forceSync(Principal principal) {
         try {
-            Optional<ReservationMy> reservationMyOpt = reservationMyRepository.findById(reservationId);
-            if (reservationMyOpt.isPresent()) {
-                ReservationMy reservationMy = reservationMyOpt.get();
-                reservationMy.setStatus("결제완료");
-                reservationMyRepository.save(reservationMy);
+            if (principal == null) {
+                return "로그인이 필요합니다.";
             }
+
+            mypageService.forceSync(principal.getName());
+            return "동기화 완료";
         } catch (Exception e) {
-            System.err.println("예약 상태 업데이트 실패: " + e.getMessage());
+            return "동기화 실패: " + e.getMessage();
+        }
+    }
+
+    // 테이블 상태 비교 API (디버깅용)
+    @GetMapping("/compare")
+    @ResponseBody
+    public String compareTables(Principal principal) {
+        try {
+            if (principal == null) {
+                return "로그인이 필요합니다.";
+            }
+
+            mypageService.compareTables(principal.getName());
+            return "테이블 비교 완료 (콘솔 로그 확인)";
+        } catch (Exception e) {
+            return "테이블 비교 실패: " + e.getMessage();
         }
     }
 }
