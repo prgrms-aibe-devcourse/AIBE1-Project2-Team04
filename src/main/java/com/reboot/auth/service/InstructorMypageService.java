@@ -69,17 +69,23 @@ public class InstructorMypageService {
         if (instructor != null) {
             instructor.setCareer(dto.getCareer());
             instructor.setDescription(dto.getDescription());
+            instructorRepository.save(instructor); // 명시적 저장
+        } else {
+            // 만약 instructor가 없다면 에러 처리 또는 생성
+            throw new RuntimeException("강사 정보가 존재하지 않습니다.");
         }
 
         // Game 정보 수정
         if (game == null) {
             game = new Game();
             game.setMember(member);
+            member.setGame(game); // 양방향 관계 설정
         }
         game.setGameType(dto.getGameType());
         game.setGameTier(dto.getGameTier());
         game.setGamePosition(dto.getGamePosition());
 
+        // 저장 순서 중요: Member 먼저, 그 다음 Game
         memberRepository.save(member);
         gameRepository.save(game);
     }
