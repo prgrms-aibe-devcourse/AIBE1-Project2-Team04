@@ -51,13 +51,20 @@ public class InstructorMypageService {
         Instructor instructor = member.getInstructor();
         Game game = member.getGame();
 
+        // 닉네임 중복 검사 추가
+        if (!member.getNickname().equals(dto.getNickname())) {
+            boolean nicknameExists = memberRepository.existsByNicknameAndMemberIdNot(dto.getNickname(), member.getMemberId());
+            if (nicknameExists) {
+                throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+            }
+        }
+
         // Member 정보 수정 (변경 가능한 필드만)
         member.setNickname(dto.getNickname());
         member.setPhone(dto.getPhone());
 
         // 프로필 이미지 처리
         if (profileImage != null && !profileImage.isEmpty()) {
-            // 이미지 업로드 로직
             validateProfileImage(profileImage);
             String imageUrl = fileUploadService.uploadImageToSupabase(profileImage);
             if (imageUrl != null) {
