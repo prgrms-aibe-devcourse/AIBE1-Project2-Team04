@@ -32,7 +32,9 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'me.paulschwarz:spring-dotenv:3.0.0'
     implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+/*
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+*/
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.json:json:20240205'
     compileOnly 'org.projectlombok:lombok'
@@ -46,7 +48,9 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+/*
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
+*/
 }
 
 tasks.named('test') {
