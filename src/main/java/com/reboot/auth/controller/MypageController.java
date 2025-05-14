@@ -98,41 +98,6 @@ public class MypageController {
         }
     }
 
-    // 강사 마이페이지
-    @GetMapping("/instructorMypage")
-    public String instructorMypage(Principal principal, Model model) {
-        try {
-            // 인증 확인
-            if (principal == null) {
-                return "redirect:/auth/login";
-            }
-
-            // 강사인지 확인
-            if (!mypageService.isInstructor(principal.getName())) {
-                return "redirect:/mypage"; // 일반 사용자 페이지로 리다이렉트
-            }
-
-            // 기본 정보 조회
-            Member member = mypageService.getCurrentMember(principal.getName());
-            Instructor instructor = mypageService.getInstructorByMember(principal.getName());
-
-            // 모델에 데이터 설정
-            model.addAttribute("member", member);
-            model.addAttribute("instructor", instructor);
-
-            // 강사 관련 추가 데이터 (나중에 구현)
-            // model.addAttribute("lectures", instructorLectures);
-            // model.addAttribute("students", instructorStudents);
-
-            return "mypage/instructorMypage";
-
-        } catch (Exception e) {
-            System.err.println("강사 마이페이지 접속 오류: " + e.getMessage());
-            e.printStackTrace();
-            return "redirect:/error";
-        }
-    }
-
     //프로필 수정 페이지
     @GetMapping("/profile")
     public String profileEditForm(Principal principal, Model model) {
