@@ -10,7 +10,6 @@ import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
 import com.reboot.payment.entity.Payment;
-import com.reboot.reservation.repository.ReservationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +33,7 @@ public class MypageController {
     public MypageController(MemberRepository memberRepository,
                             GameRepository gameRepository,
                             ReservationMyRepository reservationMyRepository,
-                            MypageService mypageService,
-                            ReservationRepository mainReservationRepository) {
+                            MypageService mypageService) {
         this.memberRepository = memberRepository;
         this.gameRepository = gameRepository;
         this.reservationMyRepository = reservationMyRepository;
@@ -45,47 +43,60 @@ public class MypageController {
     // 메인화면
     @GetMapping
     public String mypage(Principal principal, Model model) {
-
-        // 인증 확인
-        if (principal == null) {
-            return "redirect:/auth/login";  // 로그인 페이지로 리다이렉트
-        }
-
-        // 강사인 경우 강사 페이지로 자동 리다이렉트
-        if (mypageService.isInstructor(principal.getName())) {
-            return "redirect:/mypage/instructorMypage";
-        }
-
-        // 결제 대기 중인 예약 동기화
-        List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
-
-        // 결제가 완료된 예약들 상태 업데이트
-        for (ReservationMy reservation : pendingReservations) {
-            if (mypageService.hasPayment(reservation.getId())) {
-                updateReservationMyStatusToCompleted(reservation.getId());
+        try {
+            // 인증 확인
+            if (principal == null) {
+                return "redirect:/auth/login";
             }
+
+            // 강사인 경우 강사 페이지로 자동 리다이렉트
+            if (mypageService.isInstructor(principal.getName())) {
+                return "redirect:/mypage/instructorMypage";
+            }
+
+            // 로그인 사용자 정보 조회 (기본 정보부터)
+            Member member = mypageService.getCurrentMember(principal.getName());
+            List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());
+            List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
+
+            // 기본 모델 속성 설정 (오류가 나도 기본 페이지는 보이도록)
+            model.addAttribute("member", member);
+            model.addAttribute("game", game);
+            model.addAttribute("reservations", reservationMIES);
+            model.addAttribute("completedPayments", List.of()); // 기본값
+            model.addAttribute("pendingReservations", List.of()); // 기본값
+
+            try {
+                // 결제 관련 로직 (오류 발생해도 페이지는 보여주도록)
+                List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
+
+                // 결제가 완료된 예약들 상태 업데이트
+                for (ReservationMy reservation : pendingReservations) {
+                    if (mypageService.hasPayment(reservation.getId())) {
+                        updateReservationMyStatusToCompleted(reservation.getId());
+                    }
+                }
+
+                // 업데이트 후 다시 조회
+                pendingReservations = mypageService.getPendingMyReservations(principal.getName());
+                List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
+
+                // 성공적으로 조회된 경우에만 업데이트
+                model.addAttribute("completedPayments", completedPayments);
+                model.addAttribute("pendingReservations", pendingReservations);
+
+            } catch (Exception e) {
+                System.err.println("결제 정보 조회 중 오류: " + e.getMessage());
+                // 오류가 있어도 기본 페이지는 보여줌
+            }
+
+            return "mypage/index";
+
+        } catch (Exception e) {
+            System.err.println("마이페이지 접속 오류: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/error";
         }
-
-        // 로그인 사용자 정보 조회
-        Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());//수정
-        List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
-
-        // 업데이트 후 다시 조회
-        pendingReservations = mypageService.getPendingMyReservations(principal.getName());
-        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
-
-        model.addAttribute("member", member);
-        model.addAttribute("game", game);
-        model.addAttribute("reservations", reservationMIES);
-        model.addAttribute("completedPayments", completedPayments);
-        model.addAttribute("pendingReservations", pendingReservations);
-
-//        // 강사 인증 확인
-//        boolean isInstructor = mypageService.isInstructor(principal.getName());
-//        model.addAttribute("isInstructor", isInstructor);
-
-        return "mypage/index";
     }
 
     //프로필 수정 페이지

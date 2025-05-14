@@ -97,7 +97,7 @@
         </div>
 
         <!-- 결제 대기 중인 강의 -->
-        <div th:if="${!#lists.isEmpty(pendingReservations)}" class="mb-8">
+        <div th:if="${pendingReservations != null and !#lists.isEmpty(pendingReservations)}" class="mb-8">
             <h4 class="text-lg font-semibold mb-4 text-yellow-600">🔄 결제 대기 중</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div th:each="reservation : ${pendingReservations}"
@@ -109,7 +109,8 @@
                     </div>
                     <div class="mb-3">
                         <p class="text-sm text-gray-500">예약 일정</p>
-                        <p class="text-sm font-medium" th:text="${#temporals.format(reservation.date, 'yyyy-MM-dd HH:mm')}">일정</p>
+                        <p class="text-sm font-medium"
+                           th:text="${reservation.date != null ? #temporals.format(reservation.date, 'yyyy-MM-dd HH:mm') : '-'}">일정</p>
                     </div>
                     <div class="mb-3">
                         <p class="text-sm font-medium text-yellow-600">상태: <span th:text="${reservation.status}">예약완료</span></p>
@@ -127,19 +128,52 @@
             <hr class="mt-6 mb-6">
         </div>
 
-        <!-- 결제 완료된 강의 표시 메시지 -->
-        <div th:if="${#lists.isEmpty(completedPayments) && #lists.isEmpty(pendingReservations)}" class="text-center py-8">
-            <p class="text-gray-500">수강 강의가 없습니다.</p>
-            <a href="/lectures" class="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">강의 찾아보기</a>
-        </div>
-
         <!-- 결제 완료된 강의 -->
-        <div th:if="${!#lists.isEmpty(completedPayments)}">
+        <div th:if="${completedPayments != null and !#lists.isEmpty(completedPayments)}">
             <h4 class="text-lg font-semibold mb-4 text-green-600">✅ 결제 완료</h4>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">강의명</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">강사명</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">결제일</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가격</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="payment : ${completedPayments}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900"
+                                 th:text="${payment.reservation?.lecture?.info?.title ?: '강의명 정보 없음'}">강의명</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900"
+                                 th:text="${payment.reservation?.instructor?.member?.name ?: '강사명 정보 없음'}">강사명</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900"
+                                 th:text="${payment.paymentAt != null ? #temporals.format(payment.paymentAt, 'yyyy-MM-dd HH:mm') : '-'}">결제일</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">
+                                <span th:text="${payment.price ?: 0}">0</span>원
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">결제완료</span>
+                        </td>
+                    </tr>
+                    </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- 둘 다 없을 때 -->
+        <div th:if="${(completedPayments == null or #lists.isEmpty(completedPayments)) and (pendingReservations == null or #lists.isEmpty(pendingReservations))}" class="text-center py-8">
+            <p class="text-gray-500">수강 강의가 없습니다.</p>
+            <a href="/lectures" class="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">강의 찾아보기</a>
         </div>
     </div>
 
