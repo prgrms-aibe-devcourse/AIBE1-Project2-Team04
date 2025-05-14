@@ -80,7 +80,7 @@
 
         <!-- 회원가입 폼 -->
         <div class="bg-white shadow-sm rounded-lg p-8 mb-6">
-            <form th:action="@{/auth/sign}" method="post" class="space-y-5">
+            <form id="signForm" th:action="@{/auth/sign}" method="post" class="space-y-5">
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700 mb-1">아이디</label>
                     <div class="relative">
@@ -219,7 +219,7 @@
                                 type="tel"
                                 required
                                 class="pl-10 pr-3 py-3 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                                placeholder="닉네임을 입력하세요"
+                                placeholder="휴대폰 번호를 입력하세요"
                         />
                     </div>
                 </div>
@@ -329,8 +329,6 @@
 
 <!-- 공통 스크립트 포함 -->
 <div th:replace="fragments/scripts :: scripts"></div>
-</body>
-</html>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -498,7 +496,7 @@
         errorDiv.style.display = 'none';
 
         // 회원가입 폼 제출
-        const registerForm = document.querySelector('form');
+        const registerForm = document.querySelector('#signForm');
         registerForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 

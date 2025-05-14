@@ -125,7 +125,7 @@ public class ReservationController {
     @GetMapping("/{id}/cancel")
     public String cancelForm(@PathVariable Long id, Model model) {
         model.addAttribute("reservationCancelDto", new ReservationCancelDto(id, null));
-        return "reservation/reservationCancle";
+        return "reservation/reservationCancel";
     }
 
     @GetMapping("/{id}/view")

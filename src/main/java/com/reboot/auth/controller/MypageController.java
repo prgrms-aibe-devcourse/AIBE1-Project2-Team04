@@ -10,34 +10,35 @@ import com.reboot.auth.repository.MemberRepository;
 import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
 import com.reboot.payment.entity.Payment;
+import com.reboot.reservation.repository.ReservationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-// import com.reboot.auth.entity.Reservation;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/mypage")
 public class MypageController {
 
     private final MemberRepository memberRepository;
-    // 매칭
-    private final ReservationMyRepository reservationRepository;
+    private final ReservationMyRepository reservationMyRepository;
     private final GameRepository gameRepository;
     private final MypageService mypageService;
 
     public MypageController(MemberRepository memberRepository,
                             GameRepository gameRepository,
-                            ReservationMyRepository reservationRepository,
-                            MypageService mypageService) {
+                            ReservationMyRepository reservationMyRepository,
+                            MypageService mypageService,
+                            ReservationRepository mainReservationRepository) {
         this.memberRepository = memberRepository;
         this.gameRepository = gameRepository;
-        this.reservationRepository = reservationRepository;
+        this.reservationMyRepository = reservationMyRepository;
         this.mypageService = mypageService;
     }
 
@@ -55,20 +56,34 @@ public class MypageController {
             return "redirect:/mypage/instructorMypage";
         }
 
+        // 결제 대기 중인 예약 동기화
+        List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
+
+        // 결제가 완료된 예약들 상태 업데이트
+        for (ReservationMy reservation : pendingReservations) {
+            if (mypageService.hasPayment(reservation.getId())) {
+                updateReservationMyStatusToCompleted(reservation.getId());
+            }
+        }
+
         // 로그인 사용자 정보 조회
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> games = gameRepository.findByMember_MemberId(member.getMemberId());//수정
-        List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
+        List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());//수정
+        List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
+
+        // 업데이트 후 다시 조회
+        pendingReservations = mypageService.getPendingMyReservations(principal.getName());
         List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
         model.addAttribute("member", member);
-        model.addAttribute("games", games);
+        model.addAttribute("game", game);
         model.addAttribute("reservations", reservationMIES);
         model.addAttribute("completedPayments", completedPayments);
+        model.addAttribute("pendingReservations", pendingReservations);
 
-        // 강사 인증 확인
-        boolean isInstructor = mypageService.isInstructor(principal.getName());
-        model.addAttribute("isInstructor", isInstructor);
+//        // 강사 인증 확인
+//        boolean isInstructor = mypageService.isInstructor(principal.getName());
+//        model.addAttribute("isInstructor", isInstructor);
 
         return "mypage/index";
     }
@@ -258,7 +273,7 @@ public class MypageController {
     @GetMapping("/reservations")
     public String myReservations(Principal principal, Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
-        List<ReservationMy> reservationMIES = reservationRepository.findByMemberId(member.getMemberId());
+        List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
 
         model.addAttribute("member", member);
         model.addAttribute("reservations", reservationMIES);
@@ -272,7 +287,7 @@ public class MypageController {
                                     Principal principal,
                                     Model model) {
         Member member = mypageService.getCurrentMember(principal.getName());
-        Optional<ReservationMy> reservation = reservationRepository.findById(reservationId);
+        Optional<ReservationMy> reservation = reservationMyRepository.findById(reservationId);
 
         if (reservation.isPresent() && reservation.get().getMemberId().equals(member.getMemberId())) {
             model.addAttribute("member", member);
@@ -280,6 +295,20 @@ public class MypageController {
             return "mypage/reservation-detail";
         } else {
             return "redirect:/mypage/reservations";
+        }
+    }
+
+    // 예약 상태 업데이트 헬퍼 메서드
+    private void updateReservationMyStatusToCompleted(Long reservationId) {
+        try {
+            Optional<ReservationMy> reservationMyOpt = reservationMyRepository.findById(reservationId);
+            if (reservationMyOpt.isPresent()) {
+                ReservationMy reservationMy = reservationMyOpt.get();
+                reservationMy.setStatus("결제완료");
+                reservationMyRepository.save(reservationMy);
+            }
+        } catch (Exception e) {
+            System.err.println("예약 상태 업데이트 실패: " + e.getMessage());
         }
     }
 }
