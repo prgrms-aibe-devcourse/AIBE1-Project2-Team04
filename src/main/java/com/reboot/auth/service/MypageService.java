@@ -9,11 +9,15 @@ import com.reboot.auth.entity.ReservationMy;
 import com.reboot.auth.repository.*;
 import com.reboot.payment.entity.Payment;
 import com.reboot.payment.repository.PaymentRepository;
+import com.reboot.reservation.dto.ReservationResponseDto;
+import com.reboot.reservation.service.ReservationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.reboot.reservation.service.ReservationService;
+import com.reboot.reservation.dto.ReservationResponseDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,18 +41,22 @@ public class MypageService {
     @Autowired
     private GameRepository gameRepository;
 
+//    @Autowired
+//    private com.reboot.reservation.repository.ReservationRepository mainReservationRepository;
     @Autowired
-    private com.reboot.reservation.repository.ReservationRepository mainReservationRepository;
+    private ReservationService reservationService;
 
 
     public MypageService(MemberRepository memberRepository,
                          ReservationMyRepository reservationRepository,
                          PasswordEncoder passwordEncoder,
-                         FileUploadService fileUploadService) {
+                         FileUploadService fileUploadService,
+                         ReservationService reservationService) {
         this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.passwordEncoder = passwordEncoder;
         this.fileUploadService = fileUploadService;
+        this.reservationService = reservationService;
     }
 
     public Member getCurrentMember(String username) {
@@ -138,17 +146,16 @@ public class MypageService {
     protected void syncReservationsFromMainSystem(Long memberId) {
         try {
             // 메인 Reservation 시스템에서 예약 조회
-            List<com.reboot.reservation.entity.Reservation> mainReservations =
-                    mainReservationRepository.findByMember_MemberId(memberId);
+            List<ReservationResponseDto> mainReservations = reservationService.getReservationsByMember(memberId);
 
-            for (com.reboot.reservation.entity.Reservation mainRes : mainReservations) {
+            for (ReservationResponseDto mainRes : mainReservations) {
                 // ReservationMy에 없는 예약이 있으면 생성
                 if (!reservationRepository.existsById(mainRes.getReservationId())) {
                     ReservationMy newReservationMy = ReservationMy.builder()
                             .id(mainRes.getReservationId())
                             .memberId(memberId)
-                            .instructorId(mainRes.getInstructor().getInstructorId())
-                            .lectureId(mainRes.getLecture().getId())
+                            .instructorId(mainRes.getInstructorId())
+                            .lectureId(mainRes.getLectureId())
                             .date(mainRes.getDate())
                             .status(mainRes.getStatus())
                             .build();
@@ -170,6 +177,7 @@ public class MypageService {
             }
         } catch (Exception e) {
             System.err.println("예약 동기화 중 오류: " + e.getMessage());
+            e.printStackTrace();
             // 오류가 있어도 계속 진행
         }
     }
