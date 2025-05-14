@@ -35,7 +35,11 @@ public class MypageService {
     private InstructorRepository instructorRepository;
 
     @Autowired
-    private GameRepository gameRepository; // GameRepository 추가
+    private GameRepository gameRepository;
+
+    @Autowired
+    private com.reboot.reservation.repository.ReservationRepository mainReservationRepository;
+
 
     public MypageService(MemberRepository memberRepository,
                          ReservationMyRepository reservationRepository,
@@ -109,9 +113,92 @@ public class MypageService {
         return true;
     }
 
+    // 결제 대기 중인 예약 조회
+    public List<ReservationMy> getPendingMyReservations(String username) {
+        Member member = getCurrentMember(username);
+
+        // 1. 먼저 메인 시스템에서 누락된 예약들을 동기화
+        syncReservationsFromMainSystem(member.getMemberId());
+
+        // 2. ReservationMy에서 결제 대기 중인 예약 조회
+        List<ReservationMy> allReservations = reservationRepository.findByMemberId(member.getMemberId());
+
+        return allReservations.stream()
+                .filter(reservation -> {
+                    // 여러 상태 패턴 지원
+                    String status = reservation.getStatus();
+                    return "예약완료".equals(status) || "COMPLETED".equals(status) || "PENDING".equals(status);
+                })
+                .filter(reservation -> !this.hasPayment(reservation.getId()))
+                .collect(Collectors.toList());
+    }
+
+    // 메인 시스템과 동기화
+    @Transactional
+    protected void syncReservationsFromMainSystem(Long memberId) {
+        try {
+            // 메인 Reservation 시스템에서 예약 조회
+            List<com.reboot.reservation.entity.Reservation> mainReservations =
+                    mainReservationRepository.findByMember_MemberId(memberId);
+
+            for (com.reboot.reservation.entity.Reservation mainRes : mainReservations) {
+                // ReservationMy에 없는 예약이 있으면 생성
+                if (!reservationRepository.existsById(mainRes.getReservationId())) {
+                    ReservationMy newReservationMy = ReservationMy.builder()
+                            .id(mainRes.getReservationId())
+                            .memberId(memberId)
+                            .instructorId(mainRes.getInstructor().getInstructorId())
+                            .lectureId(mainRes.getLecture().getId())
+                            .date(mainRes.getDate())
+                            .status(mainRes.getStatus())
+                            .build();
+
+                    reservationRepository.save(newReservationMy);
+                    System.out.println("동기화: 새로운 예약 추가 - ID: " + newReservationMy.getId());
+                }
+
+                // 결제 상태도 확인하여 업데이트
+                if (this.hasPayment(mainRes.getReservationId())) {
+                    Optional<ReservationMy> reservationMyOpt = reservationRepository.findById(mainRes.getReservationId());
+                    if (reservationMyOpt.isPresent() && !"결제완료".equals(reservationMyOpt.get().getStatus())) {
+                        ReservationMy reservationMy = reservationMyOpt.get();
+                        reservationMy.setStatus("결제완료");
+                        reservationRepository.save(reservationMy);
+                        System.out.println("동기화: 결제 상태 업데이트 - ID: " + reservationMy.getId());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("예약 동기화 중 오류: " + e.getMessage());
+            // 오류가 있어도 계속 진행
+        }
+    }
+
+    // 상태 매핑 메서드
+    private String mapReservationStatus(String mainStatus) {
+        if (mainStatus == null) return "예약완료";
+
+        switch (mainStatus) {
+            case "COMPLETED":
+            case "예약완료":
+                return "예약완료";
+            case "PAID":
+            case "결제완료":
+                return "결제완료";
+            case "CANCELLED":
+            case "취소":
+                return "취소";
+            default:
+                return "예약완료"; // 기본값
+        }
+    }
+
     // 커스텀 결제 완료 조회 메서드
     public List<Payment> getCompletedPayments(String username) {
         Member member = getCurrentMember(username);
+
+        // 예약 동기화 먼저 실행
+        syncReservationsFromMainSystem(member.getMemberId());
 
         // 전체 조회 후 필터링
         return paymentRepository.findAll().stream()
@@ -119,20 +206,6 @@ public class MypageService {
                 .filter(payment -> payment.getReservation().getMember() != null)
                 .filter(payment -> payment.getReservation().getMember().getMemberId().equals(member.getMemberId()))
                 .filter(payment -> "결제완료".equals(payment.getStatus())) // '결제완료'로 필터링
-                .collect(Collectors.toList());
-    }
-
-    // 결제 대기 중인 예약 조회
-    public List<ReservationMy> getPendingMyReservations(String username) {
-        Member member = getCurrentMember(username);
-
-        // ReservationMyRepository 사용
-        List<ReservationMy> allReservations = reservationRepository.findByMemberId(member.getMemberId());
-
-        // 예약완료 상태인 것들만 필터링
-        return allReservations.stream()
-                .filter(reservation -> "예약완료".equals(reservation.getStatus()))
-                .filter(reservation -> !this.hasPayment(reservation.getId())) // 결제가 없는 것만
                 .collect(Collectors.toList());
     }
 

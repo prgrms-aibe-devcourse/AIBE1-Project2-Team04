@@ -54,12 +54,12 @@ public class MypageController {
                 return "redirect:/mypage/instructorMypage";
             }
 
-            // 로그인 사용자 정보 조회 (기본 정보부터)
+            // 로그인 사용자 정보 조회
             Member member = mypageService.getCurrentMember(principal.getName());
             List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());
             List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
 
-            // 기본 모델 속성 설정 (오류가 나도 기본 페이지는 보이도록)
+            // 기본 모델 속성 설정
             model.addAttribute("member", member);
             model.addAttribute("game", game);
             model.addAttribute("reservations", reservationMIES);
@@ -67,18 +67,8 @@ public class MypageController {
             model.addAttribute("pendingReservations", List.of()); // 기본값
 
             try {
-                // 결제 관련 로직 (오류 발생해도 페이지는 보여주도록)
+                // 동기화를 포함한 결제 관련 로직
                 List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
-
-                // 결제가 완료된 예약들 상태 업데이트
-                for (ReservationMy reservation : pendingReservations) {
-                    if (mypageService.hasPayment(reservation.getId())) {
-                        updateReservationMyStatusToCompleted(reservation.getId());
-                    }
-                }
-
-                // 업데이트 후 다시 조회
-                pendingReservations = mypageService.getPendingMyReservations(principal.getName());
                 List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
 
                 // 성공적으로 조회된 경우에만 업데이트
@@ -87,6 +77,7 @@ public class MypageController {
 
             } catch (Exception e) {
                 System.err.println("결제 정보 조회 중 오류: " + e.getMessage());
+                e.printStackTrace();
                 // 오류가 있어도 기본 페이지는 보여줌
             }
 
