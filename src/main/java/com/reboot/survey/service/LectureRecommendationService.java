@@ -359,8 +359,28 @@ public class LectureRecommendationService {
 
         // 응답 형식 - 기존과 동일하게 유지
         promptBuilder.append("## 응답 형식\n");
+        // promptBuilder.append("""
+        //         {member_nickname}님을 위한 맞춤 강의 추천
+        //        
+        //         1. [강의 ID: {lecture_id}] {lecture_title}
+        //            강사: {instructor_name} ({instructor_career})
+        //            추천 이유: {detailed_reason_based_on_survey}
+        //            기대 효과: {expected_improvement}
+        //        
+        //         2. [강의 ID: {lecture_id}] {lecture_title}
+        //            강사: {instructor_name} ({instructor_career})
+        //            추천 이유: {detailed_reason_based_on_survey}
+        //            기대 효과: {expected_improvement}
+        //        
+        //         3. [강의 ID: {lecture_id}] {lecture_title}
+        //            강사: {instructor_name} ({instructor_career})
+        //            추천 이유: {detailed_reason_based_on_survey}
+        //            기대 효과: {expected_improvement}
+        //        
+        //         종합 추천 의견: {overall_recommendation}
+        //         """);
         promptBuilder.append("""
-                {member_nickname}님을 위한 맞춤 강의 추천
+                회원님을 위한 맞춤 강의 추천
                 
                 1. [강의 ID: {lecture_id}] {lecture_title}
                    강사: {instructor_name} ({instructor_career})

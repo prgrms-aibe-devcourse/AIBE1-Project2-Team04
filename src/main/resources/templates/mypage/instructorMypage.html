@@ -71,7 +71,7 @@
             <div class="flex flex-col items-center">
                 <img th:if="${member.profileImage}" th:src="${member.profileImage}" alt="프로필 이미지" class="profile-image mb-4">
                 <img th:unless="${member.profileImage}" src="/images/default-profile.png" alt="기본 프로필 이미지" class="profile-image mb-4">
-                <a href="/instructor/mypage/profile" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">프로필 수정</a>
+                <a href="/mypage/instructor/profile" class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-indigo-700 transition">프로필 수정</a>
             </div>
 
             <!-- 강사 정보 -->

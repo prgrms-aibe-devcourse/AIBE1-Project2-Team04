@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>맞춤 강의 추천 결과</title>
     <!--헤드 포함-->
     <th:block th:replace="fragments/config :: configFragment"></th:block>
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
             background-color: #f5f7fa;
         }
         .recommendation-container {
@@ -19,6 +17,8 @@
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 1200px; /* Adjust max width as needed */
+            margin: 20px auto; /* Center the container and add vertical margin */
         }
         h1 {
             color: #333;
@@ -32,8 +32,10 @@
         }
         .lecture-cards {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Allow cards to grow, min 300px */
             gap: 20px;
+            justify-content: center; /* Center the grid */
+            padding: 0 10px; /* Add some horizontal padding */
         }
         .lecture-card {
             border: 1px solid #eaeaea;
@@ -47,18 +49,24 @@
         }
         .lecture-image {
             width: 100%;
+            max-height: 300px; /* Adjust height as needed */
             overflow: hidden;
+            display: flex; /* Use flexbox to center the image */
+            justify-content: center;
+            align-items: center;
         }
         .lecture-image img {
-            width: 100%;
-            height: auto;
+            display: block; /* Remove extra space below image */
+            width: 100%; /* Ensure image takes full width of container */
+            height: auto; /* Maintain aspect ratio */
+            object-fit: cover; /* Crop image if necessary to cover container */
             transition: transform 0.3s;
         }
         .lecture-card:hover .lecture-image img {
             transform: scale(1.05);
         }
         .lecture-header {
-            background-color: #4F46E5;
+            background-color: #4f46e5;
             color: white;
             padding: 15px;
         }
@@ -121,7 +129,7 @@
             transition: all 0.2s;
         }
         .btn-primary {
-            background-color: #4F46E5;
+            background-color: #4f46e5;
             color: white;
         }
         .btn-primary:hover {
@@ -129,8 +137,8 @@
         }
         .btn-secondary {
             background-color: white;
-            color: #4F46E5;
-            border: 1px solid #4F46E5;
+            color: #4f46e5;
+            border: 1px solid #4f46e5;
         }
         .btn-secondary:hover {
             background-color: #f0f4ff;
@@ -148,10 +156,13 @@
         <p th:text="${recommendation.overallRecommendation}">설문 결과에 따른 맞춤형 강의를 추천해 드립니다.</p>
     </div>
 
-    <div th:if="${recommendation.recommendations != null && !recommendation.recommendations.isEmpty()}" class="lecture-cards">
+    <div
+            th:if="${recommendation.recommendations != null && !recommendation.recommendations.isEmpty()}"
+            class="lecture-cards"
+    >
         <div th:each="lecture : ${recommendation.recommendations}" class="lecture-card">
             <div th:if="${lecture.imageUrl != null}" class="lecture-image">
-                <img th:src="${lecture.imageUrl}" alt="강의 이미지" style="width: 100%; height: auto;">
+                <img th:src="${lecture.imageUrl}" alt="강의 이미지" style="width: 100%; height: auto" />
             </div>
             <div class="lecture-header">
                 <h2 class="lecture-title" th:text="${lecture.title}">강의 제목</h2>
@@ -178,7 +189,10 @@
         </div>
     </div>
 
-    <div th:if="${recommendation.recommendations == null || recommendation.recommendations.isEmpty()}" class="no-recommendations">
+    <div
+            th:if="${recommendation.recommendations == null || recommendation.recommendations.isEmpty()}"
+            class="no-recommendations"
+    >
         <h2>맞춤 강의를 찾을 수 없습니다</h2>
         <p>현재 귀하의 기준에 맞는 강의가 준비되어 있지 않습니다. 곧 더 많은 강의가 추가될 예정입니다.</p>
     </div>
