@@ -4,88 +4,83 @@ import com.reboot.auth.dto.GameDTO;
 import com.reboot.auth.dto.ProfileDTO;
 import com.reboot.auth.entity.Game;
 import com.reboot.auth.entity.Member;
-import com.reboot.auth.entity.ReservationMy;
 import com.reboot.auth.repository.GameRepository;
 import com.reboot.auth.repository.MemberRepository;
-import com.reboot.auth.repository.ReservationMyRepository;
 import com.reboot.auth.service.MypageService;
 import com.reboot.payment.entity.Payment;
-import com.reboot.reservation.repository.ReservationRepository;
+import com.reboot.reservation.entity.Reservation;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/mypage")
 public class MypageController {
 
     private final MemberRepository memberRepository;
-    private final ReservationMyRepository reservationMyRepository;
     private final GameRepository gameRepository;
     private final MypageService mypageService;
 
+    // 생성자 수정 - @Autowired 어노테이션 제거 (Spring이 자동으로 주입)
     public MypageController(MemberRepository memberRepository,
                             GameRepository gameRepository,
-                            ReservationMyRepository reservationMyRepository,
-                            MypageService mypageService,
-                            ReservationRepository mainReservationRepository) {
+                            MypageService mypageService) {
         this.memberRepository = memberRepository;
         this.gameRepository = gameRepository;
-        this.reservationMyRepository = reservationMyRepository;
         this.mypageService = mypageService;
     }
 
-    // 메인화면
+    // 메인 마이페이지 (일반 사용자) - 단순화 버전
     @GetMapping
     public String mypage(Principal principal, Model model) {
-
-        // 인증 확인
-        if (principal == null) {
-            return "redirect:/auth/login";  // 로그인 페이지로 리다이렉트
-        }
-
-        // 강사인 경우 강사 페이지로 자동 리다이렉트
-        if (mypageService.isInstructor(principal.getName())) {
-            return "redirect:/mypage/instructorMypage";
-        }
-
-        // 결제 대기 중인 예약 동기화
-        List<ReservationMy> pendingReservations = mypageService.getPendingMyReservations(principal.getName());
-
-        // 결제가 완료된 예약들 상태 업데이트
-        for (ReservationMy reservation : pendingReservations) {
-            if (mypageService.hasPayment(reservation.getId())) {
-                updateReservationMyStatusToCompleted(reservation.getId());
+        try {
+            // 인증 확인
+            if (principal == null) {
+                return "redirect:/auth/login";
             }
+
+            // 강사인 경우 강사 페이지로 자동 리다이렉트
+            if (mypageService.isInstructor(principal.getName())) {
+                return "redirect:/mypage/instructorMypage";
+            }
+
+            // 기본 정보 조회
+            Member member = mypageService.getCurrentMember(principal.getName());
+            List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());
+
+            // 예약 및 결제 정보 조회 (단순화)
+            List<Reservation> pendingReservations = mypageService.getPendingReservations(principal.getName());
+            List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
+            List<Reservation> completedReservations = mypageService.getCompletedReservations(principal.getName());
+
+            // 모델에 데이터 설정
+            model.addAttribute("member", member);
+            model.addAttribute("game", game);
+            model.addAttribute("pendingReservations", pendingReservations);
+            model.addAttribute("completedPayments", completedPayments);
+            model.addAttribute("completedReservations", completedReservations);
+
+            // 디버깅 로그
+            System.out.println("=== 단순화된 마이페이지 데이터 ===");
+            System.out.println("결제 대기 예약 수: " + pendingReservations.size());
+            System.out.println("결제 완료 Payment 수: " + completedPayments.size());
+            System.out.println("결제 완료 예약 수: " + completedReservations.size());
+
+            return "mypage/index";
+
+        } catch (Exception e) {
+            System.err.println("마이페이지 접속 오류: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/error";
         }
-
-        // 로그인 사용자 정보 조회
-        Member member = mypageService.getCurrentMember(principal.getName());
-        List<Game> game = gameRepository.findByMember_MemberId(member.getMemberId());//수정
-        List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
-
-        // 업데이트 후 다시 조회
-        pendingReservations = mypageService.getPendingMyReservations(principal.getName());
-        List<Payment> completedPayments = mypageService.getCompletedPayments(principal.getName());
-
-        model.addAttribute("member", member);
-        model.addAttribute("game", game);
-        model.addAttribute("reservations", reservationMIES);
-        model.addAttribute("completedPayments", completedPayments);
-        model.addAttribute("pendingReservations", pendingReservations);
-
-//        // 강사 인증 확인
-//        boolean isInstructor = mypageService.isInstructor(principal.getName());
-//        model.addAttribute("isInstructor", isInstructor);
-
-        return "mypage/index";
     }
 
     //프로필 수정 페이지
@@ -100,13 +95,13 @@ public class MypageController {
         ProfileDTO profileDTO = ProfileDTO.builder()
                 .username(member.getUsername()) // 읽기 전용
                 .name(member.getName())         // 읽기 전용
-                .email(member.getEmail())       // 일기 전용
+                .email(member.getEmail())       // 읽기 전용
                 .nickname(member.getNickname()) // 변경 가능
                 .phone(member.getPhone())       // 변경 가능
                 .build();
 
         model.addAttribute("profileDTO", profileDTO);
-        model.addAttribute("member",member);
+        model.addAttribute("member", member);
         return "mypage/profile-edit";
     }
 
@@ -116,15 +111,13 @@ public class MypageController {
                                 @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
                                 Principal principal,
                                 RedirectAttributes redirectAttributes) {
-        // 파일 크기 사전 검증 추가
+        // 파일 크기 사전 검증
         if (profileImage != null && !profileImage.isEmpty()) {
-            // 5MB 제한
             if (profileImage.getSize() > 5 * 1024 * 1024) {
                 redirectAttributes.addFlashAttribute("error", "프로필 이미지는 5MB 이하여야 합니다.");
                 return "redirect:/mypage/profile";
             }
 
-            // 파일 형식 검증
             String contentType = profileImage.getContentType();
             if (contentType == null || !(contentType.equals("image/jpeg") ||
                     contentType.equals("image/png") ||
@@ -205,14 +198,13 @@ public class MypageController {
         model.addAttribute("game", game);
         return "mypage/game";
     }
-    
+
     @GetMapping("/game/register")
     public String gameRegisterForm(Principal principal, Model model) {
         if (principal == null) {
             return "redirect:/auth/login";
         }
 
-        // 이미 게임 정보가 있으면 수정 페이지로 리다이렉트
         if (mypageService.hasGameInfo(principal.getName())) {
             return "redirect:/mypage/game/edit";
         }
@@ -240,7 +232,6 @@ public class MypageController {
             return "redirect:/auth/login";
         }
 
-        // 게임 정보가 없으면 등록 페이지로 리다이렉트
         if (!mypageService.hasGameInfo(principal.getName())) {
             return "redirect:/mypage/game/register";
         }
@@ -269,46 +260,11 @@ public class MypageController {
         return "redirect:/mypage";
     }
 
-    //수강신청 내역 페이지
-    @GetMapping("/reservations")
-    public String myReservations(Principal principal, Model model) {
-        Member member = mypageService.getCurrentMember(principal.getName());
-        List<ReservationMy> reservationMIES = reservationMyRepository.findByMemberId(member.getMemberId());
-
-        model.addAttribute("member", member);
-        model.addAttribute("reservations", reservationMIES);
-
-        return "mypage/reservations";
-    }
-
-    //수강신청 상세정보
-    @GetMapping("/reservations/{reservationId}")
-    public String reservationDetail(@PathVariable Long reservationId,
-                                    Principal principal,
-                                    Model model) {
-        Member member = mypageService.getCurrentMember(principal.getName());
-        Optional<ReservationMy> reservation = reservationMyRepository.findById(reservationId);
-
-        if (reservation.isPresent() && reservation.get().getMemberId().equals(member.getMemberId())) {
-            model.addAttribute("member", member);
-            model.addAttribute("reservation", reservation.get());
-            return "mypage/reservation-detail";
-        } else {
-            return "redirect:/mypage/reservations";
-        }
-    }
-
-    // 예약 상태 업데이트 헬퍼 메서드
-    private void updateReservationMyStatusToCompleted(Long reservationId) {
-        try {
-            Optional<ReservationMy> reservationMyOpt = reservationMyRepository.findById(reservationId);
-            if (reservationMyOpt.isPresent()) {
-                ReservationMy reservationMy = reservationMyOpt.get();
-                reservationMy.setStatus("결제완료");
-                reservationMyRepository.save(reservationMy);
-            }
-        } catch (Exception e) {
-            System.err.println("예약 상태 업데이트 실패: " + e.getMessage());
-        }
+    // 결제 상태 확인 API (디버깅용) - ResponseBody import 필요
+    @GetMapping("/check-payment/{reservationId}")
+    @ResponseBody
+    public String checkPayment(@PathVariable Long reservationId) {
+        boolean hasPayment = mypageService.hasPayment(reservationId);
+        return "예약 ID " + reservationId + " 결제 상태: " + (hasPayment ? "완료" : "대기");
     }
 }

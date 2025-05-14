@@ -51,13 +51,20 @@ public class InstructorMypageService {
         Instructor instructor = member.getInstructor();
         Game game = member.getGame();
 
+        // 닉네임 중복 검사 추가
+        if (!member.getNickname().equals(dto.getNickname())) {
+            boolean nicknameExists = memberRepository.existsByNicknameAndMemberIdNot(dto.getNickname(), member.getMemberId());
+            if (nicknameExists) {
+                throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+            }
+        }
+
         // Member 정보 수정 (변경 가능한 필드만)
         member.setNickname(dto.getNickname());
         member.setPhone(dto.getPhone());
 
         // 프로필 이미지 처리
         if (profileImage != null && !profileImage.isEmpty()) {
-            // 이미지 업로드 로직
             validateProfileImage(profileImage);
             String imageUrl = fileUploadService.uploadImageToSupabase(profileImage);
             if (imageUrl != null) {
@@ -69,17 +76,23 @@ public class InstructorMypageService {
         if (instructor != null) {
             instructor.setCareer(dto.getCareer());
             instructor.setDescription(dto.getDescription());
+            instructorRepository.save(instructor); // 명시적 저장
+        } else {
+            // 만약 instructor가 없다면 에러 처리 또는 생성
+            throw new RuntimeException("강사 정보가 존재하지 않습니다.");
         }
 
         // Game 정보 수정
         if (game == null) {
             game = new Game();
             game.setMember(member);
+            member.setGame(game); // 양방향 관계 설정
         }
         game.setGameType(dto.getGameType());
         game.setGameTier(dto.getGameTier());
         game.setGamePosition(dto.getGamePosition());
 
+        // 저장 순서 중요: Member 먼저, 그 다음 Game
         memberRepository.save(member);
         gameRepository.save(game);
     }
